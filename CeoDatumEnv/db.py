@@ -1,0 +1,14 @@
+import psycopg2
+from flask import current_app, g
+from flask.cli import with_appcontext
+import config
+
+def get_db():
+	if 'db' not in g:
+		g.db = psycopg2.connect(
+			host = config.DB_HOST,
+			user = config.DB_USER,
+			password = config.DB_PASS,
+			dbname = config.DB_NAME
+			)
+	return g.db	
