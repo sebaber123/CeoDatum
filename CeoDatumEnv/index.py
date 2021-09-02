@@ -19,3 +19,4 @@ app.run(debug=True)
 from resources import user
 
 app.add_url_rule('/', 'home', user.index)
+app.add_url_rule('/intento', 'intento', user.intento)
