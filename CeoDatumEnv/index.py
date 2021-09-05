@@ -19,4 +19,6 @@ app.run(debug=True)
 from resources import user
 
 app.add_url_rule('/', 'home', user.index)
-app.add_url_rule('/intento', 'intento', user.intento)
+app.add_url_rule('/intentoLine', 'intento_line', user.intentoLine)
+app.add_url_rule('/intentoBar', 'intento_bar', user.intentoBar)
+app.add_url_rule('/embebido', 'embebido', user.embebido)

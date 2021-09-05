@@ -27,22 +27,8 @@ def index():
 
     return render_template('home/index.html', users=users)
 
-def intento():
-    #if not authenticated(session):
-    #    abort(401)
-
-    #validacion de permiso
-    #if not("estudiante_index" in (session.values())):
-    #    abort(401)
-
-    #bar plot
-    #dates = ['21/12/2020','22/12/2020']    
-    #counts = [3,4]
-    #bar2 = bar_plot(dates, counts,'fecha', 'cantidad')
-    #script, div = components(bar2)
-
-
-
+def intentoLine():
+    
     #line plot
     dates = [datetime.strptime('21/12/2020', '%d/%m/%Y'),datetime.strptime('22/12/2020', '%d/%m/%Y'),datetime.strptime('23/12/2020', '%d/%m/%Y')]
     counts = [3,4,8]
@@ -57,3 +43,26 @@ def intento():
         js_resources=INLINE.render_js(),
         css_resources=INLINE.render_css(),
     ).encode(encoding='UTF-8')
+
+def intentoBar():
+    
+
+    #bar plot
+    dates = ['21/12/2020','22/12/2020']    
+    counts = [3,4]
+    bar2 = bar_plot(dates, counts,'fecha', 'cantidad')
+    script, div = components(bar2)
+
+
+    return render_template(
+        'home/intento.html',
+        plot_script=script,
+        plot_div=div,
+        js_resources=INLINE.render_js(),
+        css_resources=INLINE.render_css(),
+    ).encode(encoding='UTF-8')
+
+
+def embebido():
+
+    return render_template('home/embebido.html')    
