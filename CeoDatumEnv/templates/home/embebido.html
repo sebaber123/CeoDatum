@@ -4,21 +4,31 @@
   <meta charset="utf-8">
   <title>change demo</title>
   <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+  <style type="text/css">
+    img {
+      width: 150px;
+      height: 150px;
+    }
+  </style>
 </head>
 <body>
- 
-<select id="select" name="select" class="selectpicker form-control">
-              
-    <option value="bar">bar</option>
-    <option value="line">line</option>
-                                                            
-</select>
 
-<iframe id="iframe" name="iframe" src="/intento" height="800" width="1200"></iframe>
+<div>
+  <h3>graficos</h3>
+    <label>
+      <input type="radio" id="bar_chart" name="chart" value="bar" /><img src="{{url_for('static', filename='bar_chart.png') }}">
+    </label>
+    <label>
+      <input type="radio" id="line_chart" name="chart" value="line" /><img src="{{url_for('static', filename='line_chart.png') }}">
+    </label>
+</div>
+
+<iframe id="iframe" name="iframe" src="" height="800" width="850"></iframe>
+
+
  
 <script>
-$( '#select' ).change(function () {
-    alert('ss');
+/*$( '#select' ).change(function () {
     var iframe = $('#iframe')[0];
     selection = $( '#select' ).val();
     if(selection == 'bar')  
@@ -29,7 +39,22 @@ $( '#select' ).change(function () {
     document.getElementById('iframe').src = document.getElementById('iframe').src
     //alert($('#iframe')[0].src);
   })
-  .change();  
+  .change();*/
+
+  $('input:radio[name="chart"]').change(function() {
+    var iframe = $('#iframe')[0];
+    if ($(this).val() == 'bar') {
+      iframe.src = "/intentoBar";
+    } else {
+      if ($(this).val() == 'line') {
+        iframe.src = "/intentoLine";
+      }
+    }
+    iframe.contentWindow.location.reload(true);
+    document.getElementById('iframe').src = document.getElementById('iframe').src
+  });
+
+
 </script>
  
 </body>
