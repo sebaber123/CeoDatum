@@ -6,12 +6,19 @@ from bokeh.models import ColumnDataSource, Div, Select, Slider, TextInput
 from bokeh.io import curdoc
 from bokeh.resources import INLINE
 from bokeh.embed import components
+from models.visualization import Visualization
 
+def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, column_y):
 
-def bar_plot(x_axis_array, y_axis_array, x_axis_name, y_axis_name):
+    data = Visualization.get_data(data_db_name, table, column_x, column_y)    
+    y_array = [int(row['cantidad']) for row in data]
+    x_array = [str(row['fecha']) for row in data]
 
-    dictionary=dict(  x=x_axis_array, y=y_axis_array)
+    dictionary=dict(  x=x_array, y=y_array)
     source = ColumnDataSource(data=dictionary)
+
+    #aaa
+
 
     bar = figure(x_range= dictionary['x'], title='bar plot', x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=400, plot_width=800)
     bar.vbar(x='x', top='y', source=source, color='blue', width=0.5)

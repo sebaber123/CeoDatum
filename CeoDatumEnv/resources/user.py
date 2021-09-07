@@ -47,10 +47,9 @@ def intentoLine():
 def intentoBar():
     
 
+
     #bar plot
-    dates = ['21/12/2020','22/12/2020']    
-    counts = [3,4]
-    bar2 = bar_plot(dates, counts,'fecha', 'cantidad')
+    bar2 = bar_plot('fecha', 'cantidad', 'PruebaDatos1', 'prueb', 'fecha', 'cantidad',)
     script, div = components(bar2)
 
 
