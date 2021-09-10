@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block content %}
+<head>
+<title> Bootstrap Drag and drop Example </title>
+<meta charset ="utf-8">
+<meta name ="viewport" content= "width=device-width, initial-scale=1">
+<script>
+function allowDrop (ev) {
+ev.preventDefault();
+}
+function dragStart (ev) {
+ev.dataTransfer.setData ("text", ev.target.id);
+}
+function dragDrop (ev) {
+ev.preventDefault ();
+var data = ev.dataTransfer.getData ("text");
+ev.target.appendChild(document.getElementById(data));
+}
+</script>
+<style>
+#colmm {
+width: 260px;
+height: 160px;
+background-color:  orange;
+}
+#colm3 {
+width: 260px;
+height: 160px;
+background-color:  yellow;
+}
+p {
+font-size:25px;
+text-align:center;
+}
+.main {
+font-size: 50px;
+color: black;
+text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class = "main"> welcome to tutorial </div>
+<p> Drag and drop using bootstrap </p>
+	<div id = "colm">
+		<div id = "colmm" ondrop ="dragDrop(event)" ondragover ="allowDrop(event)">
+			<div id="colm1" draggable ="true" ondragstart ="dragStart(event)">
+				 •            The drag and drop need card class and draggable method in JavaScript.
+				The web element move required position of web pages using mouse or pointer.
+			</div>
+		</div> <br>
+		<div id="colm3" ondrop ="dragDrop(event)" ondragover ="allowDrop(event)">
+
+		</div>
+	</div>
+</div>
+</body>
+{% endblock %}

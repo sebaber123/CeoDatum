@@ -16,9 +16,9 @@ app.run(debug=True)
 #    list_users = cursor.fetchall()
 #    return json.dumps(list_users)
 
-from resources import user
+from resources import user, visualization
 
 app.add_url_rule('/', 'home', user.index)
-app.add_url_rule('/intentoLine', 'intento_line', user.intentoLine)
-app.add_url_rule('/intentoBar', 'intento_bar', user.intentoBar)
-app.add_url_rule('/embebido', 'embebido', user.embebido)
+app.add_url_rule('/intentoLine', 'intento_line', visualization.intentoLine)
+app.add_url_rule('/intentoBar/<x_axie>', 'intento_bar', visualization.intentoBar, methods=['GET'])
+app.add_url_rule('/embebido/<int:Bid>', 'embebido', visualization.embebido, methods=['GET'])

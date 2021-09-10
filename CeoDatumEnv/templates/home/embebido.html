@@ -4,29 +4,76 @@
   <meta charset="utf-8">
   <title>change demo</title>
   <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-  <style type="text/css">
-    img {
-      width: 150px;
-      height: 150px;
-    }
-  </style>
+<style>
+  img {
+        width: 150px;
+        height: 150px;
+  }
+
+  .row{
+    --bs-gutter-x: 0;
+  }
+
+  
+
+</style>
 </head>
 <body>
 
-<div>
-  <h3>graficos</h3>
-    <label>
-      <input type="radio" id="bar_chart" name="chart" value="bar" /><img src="{{url_for('static', filename='bar_chart.png') }}">
-    </label>
-    <label>
-      <input type="radio" id="line_chart" name="chart" value="line" /><img src="{{url_for('static', filename='line_chart.png') }}">
-    </label>
-</div>
+<table>
+  <tr valign="top">
+    <td style="width:10px"></td>
+    <td style=" text-align: center; vertical-align: middle;">
+      <h1> Nombre DS</h1>
+    </td>
+    <td style="width:25px;"></td>
+    <td style="width:250px;"></td>
+    <td style="width:100px;"></td>
+    <td >
+      <br/>
+      <h3>graficos</h3>
+      <label>
+        <input type="radio" id="bar_chart" name="chart" value="bar" /><img src="{{url_for('static', filename='bar_chart.png') }}">
+      </label>
+      <label>
+        <input type="radio" id="line_chart" name="chart" value="line" /><img src="{{url_for('static', filename='line_chart.png') }}">
+      </label>
+    </td>
+  </tr>
+  <tr style="height:20px"><td style="width:10px"></td></tr>
 
-<iframe id="iframe" name="iframe" src="" height="800" width="850"></iframe>
+  <tr valign="top">
+    <td style="width:10px"></td>
+    <td>
+      <h3>Columnas del dataset</h3>
+      <div  id="order-columns" class="card overflow-auto list-group" style="height:532.5px; width: 250px; ">
+        {% for column in columns %}
+          <div class="list-group-item">{{column.name}}
+          <input type="hidden" id="POST-name" type="text" name="{{column.name}}" value="{{column.name}}">
+          </div>
+        {% endfor %}  
+      </div>    
+    </td>
+    <td style="width:25px;"></td>
+    <td>
+        <h3>Eje X</h3>
+        <div  id="order-axi-x" class="card overflow-auto list-group" style="height:150px ; width: 250px;">
+        </div>
+        <h3>Eje Y</h3>
+        <div  id="order-axi-y" class="card overflow-auto list-group" style="height:150px ; width: 250px;">
+        </div>
+        <h3>condiciones</h3>
+        <div  id="order-conditions" class="card overflow-auto list-group" style="height:150px ; width: 250px;">
+        </div>
+    </td>
+    <td style="width:100px;"></td>
+    <td>
+      <div  class="card" style="height:572.5px; width: 900px; ">
+      <iframe id="iframe" name="iframe" src="" height="550" width="850"></iframe>  
+    </td>  
+  </tr>
+</table>         
 
-
- 
 <script>
 /*$( '#select' ).change(function () {
     var iframe = $('#iframe')[0];
@@ -43,8 +90,14 @@
 
   $('input:radio[name="chart"]').change(function() {
     var iframe = $('#iframe')[0];
+    var x = '';
     if ($(this).val() == 'bar') {
-      iframe.src = "/intentoBar";
+      var div = $('#order-axi-x');
+      for (var i = 0; i <= div.children().length; i++) {
+        var name = div.children(i).children(0).prop('name');
+        x = name;
+      }
+      iframe.src = "/intentoBar/" + x;
     } else {
       if ($(this).val() == 'line') {
         iframe.src = "/intentoLine";
@@ -54,7 +107,42 @@
     document.getElementById('iframe').src = document.getElementById('iframe').src
   });
 
+  /*$('#order-axi-x').on('DOMSubtreeModified', function(){
+    console.log('s');
+    console.log($('#order-axi-x').children().length);
+    var div = $('#order-axi-x');
+    for (var i = 0; i <= div.children().length; i++) {
+      var name = div.children(i).children(0).prop('name');
+      if (name.split("##")[0] != 'y') {
+        div.children(i).children(0).attr('name', 'y##' + name);
+      }
+    }
+  });*/
 
+</script>
+
+<script src="http://sortablejs.github.io/Sortable/Sortable.js"></script>
+<script>
+  new Sortable(document.getElementById('order-columns'),{
+    group: 'shared',
+    animation: 150,
+    ghostClass: 'bg-info'
+  })
+  new Sortable(document.getElementById('order-axi-x'),{
+    group: 'shared',
+    animation: 150,
+    ghostClass: 'bg-info'
+  })
+  new Sortable(document.getElementById('order-axi-y'),{
+    group: 'shared',
+    animation: 150,
+    ghostClass: 'bg-info'
+  })
+  new Sortable(document.getElementById('order-conditions'),{
+    group: 'shared',
+    animation: 150,
+    ghostClass: 'bg-info'
+  })
 </script>
  
 </body>
