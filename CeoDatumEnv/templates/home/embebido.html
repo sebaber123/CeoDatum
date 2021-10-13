@@ -14,30 +14,38 @@
     --bs-gutter-x: 0;
   }
 
+.form-check-input {
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
   
 
 </style>
 </head>
 <body>
 
-<table>
+<table style="margin-top:10px;">
   <tr valign="top">
     <td style="width:10px"></td>
     <td style=" text-align: center; vertical-align: middle;">
-      <h1> Nombre DS</h1>
+      <h1> {{database.name}}</h1>
     </td>
     <td style="width:25px;"></td>
     <td style="width:250px;"></td>
     <td style="width:100px;"></td>
     <td >
-      <br/>
-      <h3>graficos</h3>
+      <label>
+        <input type="radio" id="table" name="chart" value="table" /><img src="{{url_for('static', filename='Data_table.png') }}">
+      </label>
       <label>
         <input type="radio" id="bar_chart" name="chart" value="bar" /><img src="{{url_for('static', filename='bar_chart.png') }}">
       </label>
       <label>
         <input type="radio" id="line_chart" name="chart" value="line" /><img src="{{url_for('static', filename='line_chart.png') }}">
       </label>
+       <button onclick="GenerateChart()">Generar grafico</button> 
     </td>
   </tr>
   <tr style="height:20px"><td style="width:10px"></td></tr>
@@ -46,10 +54,12 @@
     <td style="width:10px"></td>
     <td>
       <h3>Columnas del dataset</h3>
-      <div  id="order-columns" class="card overflow-auto list-group" style="height:532.5px; width: 250px; ">
+      <div  id="order-columns" class="card overflow-auto list-group" style="height:582.5px; width: 250px; ">
         {% for column in columns %}
           <div class="list-group-item">{{column.name}}
-          <input type="hidden" id="POST-name" type="text" name="{{column.name}}" value="{{column.name}}">
+            <input type="hidden" id="{{column.name}}" type="text" name="{{column.name}}" value="{{column.name}}">
+            <input type="hidden" type="text" value="{{column.type}}">
+
           </div>
         {% endfor %}  
       </div>    
@@ -57,24 +67,142 @@
     <td style="width:25px;"></td>
     <td>
         <h3>Eje X</h3>
-        <div  id="order-axi-x" class="card overflow-auto list-group" style="height:150px ; width: 250px;">
+        <div  id="order-axi-x" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
         </div>
-        <h3>Eje Y</h3>
-        <div  id="order-axi-y" class="card overflow-auto list-group" style="height:150px ; width: 250px;">
+        <div style="height:190px ">
+          <div style= "" id="container-order-y">
+            <h3>Eje Y</h3>
+            <div  id="order-axi-y" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
+            </div>
+          </div>
         </div>
         <h3>condiciones</h3>
-        <div  id="order-conditions" class="card overflow-auto list-group" style="height:150px ; width: 250px;">
+        <div  id="order-conditions" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
         </div>
+        <br/>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+          Agregar condicion
+        </button>
     </td>
     <td style="width:100px;"></td>
     <td>
-      <div  class="card" style="height:572.5px; width: 900px; ">
+      <div  class="card" style="height:622.5px; width: 900px; ">
       <iframe id="iframe" name="iframe" src="" height="550" width="850"></iframe>  
     </td>  
   </tr>
-</table>         
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form id="formCondition">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Seleccione la variable por la que quiere filtrar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          
+          <h3>Columna</h3>
+          {% for column in columns %}
+            <label>
+              <input type="radio" id="{{column.name}}ModalId" name="columnModal" value="{{column.name}}" columnType="{{column.type}}" required="required"/>{{column.name}}
+            </label>
+          {% endfor %}
+            
+          <h3>accion</h3>
+            <label style="display: none;" id="label-include">
+              <input type="radio" id="include" name="columnCondition" value="include"/> Incluir
+            </label>
+            <label style="display: none;" id="label-exclude">
+              <input type="radio" id="exclude" name="columnCondition" value="exclude" />Excluir
+            </label>
+            <label style="display: none;" id="label-higher">
+              <input type="radio" id="higher" name="columnCondition" value="higher" />Mayor que
+            </label>
+            <label style="display: none;" id="label-lower">
+              <input type="radio" id="lower" name="columnCondition" value="lower" />Menor que
+            </label>
+            <label style="display: none;" id="label-between">
+              <input type="radio" id="between" name="columnCondition" value="between" />Dentro del rango
+            </label>
+            
+          <h4>valor</h4>
+
+          <input style="display: none;" name="inputConditon" type="date" id="inputCondition">
+          <label style="display: none;" id="label-from">Desde: </label>
+          <input style="display: none;" name="inputConditon" type="date" id="inputStart">
+          <br/>
+          <label style="display: none;" id="label-to">Hasta: </label>
+          <input style="display: none;" name="inputConditon" type="date" id="inputEnd">
+
+
+            <div class="card overflow-auto" style="height:200px; width: 400px; display: none;" id="card-include-exclude">
+              <div style="vertical-align: middle;" class="form-check" id="optionContainer">
+
+              </div>            
+            
+            </div>  
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <input type="submit" class="btn btn-primary" name="submit" onclick="generateCondition()" value="Agregar">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+     
 
 <script>
+
+  $( document ).ready(function() {
+    $("input[type=radio][name=chart]").prop('checked', false);
+    $("input[type=radio][name=columnModal]").prop('checked', false);
+    $("input[type=radio][name=columnCondition]").prop('checked', false);
+    console.log( "ready!" );
+});
+
+$('#formCondition').submit(function () {
+ return false;
+});
+
+  
+
+  $('input:radio[name="chart"]').change(function(){
+    if($(this).val() == 'bar' || $(this).val() == 'line'  ){
+      
+      // Start observing the target node for configured mutations
+      observer.observe(targetNode, config);  
+
+      $("#container-order-y").css("display", "none"); 
+      
+
+    } else {
+
+      //desconecta el observer
+      observer.disconnect();
+
+      $("#container-order-y").css("display", "contents"); 
+
+    }
+
+    $('#order-axi-x .list-group-item').each(function(index){
+      var column = $(this).clone();
+      $('#order-columns').append(column);
+      $(this).remove();
+    });
+    $('#order-axi-y .list-group-item').each(function(index){
+      var column = $(this).clone();
+      $('#order-columns').append(column);
+      $(this).remove();
+    });
+
+
+  });
 /*$( '#select' ).change(function () {
     var iframe = $('#iframe')[0];
     selection = $( '#select' ).val();
@@ -88,28 +216,316 @@
   })
   .change();*/
 
-  $('input:radio[name="chart"]').change(function() {
+  function GenerateChart() {
+    
     var iframe = $('#iframe')[0];
+    var src = "/"
     var x = '';
-    if ($(this).val() == 'bar') {
-      var div = $('#order-axi-x');
-      for (var i = 0; i <= div.children().length; i++) {
+    selection = $('input:radio[name="chart"]:checked').val().toString();
+    //alert(selection);
+    
+    if(selection == 'bar'){
+      src = src + "graphBar/{{database.name}}&";
+      src = src + $('#order-axi-x').children(0).children(0).prop('name');
+      /*for (var i = 0; i <= div.children().length; i++) {
         var name = div.children(i).children(0).prop('name');
         x = name;
       }
-      iframe.src = "/intentoBar/" + x;
+      src = src + x;*/
+
+
     } else {
-      if ($(this).val() == 'line') {
-        iframe.src = "/intentoLine";
+      if (selection == 'line') {
+        src = "/graphLine/{{database.name}}&";
+        src = src + $('#order-axi-x').children(0).children(0).prop('name');
       }
     }
+    var conditions = $("#order-conditions");
+    //alert($("#order-conditions").children(0).length);
+    /*if (conditions.children(0).length == 1) {
+      
+      src = src + '&' + conditions.children(0)[1].value;
+    }else{
+      alert(9);*/
+      if (conditions.children(0).length > 0) {
+        
+        var stringConditions = '';
+        
+        $('[name=condition]').each(function(index) {
+          //alert(JSON.stringify(index));
+          //alert(JSON.stringify($(this).children(0)[1].value));
+          // and of course depending on your element utilize $(this).doSomethingCool
+          stringConditions = stringConditions + $(this).children(0)[1].value + '***';
+        });
+
+        //for (var i = 0; i < conditions.children(0).length; i++) {
+          //alert (conditions.children(0).children(i).val());
+          //alert (conditions.children(i).children(0).val());
+          //alert(JSON.stringify(conditions.children(1).children(0)[0].value));
+          //alert(i);
+          //stringConditions = stringConditions + conditions.children(0).children(0)[i].value+ '***';
+        //}
+        alert(stringConditions);
+
+        src = src + '&' + (stringConditions.slice(0, -3));
+
+        
+      }  
+    //}
+    iframe.src = src
     iframe.contentWindow.location.reload(true);
-    document.getElementById('iframe').src = document.getElementById('iframe').src
+    document.getElementById('iframe').src = document.getElementById('iframe').src;
+  }
+
+  $('input:radio[name="columnModal"]').change(function() {
+    
+    //alert($(this).attr('columnType'));
+
+    $("#card-include-exclude").css("display", "none"); 
+    $( "#optionContainer" ).empty();
+    $("#inputCondition").css("display", "none"); 
+    $("#inputStart").css("display", "none"); 
+    $("#inputEnd").css("display", "none"); 
+    $("#label-from").css("display", "none");
+    $("#label-to").css("display", "none");
+    $("input[type=radio][name=columnCondition]").prop('checked', false);
+
+
+    if ($(this).attr('columnType') == 'date' || $(this).attr('columnType')== 'number' ) { 
+
+      $("#label-higher").css("display", "contents"); 
+      $("#label-lower").css("display", "contents"); 
+      $("#label-between").css("display", "contents"); 
+
+      if ($(this).attr('columnType') == 'date') {
+
+        $("#inputCondition").attr('type', 'date');
+        $("#inputStart").attr('type', 'date');
+        $("#inputEnd").attr('type', 'date');
+
+
+      } else{
+
+        $("#inputCondition").attr('type', 'number');
+        $("#inputStart").attr('type', 'number');
+        $("#inputEnd").attr('type', 'number');        
+
+      }
+
+
+
+    }
+    else{
+      $("#label-higher").css("display", "none"); 
+      $("#label-lower").css("display", "none"); 
+      $("#label-between").css("display", "none"); 
+    }
+
+    $("#label-include").css("display", "contents"); 
+    $("#label-exclude").css("display", "contents");
+    
+    /*$( "#optionContainer" ).empty();
+    $.getJSON($SCRIPT_ROOT + 'PruebaDatos1&' + $(this).val() , {
+      }, function(data) {
+
+        for (var i =  0; i < data.result.length; i++) {
+          $( "#optionContainer" ).append("<input class=\"form-check-input\" type=\"checkbox\" value=\"" + data.result[i][1] + "\">" + "<label class=\"form-check-label\" for=\"flexCheckDefault\">"  + data.result[i][1] + "</label><br/>");  
+        }
+      });
+    return false;*/
   });
 
+  $('input:radio[name="columnCondition"]').change(function() {
+    
+    if ($(this).val() == 'include' || $(this).val() == 'exclude' ) {
+
+      $("#inputCondition").css("display", "none"); 
+      $("#inputStart").css("display", "none"); 
+      $("#inputEnd").css("display", "none"); 
+      $("#label-from").css("display", "none");
+      $("#label-to").css("display", "none");
+
+      $("#card-include-exclude").css("display", ""); 
+
+      $( "#optionContainer" ).empty();
+      $.getJSON($SCRIPT_ROOT + 'PruebaDatos1&' + $('input:radio[name="columnModal"]:checked').val() , {
+        }, function(data) {
+
+          for (var i =  0; i < data.result.length; i++) {
+            $( "#optionContainer" ).append("<input class=\"form-check-input\" type=\"checkbox\" value=\"" + data.result[i][1] + "\">" + "<label class=\"form-check-label\" for=\"flexCheckDefault\">"  + data.result[i][1] + "</label><br/>");  
+          }
+        });
+      return false;
+
+    } else{
+      $("#card-include-exclude").css("display", "none"); 
+      $( "#optionContainer" ).empty();
+
+      if ($(this).val() == 'higher' || $(this).val() == 'lower') {
+
+        $("#inputCondition").css("display", ""); 
+        $("#inputStart").css("display", "none"); 
+        $("#inputEnd").css("display", "none");
+        $("#label-from").css("display", "none");
+        $("#label-to").css("display", "none");
+      
+      } else{
+
+        if ($(this).val() == 'between') {
+
+          $("#inputCondition").css("display", "none"); 
+          $("#inputStart").css("display", ""); 
+          $("#inputEnd").css("display", "");
+          $("#label-from").css("display", "contents");
+          $("#label-to").css("display", "contents");
+        }
+
+      } 
+
+    }
+
+  });
+
+
+  var cant = 0;
+
+  function generateCondition(){
+    //var checked = $(".form-check-input:checked");
+
+    var conditions = [];
+    var condition = '';
+    var column = $('input:radio[name="columnModal"]:checked').val().toString();
+
+    $('.form-check-input:checked').each(function() {
+      condition = '';
+      condition = condition + column;
+      if ($('input:radio[name="columnCondition"]:checked').val() == 'include') {
+        condition = condition + ' = ';
+      }else{
+        condition = condition + ' != ';
+      }
+      condition = condition + "\'" + $(this).attr('value') + "\'" ;
+      conditions.push(condition);
+    });
+
+    //console.log(conditions.length);
+
+    if (conditions.length == 0) {
+     
+      //console.log($('#inputCondition').css("display"));
+      if ($('#inputCondition').css("display") == 'inline-block') { 
+
+        condition = condition + column;
+
+        if ($('input:radio[name="columnCondition"]:checked').val() == 'higher') {
+        
+          condition = condition + ' >= ';
+        
+        }else{
+        
+            condition = condition + ' <= ';
+        }
+
+        condition = condition + "\'" +$('#inputCondition').val() + "\'"; 
+        conditions.push(condition);
+        
+
+      } else {
+
+        condition = condition + column + " >= ";
+
+        condition = condition + "\'" +$('#inputStart').val() + "\' and " + column + " <= \'" +$('#inputEnd').val() + "\'"; 
+
+        conditions.push(condition);
+
+
+
+
+      }
+
+    
+    }
+
+    for (condition of conditions){
+      var divId = 'cond'+cant.toString();
+      $( "#order-conditions" ).append(
+          "<div class=\"list-group-item\" id=\""+divId+"\" name=\"condition\">"+
+            condition+
+            " <button onclick=\"deleteCondition(\'"+divId+"\')\" style=\"float:right;\"><img style=\"width: 20px; height: 20px;\" src=\"{{url_for('static', filename='trash.svg') }}\"/></button>"+
+            " <input type=\"hidden\" id=\""+condition+"\" type=\"text\" name=\""+condition+"\" value=\""+condition+"\">"+
+          "</div>");  
+      cant = cant + 1;
+    }  
+  }
+
+  function deleteCondition(condition){
+    $( "#"+condition ).remove();
+  }
+
   /*$('#order-axi-x').on('DOMSubtreeModified', function(){
-    console.log('s');
-    console.log($('#order-axi-x').children().length);
+      if($("#order-axi-x > .bg-info").length == 0 ){
+        $("#order-axi-x > .list-group-item").each(function(index){
+          if(index > 0 && ! $(this).prop('draggable')){
+            var column = $(this).clone();
+            $('#order-columns').html(column);
+            $(this).remove();
+            throw('s');
+          }
+        });
+      }
+  });*/
+
+
+  // Select the node that will be observed for mutations
+const targetNode = document.getElementById('order-axi-x');
+
+// Options for the observer (which mutations to observe)
+const config = { attributes: true, childList: false, subtree: true };
+
+// Callback function to execute when mutations are observed
+const callback = function(mutationsList, observer) {
+    // Use traditional 'for loops' for IE 11
+    for(const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            console.log('A child node has been added or removed.');
+            
+        }
+        else if (mutation.type === 'attributes') {
+            console.log('The ' + mutation.attributeName + ' attribute was modified.');
+            if (mutation.attributeName == 'draggable') {
+              $("#order-axi-x > .list-group-item").each(function(index){
+                if(index > 0 && ! $(this).prop('draggable')){
+                  var column = $(this).clone();
+                  $('#order-columns').append(column);
+                  $(this).remove();
+                }
+              });
+            }
+        }
+    }
+};
+
+// Create an observer instance linked to the callback function
+const observer = new MutationObserver(callback);
+
+
+
+
+    /*console.log($('#order-conditions').children().length);
+    var div =  $('#order-conditions');
+    console.log(cant < div.children.length);
+    var classCant = 0;
+    for (var i = 0; i = div.children.length; i++) {
+      if(div.children(i).children(0).prop('class') == 'list-group-item'){
+        classCant = classCant + 1;
+      }
+      
+    }
+    //console.log(div.children(div.children().length-1).prop('class'));
+    if(div.children(div.children().length-1).prop('class') == 'list-group-item' && cant < classCant ){
+      console.log(div.children(div.children().length-1).children(0).prop('name'));
+      cant = cant + 1;
+    }
     var div = $('#order-axi-x');
     for (var i = 0; i <= div.children().length; i++) {
       var name = div.children(i).children(0).prop('name');
@@ -134,11 +550,6 @@
     ghostClass: 'bg-info'
   })
   new Sortable(document.getElementById('order-axi-y'),{
-    group: 'shared',
-    animation: 150,
-    ghostClass: 'bg-info'
-  })
-  new Sortable(document.getElementById('order-conditions'),{
     group: 'shared',
     animation: 150,
     ghostClass: 'bg-info'
