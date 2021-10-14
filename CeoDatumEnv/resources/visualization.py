@@ -9,6 +9,9 @@ from bokeh.io import curdoc
 from bokeh.resources import INLINE
 from bokeh.embed import components
 from models.visualization import Visualization
+from math import pi
+from bokeh.transform import cumsum
+from bokeh.palettes import Category20, cividis, Set3, Set1, Category10
 
 
 def embebido(Bid):
@@ -107,7 +110,7 @@ def conditionsToString(database, axis, condition):
                 if cantNegative > 0:
                     queryConditionNegative = queryConditionNegative + " AND "
 
-                queryConditionNegative = queryConditionNegative + 't'+ str(pos) +'.'+ columnCondition +" != \'" + cond.split(sep='=')[1].strip()+ "\'"
+                queryConditionNegative = queryConditionNegative + 't'+ str(pos) +'.'+ columnCondition +" != " + cond.split(sep='=')[1].strip()+ ""
                 cantNegative = cantNegative + 1
 
 
@@ -241,14 +244,14 @@ def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, condition
     return p
 
 
-def counts_query_for_data_table(database, column):
+def counts_query_for_data_table(database, column, condition):
     
-    columnData = Visualization.getColumnData(database, column)
+    columnData = Visualization.getColumnData(database, column, condition)
 
     stringCounts = ''
     
     for x in columnData:
-        stringCounts = stringCounts + 'count(case t1.'+column+' when \''+str(x[1])+'\' then 1 else null end) as '+ str(x[1]) + ', '
+        stringCounts = stringCounts + 'count(case t1.'+column+' when \''+str(x[1])+'\' then 1 else null end) as \"'+ str(x[1]) + '\", '
 
     stringCounts = stringCounts[:-2] 
     
@@ -261,11 +264,40 @@ def counts_query_for_data_table(database, column):
 
 def data_table(database, rowName, column, condition):
 
-    conditionAndColumns = conditionsToString(database, [rowName, column], condition)  
 
-    counts = counts_query_for_data_table(database, column)
+    if column != 'undefined':
 
-    data = Visualization.get_data_for_data_table(database, rowName, column, conditionAndColumns[0], conditionAndColumns[1], counts[0])
+        conditionAndColumns = conditionsToString(database, [rowName, column], condition) 
+
+        conditionsOfColumn = ''
+
+        for cond in condition.split(sep='***'):
+
+            if (cond[:+len(column)] == column):
+
+                conditionsOfColumn = conditionsOfColumn + cond + '***'
+
+        conditionsOfColumn = conditionsOfColumn[:-3]        
+
+        counts = ''
+
+        if conditionsOfColumn:
+            queryConditionsOfColumns = conditionsToString(database,  [rowName, column], conditionsOfColumn) 
+            counts = counts_query_for_data_table(database, column, queryConditionsOfColumns[0])
+        else:
+            counts = counts_query_for_data_table(database, column, '') 
+
+        data = Visualization.get_data_for_data_table(database, rowName, column, conditionAndColumns[0], conditionAndColumns[1], counts[0])    
+
+        
+    
+    else:
+        
+        conditionAndColumns = conditionsToString(database, rowName, condition)
+
+        counts = ['COUNT(t.id) as count', ['cantidad']]
+
+        data = Visualization.get_data_for_data_table_without_column(database, rowName, conditionAndColumns[0], conditionAndColumns[1], counts[0])
 
     columnRow = [str(row[rowName]) for row in data]
 
@@ -297,9 +329,73 @@ def data_table(database, rowName, column, condition):
     ).encode(encoding='UTF-8')
 
 
+def pie_plot(rowName, data_db_name, table, column_x, condition, innerColumnsCondition):
+
+    data = Visualization.get_data(data_db_name, table, column_x, condition, innerColumnsCondition)
+
+    rowData = [str(row[rowName]) for row in data]
+    counts = [int(row['count']) for row in data]
+
+    dictionary = {}
+
+    for i in range(len(rowData)):
+        dictionary[rowData[i]] = counts[i]
+
+    data = pd.Series(dictionary).reset_index(name='value').rename(columns={'index':rowName})
+    
+    totalSum = data['value'].sum()
+
+    data['angle'] = data['value']/totalSum * 2*pi
+    data['percentage'] = data['value']/totalSum * 100
+    if len(data['angle'])<=2:
+        colors = Category10[3]
+        data['color'] = colors[:-(3-len(data['angle']))]
+    else:    
+        data['color'] = Category10[(len(data['angle']))]
+
+        
+
+    p = figure(plot_height=350, title="Pie Chart", x_range=(-0.5, 1.0))
+
+    p.wedge(x=0, y=1, radius=0.4,
+        start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
+        line_color="white", fill_color='color', legend_field=rowName, source=data)
+
+    hover_tool = HoverTool(tooltips=[
+                (rowName, "@"+rowName),
+                ("porcentaje", "@percentage"+" %"),
+                ("cantidad", "@value")
+            ])
+
+    p.tools.append(hover_tool)  
+
+    return p
+
+
+def pie_chart(database, rowName, condition):
+
+    ConditionAndColumns = conditionsToString(database, rowName, condition)  
+
+    graph = pie_plot(rowName, database, database, rowName, ConditionAndColumns[0], ConditionAndColumns[1])
+    script, div = components(graph)
+ 
+    return render_template(
+        'home/intento.html',
+        plot_script=script,
+        plot_div=div,
+        js_resources=INLINE.render_js(),
+        css_resources=INLINE.render_css(),
+    ).encode(encoding='UTF-8')
+
+
+
+
+
+
+
 def ajaxGetColumnData(database, column):
     
-    ajaxData = Visualization.getColumnData(database, column)
+    ajaxData = Visualization.getColumnData(database, column, '')
 
     y = 0
     if(str(type(ajaxData[0][1])) == "<class 'datetime.date'>"):

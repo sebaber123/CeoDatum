@@ -27,6 +27,12 @@ app.add_url_rule('/graphBar/<database>&<x_axie>', 'graph_bar', visualization.gra
 app.add_url_rule('/graphBar/<database>&<x_axie>&<condition>', 'graph_bar', visualization.graphBar, methods=['GET'])
 
 app.add_url_rule('/dataTable/<database>&<rowName>&<column>', 'data_table', visualization.data_table, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/dataTable/<database>&<rowName>&<column>&<condition>', 'data_table', visualization.data_table, methods=['GET'])
+
+app.add_url_rule('/pieChart/<database>&<rowName>', 'pie_chart', visualization.pie_chart, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/pieChart/<database>&<rowName>&<condition>', 'pie_chart', visualization.pie_chart, methods=['GET'])
+
+
 
 app.add_url_rule('/embebido/<int:Bid>', 'embebido', visualization.embebido, methods=['GET'])
 app.add_url_rule('/embebido/<database>&<column>', 'ajax_get_column_data', visualization.ajaxGetColumnData, methods=['GET'])

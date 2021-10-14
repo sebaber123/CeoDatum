@@ -41,8 +41,8 @@ class Visualization(object):
 		return cursor.fetchall()
 
 	@classmethod
-	def getColumnData(cls, database, column):
-		query = ("SELECT * FROM \"" + database + "-" + column + "\"")
+	def getColumnData(cls, database, column, condition):
+		query = ("SELECT * FROM \"" + database + "-" + column + "\" as t1 " + condition)
 		cursor = get_db_visualization(database).cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
@@ -61,5 +61,15 @@ class Visualization(object):
 
 		return cursor.fetchall()	
 
+	@classmethod	
+	def get_data_for_data_table_without_column(cls, data_db_name, row, condition, innerColumnsCondition, counts):
+		query = ("SELECT t0." +row + ", "+ counts +
+				" FROM \"" + data_db_name + "\" as t INNER JOIN " + "\""+ data_db_name + "-" + row + "\" as t0 on (t." + row + " = t0.id ) " + 
+				innerColumnsCondition + " " +
+				condition + 
+				" GROUP BY t0." + row +" ORDER BY " + row + " ASC ")
+		cursor = get_db_visualization(data_db_name).cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
 
+		return cursor.fetchall()	
 

@@ -37,13 +37,16 @@
     <td style="width:100px;"></td>
     <td >
       <label>
-        <input type="radio" id="table" name="chart" value="table" /><img src="{{url_for('static', filename='Data_table.png') }}">
+        <input type="radio" id="data_table" name="chart" value="data_table" /><img src="{{url_for('static', filename='Data_table.png') }}">
       </label>
       <label>
         <input type="radio" id="bar_chart" name="chart" value="bar" /><img src="{{url_for('static', filename='bar_chart.png') }}">
       </label>
       <label>
         <input type="radio" id="line_chart" name="chart" value="line" /><img src="{{url_for('static', filename='line_chart.png') }}">
+      </label>
+      <label>
+        <input type="radio" id="pie_chart" name="chart" value="pie" /><img src="{{url_for('static', filename='pie_chart.png') }}">
       </label>
        <button onclick="GenerateChart()">Generar grafico</button> 
     </td>
@@ -173,7 +176,7 @@ $('#formCondition').submit(function () {
   
 
   $('input:radio[name="chart"]').change(function(){
-    if($(this).val() == 'bar' || $(this).val() == 'line'  ){
+    if($(this).val() == 'bar' || $(this).val() == 'line' || $(this).val() == 'pie'  ){
       
       // Start observing the target node for configured mutations
       observer.observe(targetNode, config);  
@@ -238,6 +241,19 @@ $('#formCondition').submit(function () {
       if (selection == 'line') {
         src = "/graphLine/{{database.name}}&";
         src = src + $('#order-axi-x').children(0).children(0).prop('name');
+      }
+      else{
+        if (selection == 'data_table') {
+          src = "/dataTable/{{database.name}}&";
+          src = src + $('#order-axi-x').children(0).children(0).prop('name') + "&";
+          src = src + $('#order-axi-y').children(0).children(0).prop('name');
+        }
+        else{
+          if (selection == 'pie') {
+            src = "/pieChart/{{database.name}}&"
+            src = src + $('#order-axi-x').children(0).children(0).prop('name');
+          }
+        }
       }
     }
     var conditions = $("#order-conditions");
