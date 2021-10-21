@@ -16,7 +16,7 @@ app.run(debug=True)
 #    list_users = cursor.fetchall()
 #    return json.dumps(list_users)
 
-from resources import user, visualization
+from resources import user, visualization, home
 
 app.add_url_rule('/', 'home', user.index)
 
@@ -34,5 +34,8 @@ app.add_url_rule('/pieChart/<database>&<rowName>&<condition>', 'pie_chart', visu
 
 
 
-app.add_url_rule('/embebido/<int:Bid>', 'embebido', visualization.embebido, methods=['GET'])
-app.add_url_rule('/embebido/<database>&<column>', 'ajax_get_column_data', visualization.ajaxGetColumnData, methods=['GET'])
+app.add_url_rule('/plotter/<int:Bid>', 'plotter', visualization.plotter, methods=['GET'])
+app.add_url_rule('/plotter/<database>&<column>', 'ajax_get_column_data', visualization.ajaxGetColumnData, methods=['GET'])
+
+app.add_url_rule('/dragAndDrop', 'dragAndDrop', home.dragAndDrop, methods=['GET'])
+app.add_url_rule('/dragAndDrop/uploadFile', 'uploadFile', home.uploadFile, methods=['POST'])
