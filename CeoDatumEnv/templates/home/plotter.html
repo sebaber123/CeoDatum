@@ -384,7 +384,7 @@
       $( "#optionContainer" ).empty();
 
       //load the values of the "columna" in the "valor" box
-      $.getJSON($SCRIPT_ROOT + 'PruebaDatos1&' + $('input:radio[name="columnModal"]:checked').val() , {
+      $.getJSON($SCRIPT_ROOT + '{{database.name}}&' + $('input:radio[name="columnModal"]:checked').val() , {
         }, function(data) {
 
           //load the HTML in the "valor" box

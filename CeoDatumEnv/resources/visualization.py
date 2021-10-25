@@ -18,10 +18,10 @@ from bokeh.palettes import Category20, cividis, Set3, Set1, Category10
 def plotter(Bid):
 
     #get the columns of the database
-    columns = Visualization.get_db_data(1)
+    columns = Visualization.get_db_data(Bid)
     
     #get the database
-    database = Visualization.get_database(1)
+    database = Visualization.get_database(Bid)
 
     return render_template('home/plotter.html', columns = columns, database= database)  
 
