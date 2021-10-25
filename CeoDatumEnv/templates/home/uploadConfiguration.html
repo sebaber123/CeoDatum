@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+
+	<h2>fila de archivo de ejemplo</h2>
+
+	<p>por favor ingrese el tipo de dato de la columna y el nombre que tendra dicha columna (lo primero que se muestra es de ejemplo tomado desde el archivo)</p>
+
+	<form action="{{url_for('configurateUpload')}}" method=post>
+
+		<input type="hidden" name="filename" value="{{filename}}">
+		<p style="width: 250px">ingrese el nombre de la base de datos: </p>
+		<input type="text" name="database">
+		<br/>
+
+		{% for element in firstRow %}
+
+			<div class="card" style="margin: 10px; padding: 5px; display:inline-block;"> 
+				<div class="card" style="display:inline-block;">
+					<p style="width: 200px">valor de ejemplo: {{element}}</p> 
+				</div>
+				<br/>
+				<div style="display:inline-block;">
+					<p style="width: 300px">ingrese el tipo de dato de la columna: </p> 
+				</div>
+				<select name="select{{loop.index}}">
+				  <option value="int">numero</option>
+				  <option value="date" selected>fecha</option>
+				  <option value="varchar(255)">cadena</option>
+				</select>
+				<br/>		
+				<div style="display:inline-block;">
+					<p style="width: 250px">ingrese el nombre de la columna: </p> 
+				</div>
+				<input type="text" name="nameColumn{{loop.index}}">
+			</div>
+		 	<br/>
+		
+		{% endfor %} 
+
+		<input type=submit value=Finalizar>
+	</form> 
+
+{% endblock %}    

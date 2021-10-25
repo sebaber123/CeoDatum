@@ -92,7 +92,8 @@ def register():
     email = request.form['email']
     if User.emailExist(email):
         return render_template('user/register_form.html', emailExist="El email ya está en uso")
-    User.register(name, password, email)
+    else:
+        User.register(name, password, email)
     return render_template('user/login_form.html', registerSuccess="Registro exitoso!")
 
 

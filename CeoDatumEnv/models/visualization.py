@@ -10,9 +10,9 @@ class Visualization(object):
 	@classmethod
 	def get_database(cls, Bid):
 		query = ("SELECT * FROM public.\"Database\" as d " +
-				"WHERE d.id = %s")
+				"WHERE d.id = "+str(Bid))
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query,(str(Bid)))
+		cursor.execute(query)
 
 		return cursor.fetchone()
 
@@ -22,9 +22,9 @@ class Visualization(object):
 				"inner join public.\"Table\" as t on dt.id_table = t.id " +
 				"inner join public.\"Table_column\" as tc on t.id = tc.id_table " +
 				"inner join public.\"Column\" as c on tc.id_column = c.id " +
-				"WHERE t.fact_table = True AND d.id = %s")
+				"WHERE t.fact_table = True AND d.id = "+str(Bid))
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query,(str(Bid)))
+		cursor.execute(query)
 
 		return cursor.fetchall()
 

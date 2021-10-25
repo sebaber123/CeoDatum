@@ -4,25 +4,25 @@
   <meta charset="utf-8">
   <title>change demo</title>
   <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-<style>
-  img {
-        width: 150px;
-        height: 150px;
-  }
+  <style>
+    img {
+          width: 150px;
+          height: 150px;
+    }
 
-  .row{
-    --bs-gutter-x: 0;
-  }
+    .row{
+      --bs-gutter-x: 0;
+    }
 
-.form-check-input {
-  overflow: hidden; 
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+    .form-check-input {
+      overflow: hidden; 
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-  
+    
 
-</style>
+  </style>
 </head>
 <body>
 
@@ -162,37 +162,45 @@
 
 <script>
 
+
+  //when the page loads it puts the input radios without a marked option
   $( document ).ready(function() {
     $("input[type=radio][name=chart]").prop('checked', false);
     $("input[type=radio][name=columnModal]").prop('checked', false);
     $("input[type=radio][name=columnCondition]").prop('checked', false);
     console.log( "ready!" );
-});
+  });
 
-$('#formCondition').submit(function () {
- return false;
-});
+
+  //with this code the submit input of the #formCondition dont refresh the page
+  $('#formCondition').submit(function () {
+   return false;
+  });
 
   
-
+  //this is triggered when the option of the radio chart is changed
   $('input:radio[name="chart"]').change(function(){
+    
     if($(this).val() == 'bar' || $(this).val() == 'line' || $(this).val() == 'pie'  ){
       
       // Start observing the target node for configured mutations
       observer.observe(targetNode, config);  
 
+      //hide the "Eje y" Box 
       $("#container-order-y").css("display", "none"); 
       
 
     } else {
 
-      //desconecta el observer
+      //disconnect the observer
       observer.disconnect();
 
+      //show the "Eje y" Box
       $("#container-order-y").css("display", "contents"); 
 
     }
 
+    //clear the "Eje X" and "Eje y" Box and put the columns in the "Columnas del dataset" Box
     $('#order-axi-x .list-group-item').each(function(index){
       var column = $(this).clone();
       $('#order-columns').append(column);
@@ -206,119 +214,133 @@ $('#formCondition').submit(function () {
 
 
   });
-/*$( '#select' ).change(function () {
-    var iframe = $('#iframe')[0];
-    selection = $( '#select' ).val();
-    if(selection == 'bar')  
-      iframe.src = "/intentoBar";
-    else
-      iframe.src = "/intentoLine";
-    iframe.contentWindow.location.reload(true);
-    document.getElementById('iframe').src = document.getElementById('iframe').src
-    //alert($('#iframe')[0].src);
-  })
-  .change();*/
 
+  //generate the url for the chart needed 
   function GenerateChart() {
     
+    //iframe
     var iframe = $('#iframe')[0];
-    var src = "/"
-    var x = '';
-    selection = $('input:radio[name="chart"]:checked').val().toString();
-    //alert(selection);
     
+    //src iframe string
+    var src = "/"
+
+    //get the value of the selection of the chart radio
+    selection = $('input:radio[name="chart"]:checked').val().toString();
+
+    //bar chart
     if(selection == 'bar'){
+      //add the start of the url and the database parameter
       src = src + "graphBar/{{database.name}}&";
+
+      //add the axi x parameter
       src = src + $('#order-axi-x').children(0).children(0).prop('name');
-      /*for (var i = 0; i <= div.children().length; i++) {
-        var name = div.children(i).children(0).prop('name');
-        x = name;
-      }
-      src = src + x;*/
 
 
     } else {
+
+      //line chart
       if (selection == 'line') {
+
+        //add the start of the url and the database parameter
         src = "/graphLine/{{database.name}}&";
+
+        //add the axi x parameter
         src = src + $('#order-axi-x').children(0).children(0).prop('name');
       }
       else{
+
+        //data table
         if (selection == 'data_table') {
+
+          //add the start of the url and the database parameter
           src = "/dataTable/{{database.name}}&";
+
+          //add the axi x parameter
           src = src + $('#order-axi-x').children(0).children(0).prop('name') + "&";
+          
+          //add the axi y parameter
           src = src + $('#order-axi-y').children(0).children(0).prop('name');
         }
         else{
+
+          //pie chart
           if (selection == 'pie') {
+
+            //add the start of the url and the database parameter
             src = "/pieChart/{{database.name}}&"
+
+            //add the axi x parameter
             src = src + $('#order-axi-x').children(0).children(0).prop('name');
           }
         }
       }
     }
+
+    //add the conditions to the url
     var conditions = $("#order-conditions");
-    //alert($("#order-conditions").children(0).length);
-    /*if (conditions.children(0).length == 1) {
       
-      src = src + '&' + conditions.children(0)[1].value;
-    }else{
-      alert(9);*/
+      //check if there are any conditions
       if (conditions.children(0).length > 0) {
         
+        //String where the conditions the conditions are loaded
         var stringConditions = '';
         
+        //loop through the conditions
         $('[name=condition]').each(function(index) {
-          //alert(JSON.stringify(index));
-          //alert(JSON.stringify($(this).children(0)[1].value));
-          // and of course depending on your element utilize $(this).doSomethingCool
+
+          //add the condition and the separator "***"
           stringConditions = stringConditions + $(this).children(0)[1].value + '***';
         });
 
-        //for (var i = 0; i < conditions.children(0).length; i++) {
-          //alert (conditions.children(0).children(i).val());
-          //alert (conditions.children(i).children(0).val());
-          //alert(JSON.stringify(conditions.children(1).children(0)[0].value));
-          //alert(i);
-          //stringConditions = stringConditions + conditions.children(0).children(0)[i].value+ '***';
-        //}
-        alert(stringConditions);
-
+        //delete the las separator "***"
         src = src + '&' + (stringConditions.slice(0, -3));
 
         
       }  
-    //}
+
+    //set the url to the iframe
     iframe.src = src
+
+    //reload the iframe
     iframe.contentWindow.location.reload(true);
     document.getElementById('iframe').src = document.getElementById('iframe').src;
   }
 
+
+  //Method triggered when a "columna" is selected in the "agregar condicion" modal
   $('input:radio[name="columnModal"]').change(function() {
     
-    //alert($(this).attr('columnType'));
-
+    //hide the "valor" box
     $("#card-include-exclude").css("display", "none"); 
+    
+    //clear the "valor" box
     $( "#optionContainer" ).empty();
+
+    //hide the number/date input and the labels
     $("#inputCondition").css("display", "none"); 
     $("#inputStart").css("display", "none"); 
     $("#inputEnd").css("display", "none"); 
     $("#label-from").css("display", "none");
     $("#label-to").css("display", "none");
+
+    //uncheck the radio "accion" 
     $("input[type=radio][name=columnCondition]").prop('checked', false);
 
 
+    //check if the column selected type is date or number to show the options "mayor que", "menor que" and "dentro del rango" in the "accion" radio
     if ($(this).attr('columnType') == 'date' || $(this).attr('columnType')== 'number' ) { 
+
 
       $("#label-higher").css("display", "contents"); 
       $("#label-lower").css("display", "contents"); 
       $("#label-between").css("display", "contents"); 
 
+      //set the type of the input (date or number)
       if ($(this).attr('columnType') == 'date') {
 
         $("#inputCondition").attr('type', 'date');
         $("#inputStart").attr('type', 'date');
         $("#inputEnd").attr('type', 'date');
-
 
       } else{
 
@@ -328,67 +350,80 @@ $('#formCondition').submit(function () {
 
       }
 
-
-
     }
+
     else{
       $("#label-higher").css("display", "none"); 
       $("#label-lower").css("display", "none"); 
       $("#label-between").css("display", "none"); 
     }
 
+    //show the options "incluir" and "excluir" in the "accion" radio
     $("#label-include").css("display", "contents"); 
     $("#label-exclude").css("display", "contents");
     
-    /*$( "#optionContainer" ).empty();
-    $.getJSON($SCRIPT_ROOT + 'PruebaDatos1&' + $(this).val() , {
-      }, function(data) {
-
-        for (var i =  0; i < data.result.length; i++) {
-          $( "#optionContainer" ).append("<input class=\"form-check-input\" type=\"checkbox\" value=\"" + data.result[i][1] + "\">" + "<label class=\"form-check-label\" for=\"flexCheckDefault\">"  + data.result[i][1] + "</label><br/>");  
-        }
-      });
-    return false;*/
   });
 
+  //Method triggered when a "accion" is selected in the "agregar condicion" modal
   $('input:radio[name="columnCondition"]').change(function() {
     
+    //check if the option selected is "incluir" or "excluir", if true:   
     if ($(this).val() == 'include' || $(this).val() == 'exclude' ) {
 
+      //hide the number/date input and the labels
       $("#inputCondition").css("display", "none"); 
       $("#inputStart").css("display", "none"); 
       $("#inputEnd").css("display", "none"); 
       $("#label-from").css("display", "none");
       $("#label-to").css("display", "none");
 
+      //show the "valor" box
       $("#card-include-exclude").css("display", ""); 
 
+      //clear the "valor" box
       $( "#optionContainer" ).empty();
-      $.getJSON($SCRIPT_ROOT + 'PruebaDatos1&' + $('input:radio[name="columnModal"]:checked').val() , {
+
+      //load the values of the "columna" in the "valor" box
+      $.getJSON($SCRIPT_ROOT + '{{database.name}}&' + $('input:radio[name="columnModal"]:checked').val() , {
         }, function(data) {
 
+          //load the HTML in the "valor" box
           for (var i =  0; i < data.result.length; i++) {
             $( "#optionContainer" ).append("<input class=\"form-check-input\" type=\"checkbox\" value=\"" + data.result[i][1] + "\">" + "<label class=\"form-check-label\" for=\"flexCheckDefault\">"  + data.result[i][1] + "</label><br/>");  
           }
         });
       return false;
 
-    } else{
+    } 
+
+    //check if the option selected is "incluir" or "excluir", if false:
+    else{
+
+      //hide the "valor" box
       $("#card-include-exclude").css("display", "none"); 
+      
+      //clear the  "valor" box
       $( "#optionContainer" ).empty();
 
+      //check if the option selected is "mayor que" or "menor que", if true:
       if ($(this).val() == 'higher' || $(this).val() == 'lower') {
 
+        //show the number/date input and the labels of the input
         $("#inputCondition").css("display", ""); 
         $("#inputStart").css("display", "none"); 
         $("#inputEnd").css("display", "none");
         $("#label-from").css("display", "none");
         $("#label-to").css("display", "none");
       
-      } else{
+      } 
 
+      //check if the option selected is "mayor que" or "menor que", if false:
+      else{
+
+        //check if the option selected is "dentro del rango", if false:
         if ($(this).val() == 'between') {
 
+          //show the number/date input and the labels of the start input and end input of the range
           $("#inputCondition").css("display", "none"); 
           $("#inputStart").css("display", ""); 
           $("#inputEnd").css("display", "");
@@ -403,65 +438,95 @@ $('#formCondition').submit(function () {
   });
 
 
+  //var used to make the id of each condition generated (it id is needed to delete the condition if it es needed)
   var cant = 0;
 
+  //method triggered when the button "agregar" inside the modal "agregar condicion" is pushed
   function generateCondition(){
-    //var checked = $(".form-check-input:checked");
 
+    //array where will be the conditions when the selected option is "incluir" or "excluir" 
     var conditions = [];
+
+    //string condition
     var condition = '';
+
+    //get the value of the radio 'columna'
     var column = $('input:radio[name="columnModal"]:checked').val().toString();
 
+    //loop through the checked options in the 'valor' box
     $('.form-check-input:checked').each(function() {
+      
+      //clear the condition string
       condition = '';
+
+      //add the 'columna' to the condition
       condition = condition + column;
+
+      //if the action is include
       if ($('input:radio[name="columnCondition"]:checked').val() == 'include') {
+        
+        //add ' = ' to the string condition 
         condition = condition + ' = ';
       }else{
+
+        //add ' != ' to the string condition
         condition = condition + ' != ';
       }
+
+      //add the value of the checked option (each one per loop)
       condition = condition + "\'" + $(this).attr('value') + "\'" ;
+      
+      //push the condition to the array
       conditions.push(condition);
     });
 
-    //console.log(conditions.length);
-
+    //if there are no conditions in the conditions array it means that the 'accion' check is not 'incluir' or 'excluir' 
     if (conditions.length == 0) {
      
-      //console.log($('#inputCondition').css("display"));
+      //if the input used in the 'mayor que' and 'menor que' options is visible it means that one of them has been selected 
       if ($('#inputCondition').css("display") == 'inline-block') { 
 
+        ////add the 'columna' to the condition
         condition = condition + column;
 
         if ($('input:radio[name="columnCondition"]:checked').val() == 'higher') {
         
+          //add ' >= ' to the string condition
           condition = condition + ' >= ';
         
         }else{
         
+            //add ' <= ' to the string condition
             condition = condition + ' <= ';
         }
 
+        //add the value of the input to the string
         condition = condition + "\'" +$('#inputCondition').val() + "\'"; 
+        
+        //push the condition to the array
         conditions.push(condition);
         
 
-      } else {
+      } 
 
+      //the 'accion' selected is 'dentro del rango'
+      else {
+
+        //add the 'columna' and the '>=' to the condition
         condition = condition + column + " >= ";
 
+        //add the value of the input + the 'columna' + '<=' + the value of the end input
         condition = condition + "\'" +$('#inputStart').val() + "\' and " + column + " <= \'" +$('#inputEnd').val() + "\'"; 
 
+        //push the condition to the array
         conditions.push(condition);
-
-
-
 
       }
 
     
     }
 
+    //append the html of the conditions to the 
     for (condition of conditions){
       var divId = 'cond'+cant.toString();
       $( "#order-conditions" ).append(
@@ -474,86 +539,49 @@ $('#formCondition').submit(function () {
     }  
   }
 
+  //remove the condition
   function deleteCondition(condition){
     $( "#"+condition ).remove();
   }
 
-  /*$('#order-axi-x').on('DOMSubtreeModified', function(){
-      if($("#order-axi-x > .bg-info").length == 0 ){
-        $("#order-axi-x > .list-group-item").each(function(index){
-          if(index > 0 && ! $(this).prop('draggable')){
-            var column = $(this).clone();
-            $('#order-columns').html(column);
-            $(this).remove();
-            throw('s');
-          }
-        });
-      }
-  });*/
-
-
+  //OBSERVER
   // Select the node that will be observed for mutations
-const targetNode = document.getElementById('order-axi-x');
+  const targetNode = document.getElementById('order-axi-x');
 
-// Options for the observer (which mutations to observe)
-const config = { attributes: true, childList: false, subtree: true };
+  // Options for the observer (which mutations to observe)
+  const config = { attributes: true, childList: false, subtree: true };
 
-// Callback function to execute when mutations are observed
-const callback = function(mutationsList, observer) {
-    // Use traditional 'for loops' for IE 11
-    for(const mutation of mutationsList) {
-        if (mutation.type === 'childList') {
-            console.log('A child node has been added or removed.');
-            
-        }
-        else if (mutation.type === 'attributes') {
-            console.log('The ' + mutation.attributeName + ' attribute was modified.');
-            if (mutation.attributeName == 'draggable') {
-              $("#order-axi-x > .list-group-item").each(function(index){
-                if(index > 0 && ! $(this).prop('draggable')){
-                  var column = $(this).clone();
-                  $('#order-columns').append(column);
-                  $(this).remove();
-                }
-              });
-            }
-        }
-    }
-};
+  // Callback function to execute when mutations are observed
+  const callback = function(mutationsList, observer) {
 
-// Create an observer instance linked to the callback function
-const observer = new MutationObserver(callback);
-
-
-
-
-    /*console.log($('#order-conditions').children().length);
-    var div =  $('#order-conditions');
-    console.log(cant < div.children.length);
-    var classCant = 0;
-    for (var i = 0; i = div.children.length; i++) {
-      if(div.children(i).children(0).prop('class') == 'list-group-item'){
-        classCant = classCant + 1;
+      for(const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+              console.log('A child node has been added or removed.');
+              
+          }
+          else if (mutation.type === 'attributes') {
+              console.log('The ' + mutation.attributeName + ' attribute was modified.');
+              if (mutation.attributeName == 'draggable') {
+                
+                //this move last element dropped in the 'eje x' box if there is already one inside of it to the 'columnas' box
+                $("#order-axi-x > .list-group-item").each(function(index){
+                  if(index > 0 && ! $(this).prop('draggable')){
+                    var column = $(this).clone();
+                    $('#order-columns').append(column);
+                    $(this).remove();
+                  }
+                });
+              }
+          }
       }
-      
-    }
-    //console.log(div.children(div.children().length-1).prop('class'));
-    if(div.children(div.children().length-1).prop('class') == 'list-group-item' && cant < classCant ){
-      console.log(div.children(div.children().length-1).children(0).prop('name'));
-      cant = cant + 1;
-    }
-    var div = $('#order-axi-x');
-    for (var i = 0; i <= div.children().length; i++) {
-      var name = div.children(i).children(0).prop('name');
-      if (name.split("##")[0] != 'y') {
-        div.children(i).children(0).attr('name', 'y##' + name);
-      }
-    }
-  });*/
+  };
+
+  // Create an observer instance linked to the callback function
+  const observer = new MutationObserver(callback);
 
 </script>
 
-<script src="http://sortablejs.github.io/Sortable/Sortable.js"></script>
+<script src="{{url_for('static', filename='/scripts/Sortable.js') }}"></script>
 <script>
   new Sortable(document.getElementById('order-columns'),{
     group: 'shared',
