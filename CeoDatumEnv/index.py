@@ -36,3 +36,11 @@ app.add_url_rule('/pieChart/<database>&<rowName>&<condition>', 'pie_chart', visu
 
 app.add_url_rule('/embebido/<int:Bid>', 'embebido', visualization.embebido, methods=['GET'])
 app.add_url_rule('/embebido/<database>&<column>', 'ajax_get_column_data', visualization.ajaxGetColumnData, methods=['GET'])
+
+app.add_url_rule('/loginForm', 'loginForm', user.login_form, methods=['GET'])
+app.add_url_rule('/login', 'login', user.login, methods=['POST'])
+
+app.add_url_rule('/registerForm', 'registerForm', user.register_form, methods=['GET'])
+app.add_url_rule('/register', 'register', user.register, methods=['POST'])
+
+app.add_url_rule('/forgotPassword', 'forgotPassword', user.forgotPassword, methods=['GET'])
