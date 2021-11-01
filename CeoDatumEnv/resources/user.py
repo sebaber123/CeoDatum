@@ -45,9 +45,6 @@ def intentoLine():
     ).encode(encoding='UTF-8')
 
 def intentoBar():
-    
-
-
     #bar plot
     bar2 = bar_plot('fecha', 'cantidad', 'PruebaDatos1', 'prueb', 'fecha', 'boolean = True')
     script, div = components(bar2)

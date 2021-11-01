@@ -17,6 +17,8 @@ app.run(debug=True)
 #    return json.dumps(list_users)
 
 from resources import user, visualization, home
+from resources.activities import activities
+from resources.datasets import datasets
 
 app.add_url_rule('/', 'home', user.index)
 
@@ -47,3 +49,6 @@ app.add_url_rule('/dragAndDrop', 'dragAndDrop', home.dragAndDrop, methods=['GET'
 app.add_url_rule('/dragAndDrop/uploadFile', 'uploadFile', home.uploadFile, methods=['POST'])
 app.add_url_rule('/dragAndDrop/configurateUpload', 'configurateUpload', home.configurateUpload, methods=['POST'])
 
+app.add_url_rule('/activities', 'activities', activities.activities, methods=['GET'])
+
+app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
