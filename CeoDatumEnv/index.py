@@ -39,5 +39,7 @@ app.add_url_rule('/plotter/<database>&<column>', 'ajax_get_column_data', visuali
 
 app.add_url_rule('/dragAndDrop', 'dragAndDrop', home.dragAndDrop, methods=['GET'])
 app.add_url_rule('/dragAndDrop/uploadFile', 'uploadFile', home.uploadFile, methods=['POST'])
-app.add_url_rule('/dragAndDrop/configurateUpload', 'configurateUpload', home.configurateUpload, methods=['POST'])
+app.add_url_rule('/dragAndDrop/configurateUploadCSV', 'configurateUploadCSV', home.configurateUploadCSV, methods=['POST'])
+app.add_url_rule('/dragAndDrop/configurateUploadJSON', 'configurateUploadJSON', home.configurateUploadJSON, methods=['POST'])
+
 

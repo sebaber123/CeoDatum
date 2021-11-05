@@ -23,7 +23,55 @@ def plotter(Bid):
     #get the database
     database = Visualization.get_database(Bid)
 
+    #get the structure of the dataset
+    databaseStructure = {}
+
+    for column in columns:
+        if column['type'] == 'object': 
+
+            dictionaryObject = {}
+
+            columnsOfObject = Visualization.getColumnsOfObject(database['name'],column['name'])
+
+            for columnOfObject in columnsOfObject:
+                if columnOfObject['type'] == 'object':
+
+                    dictionaryObject[columnOfObject['name']] = generateStructureRecursion(database['name'], column['name'], columnOfObject['name'])
+
+                else:   
+
+                    dictionaryObject[columnOfObject['name']] = columnOfObject['type'] 
+
+            databaseStructure[column['name']] = dictionaryObject        
+
+
+            #databaseStructure[column['name']] = generateStructureRecursion(database['name'],)
+
+        else:    
+            databaseStructure[column['name']] = column['type'] 
+
+    aa        
+
+
+
     return render_template('home/plotter.html', columns = columns, database= database)  
+
+def generateStructureRecursion(databaseName, columnName, columnNameOfObject): 
+
+    dictionaryObject = {}
+
+    columnsOfObject = Visualization.getColumnsOfObject(databaseName,columnName+'-'+columnNameOfObject)
+
+    for columnOfObject in columnsOfObject:
+        if columnOfObject['type'] == 'object':
+
+            dictionaryObject[columnOfObject['name']] = generateStructureRecursion(databaseName, columnNameOfObject, columnOfObject['name'])
+
+        else:    
+            dictionaryObject[columnOfObject['name']] = columnOfObject['type'] 
+
+    return dictionaryObject      
+
 
 #transform the string of conditions to the format that the query needs
 def conditionsToString(database, axis, condition):    
@@ -51,8 +99,8 @@ def conditionsToString(database, axis, condition):
     #position to add to the tX (rename of the inner joins in the query). only 1 if only the axi_x is defined
     positionToAdd = 1
 
-
-    if len(axis)>1:
+    if type(axis) != str:
+    #if len(axis)>1:
         
         #get the values of the parameters
         axie_x = axis[0]
@@ -116,6 +164,8 @@ def conditionsToString(database, axis, condition):
 
                             #else get the length and add it to the position to get the tX (rename of the inner joins in the query)
                             pos = len(columnsToInner) + positionToAdd
+
+                          
 
 
                 #if the condition is between add the tX to the seccond condition
@@ -185,8 +235,12 @@ def conditionsToString(database, axis, condition):
         #loop through the columnsToInner
         for column in columnsToInner:
 
-            #add the inner join to the column to the string of inner joins
-            innerColumnsCondition = innerColumnsCondition + " inner join \""+database+"-" +column + "\" as t"+str(columnsToInner.index(column)+positionToAdd)+" on t." +column + "  = t"+str(columnsToInner.index(column)+positionToAdd)+".id "
+            #
+            innerColumnsCondition = (innerColumnsCondition + " inner join \""+database+"-"+column + "\" as "+
+                "t"+str(columnsToInner.index(column)+positionToAdd)+"_"+str(columnsToInner.index(column)+positionToAdd)+
+                " on t.id = t"+str(columnsToInner.index(column)+positionToAdd)+"_"+str(columnsToInner.index(column)+positionToAdd)+".id_" +database +
+                " INNER JOIN \""+column+"\" as t"+str(columnsToInner.index(column)+positionToAdd)+" "+
+                "on t"+str(columnsToInner.index(column)+positionToAdd)+"_"+str(columnsToInner.index(column)+positionToAdd)+".id_" +column + "  = t"+str(columnsToInner.index(column)+positionToAdd)+".id ")
 
         #add the negative part of conditions
         #if there is no negative conditions just add a '(False)'

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+
+	<h2>fila de archivo de ejemplo</h2>
+
+	<p>por favor ingrese el tipo de dato de la columna y el nombre que tendra dicha columna (lo primero que se muestra es de ejemplo tomado desde el archivo)</p>
+
+	<form action="{{url_for('configurateUploadJSON')}}" method=post>
+
+		<input type="hidden" name="filename" value="{{filename}}">
+		<p style="width: 250px">ingrese el nombre de la base de datos: </p>
+		<input type="text" name="database">
+		<br/>
+
+		<input type=submit value=Finalizar>
+	</form> 
+
+{% endblock %}    
