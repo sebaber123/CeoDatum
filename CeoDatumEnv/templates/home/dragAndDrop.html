@@ -1,12 +1,26 @@
 {% extends "layout.html" %}
+{% block title %}Uploading{% endblock %}
+{% block header %}
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/dragAndDrop.css') }}">
+{% endblock %}
 {% block content %}
-    <h1>Suba un nuevo archivo</h1>
-    <form action="{{url_for('uploadFile')}}" method=post enctype=multipart/form-data>
+	<div class="container d-flex" style="height: 90%">
+	    <div class="row align-self-center" style="width: 100%">
+	     <div class="col">
+				<h1>Nuevo dataset</h1>
+				<span>Haga click en examinar o suelte un archivo sobre el area marcada.</span>
+			</div>
+			<div class="col">	
+				<form action="{{url_for('uploadFile')}}" method=post enctype=multipart/form-data>
+		        	<div class="card" style="height: 50px; width: 400px;">
+		            	<input type=file name=file id="file" style="height: 50px; width: 400px; padding-top: 10px;">
+		       		</div>
+		        	<br>
+		        	<input type=submit value=Upload>
+		    	</form>
+		    </div>
+	    </div>
+	</div>
+   
 
-        <div class="card" style="height: 50px; width: 400px;">
-            <input type=file name=file id="file" style="height: 50px; width: 400px; padding-top: 10px;">
-        </div>
-        <br>
-        <input type=submit value=Upload>
-    </form>
 {% endblock %}    

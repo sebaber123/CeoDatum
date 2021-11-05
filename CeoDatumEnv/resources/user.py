@@ -45,9 +45,6 @@ def intentoLine():
     ).encode(encoding='UTF-8')
 
 def intentoBar():
-    
-
-
     #bar plot
     bar2 = bar_plot('fecha', 'cantidad', 'PruebaDatos1', 'prueb', 'fecha', 'boolean = True')
     script, div = components(bar2)
@@ -63,5 +60,38 @@ def intentoBar():
 
 
 def embebido():
-
     return render_template('home/embebido.html')    
+
+def login_form():
+    return render_template('user/login_form.html')
+
+def register_form():
+    return render_template('user/register_form.html')
+
+def forgotPassword():
+    return render_template('user/forgot_password_form.html')
+
+def login():
+    if request.form['submit'] == 'login':
+        name = request.form['name']
+        password = request.form['password']
+        result = User.login(name, password)
+        if result:
+            return index()
+        else:
+            return render_template('user/login_form.html', error="Usuario y/o contraseña incorrectos")
+    elif request.form['submit'] == 'register':
+        return register_form()
+
+def register():
+    name = request.form['name']
+    password = request.form['password'] 
+    email = request.form['email']
+    if User.emailExist(email):
+        return render_template('user/register_form.html', emailExist="El email ya está en uso")
+    else:
+        User.register(name, password, email)
+    return render_template('user/login_form.html', registerSuccess="Registro exitoso!")
+
+
+

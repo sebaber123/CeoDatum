@@ -1,0 +1,42 @@
+body {
+    font-family: "Lato", sans-serif;
+}
+
+
+.blue-background{
+    background-color: #0c6b7e;
+    padding: 80px
+}
+
+h2{
+    color: white;
+}
+
+p{
+    color: white;
+}
+
+.form-group{
+    width: 80%;
+}
+
+select{
+    width: 80%;
+}
+
+.size-12{
+    font-size: 12px;
+}
+
+.buttons-area{
+    margin-top:10px;
+}
+
+.link-login{
+    color:white;
+    text-decoration: none;
+}
+
+.link-login:hover{
+    color:black;
+}
