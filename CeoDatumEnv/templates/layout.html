@@ -15,6 +15,8 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if session.name %}
+
           <li class="nav-item">
             <a class="nav-link" href="{{url_for('datasets')}}">Datasets</a>
           </li>
@@ -24,8 +26,14 @@
           <li class="nav-item">
               <a class="nav-link" href="#">Perfil</a>
           </li>
+          {% endif %}
         </ul>
+          {% if session.name %}
+          <span class="font-italic">Hola, {{ session.name }}</span>
+          <a <a class="nav-link text-dark" aria-current="page" href="{{url_for('logout')}}">Cerrar sesión</a>
+          {% else %}
           <a class="nav-link text-dark" aria-current="page" href="{{url_for('loginForm')}}">Iniciar sesión</a>
+          {% endif %}
       </div>
     </div>
   </nav>

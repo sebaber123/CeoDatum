@@ -3,9 +3,13 @@ from flask import Flask
 import psycopg2
 import psycopg2.extras
 from db import get_db
+from flask_session import Session
 import json
 
 app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 app.run(debug=True)
 
 #@app.route("/")
@@ -36,6 +40,8 @@ app.add_url_rule('/pieChart/<database>&<rowName>&<condition>', 'pie_chart', visu
 
 app.add_url_rule('/loginForm', 'loginForm', user.login_form, methods=['GET'])
 app.add_url_rule('/login', 'login', user.login, methods=['POST'])
+app.add_url_rule('/logout', 'logout', user.logout, methods=['GET'])
+
 
 app.add_url_rule('/registerForm', 'registerForm', user.register_form, methods=['GET'])
 app.add_url_rule('/register', 'register', user.register, methods=['POST'])
@@ -52,3 +58,6 @@ app.add_url_rule('/dragAndDrop/configurateUpload', 'configurateUpload', home.con
 app.add_url_rule('/activities', 'activities', activities.activities, methods=['GET'])
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
+
+from resources.educational_establishments import extracting_data
+app.add_url_rule('/get_establishments', 'get_establishments', extracting_data.extract_data, methods=['GET'])

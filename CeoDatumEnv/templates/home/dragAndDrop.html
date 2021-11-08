@@ -11,12 +11,12 @@
 				<span>Haga click en examinar o suelte un archivo sobre el area marcada.</span>
 			</div>
 			<div class="col">	
-				<form action="{{url_for('uploadFile')}}" method=post enctype=multipart/form-data>
-		        	<div class="card" style="height: 50px; width: 400px;">
-		            	<input type=file name=file id="file" style="height: 50px; width: 400px; padding-top: 10px;">
+				<form action="{{url_for('uploadFile')}}" method=post enctype=multipart/form-data style="height: 100%">
+		        	<div class="card" style="height: 50%; width: 100%;">
+		            	<input type=file class="m-3" name=file id="file">
 		       		</div>
 		        	<br>
-		        	<input type=submit value=Upload>
+		        	<input class="btn btn-primary" style="width:100%" type=submit value="Subir">
 		    	</form>
 		    </div>
 	    </div>

@@ -10,6 +10,7 @@ from bokeh.models import ColumnDataSource, Div, Select, Slider, TextInput
 from bokeh.io import curdoc
 from bokeh.resources import INLINE
 from bokeh.embed import components
+from flask_session import Session
 
 
 
@@ -77,11 +78,17 @@ def login():
         password = request.form['password']
         result = User.login(name, password)
         if result:
+            session['name'] = result['name']
+            session['id'] = result['id']
             return index()
         else:
             return render_template('user/login_form.html', error="Usuario y/o contraseña incorrectos")
     elif request.form['submit'] == 'register':
         return register_form()
+
+def logout():
+    session["name"] = None
+    return redirect("/")
 
 def register():
     name = request.form['name']
