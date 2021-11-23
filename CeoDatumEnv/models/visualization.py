@@ -59,8 +59,8 @@ class Visualization(object):
 		return cursor.fetchall()
 
 	@classmethod
-	def getColumnData(cls, database, column, condition):
-		query = ("SELECT * FROM \"" + column + "\" as t1 " + condition)
+	def getColumnData(cls, database, column, condition, pos):
+		query = ("SELECT * FROM \"" + column + "\" as t"+str(pos)+" " + condition)
 		cursor = get_db_visualization(database).cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
@@ -99,4 +99,26 @@ class Visualization(object):
 		cursor.execute(query)
 
 		return cursor.fetchall()	
+
+	@classmethod
+	def get_data_with_parameters(cls, data_db_name, selectString, fromString, groupByString, whereString):
+		query = ("SELECT "+selectString+ " FROM "+ fromString +
+		" "+whereString+ 
+		"GROUP BY " +groupByString+ " ORDER BY " + groupByString + " ASC " )
+		cursor = get_db_visualization(data_db_name).cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+
+		return cursor.fetchall()	
+
+	@classmethod
+	def get_data_with_parameters_for_scatter(cls, data_db_name, selectString, fromString, groupByString, whereString):
+		query = ("SELECT "+selectString+ " FROM "+ fromString +
+		" "+whereString+ 
+		" ORDER BY " + groupByString + " ASC " )
+		cursor = get_db_visualization(data_db_name).cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+
+		return cursor.fetchall()		
 

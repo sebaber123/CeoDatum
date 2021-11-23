@@ -27,7 +27,7 @@ def index():
 
     return render_template('home/index.html', users=users)
 
-def intentoLine():
+"""def intentoLine():
     
     #line plot
     dates = [datetime.strptime('21/12/2020', '%d/%m/%Y'),datetime.strptime('22/12/2020', '%d/%m/%Y'),datetime.strptime('23/12/2020', '%d/%m/%Y')]
@@ -61,7 +61,7 @@ def intentoBar():
 
 def embebido():
     return render_template('home/embebido.html')    
-
+"""
 def login_form():
     return render_template('user/login_form.html')
 

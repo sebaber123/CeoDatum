@@ -16,7 +16,7 @@ app.run(debug=True)
 #    list_users = cursor.fetchall()
 #    return json.dumps(list_users)
 
-from resources import user, visualization, home
+from resources import user, visualization, home, socialGraph
 from resources.activities import activities
 from resources.datasets import datasets
 
@@ -33,6 +33,14 @@ app.add_url_rule('/dataTable/<database>&<rowName>&<column>&<condition>', 'data_t
 
 app.add_url_rule('/pieChart/<database>&<rowName>', 'pie_chart', visualization.pie_chart, methods=['GET'], defaults={'condition':None})
 app.add_url_rule('/pieChart/<database>&<rowName>&<condition>', 'pie_chart', visualization.pie_chart, methods=['GET'])
+
+
+app.add_url_rule('/dotChart/<database>&<rowName>&<column>', 'dot_chart', visualization.dot_chart, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/dotChart/<database>&<rowName>&<column>&<condition>', 'dot_chart', visualization.dot_chart, methods=['GET'])
+
+app.add_url_rule('/scatterChart/<database>&<rowName>&<column>&<dispersionX>&<dispersionY>', 'scatter_chart', visualization.scatter_chart, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/scatterChart/<database>&<rowName>&<column>&<dispersionX>&<dispersionY>&<condition>', 'scatter_chart', visualization.scatter_chart, methods=['GET'])
+
 
 app.add_url_rule('/loginForm', 'loginForm', user.login_form, methods=['GET'])
 app.add_url_rule('/login', 'login', user.login, methods=['POST'])
@@ -54,3 +62,7 @@ app.add_url_rule('/dragAndDrop/configurateUploadJSON', 'configurateUploadJSON', 
 app.add_url_rule('/activities', 'activities', activities.activities, methods=['GET'])
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
+
+#TWITTER
+app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
+app.add_url_rule('/twitter', 'twitter_search', socialGraph.twitter_search, methods=['GET'])

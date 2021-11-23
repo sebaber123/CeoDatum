@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+{% block content %}
+<head>
+  <meta charset="utf-8">
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+
+<div class="d-flex justify-content-center">
+  <div class="card justify-content-center" style="width: 60rem; margin-top: 10px;">
+
+    <div class="d-flex justify-content-center" style="margin-top: 10px;">
+      <div class="input-group mb-3"  style="width:800px">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">Palabra o frase que quiere buscar: </span>
+        </div>
+        <input type="text" class="form-control" id="searchString" aria-label="searchString" aria-describedby="basic-addon1">
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <div class="input-group mb-3"  style="width:800px">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1" style="height: 38px;" >Cantidad de palabras a mostrar: <output class="input-group-text" id="quantityOutput" style=" text-align: center; height: 34px; background-color: white;">10</output> </span>
+        </div>
+        <input type="range" class="form-control form-range" min="5" max="25" id="quantity" value="10"  aria-describedby="basic-addon1" style="width:500px; height: 38px;" oninput="$('#quantityOutput').value = this.value"/>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="preposiciones">
+        <label class="form-check-label" for="preposiciones">Excluir preposiciones</label>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="articulos">
+        <label class="form-check-label" for="articulos">Excluir articulos</label>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center" style="margin-Bottom:10px;">
+      <button type="button" class="btn btn-primary" style="width:200px" onclick="GenerateChart()">Buscar</button>
+    </div>
+  </div>
+</div>
+<div class="d-flex justify-content-center">
+  <div class="card justify-content-center" style="width: 60rem;">
+
+    <div class="d-flex justify-content-center" style="margin-top: 10px;">
+      <iframe id="iframe" name="iframe" src="" height="650" width="800"></iframe>  
+    </div>
+
+    
+</div>
+
+<script>
+  function GenerateChart() {
+    
+    //iframe
+    var iframe = $('#iframe')[0];
+    
+    //src iframe string
+    var src = "/twitterSearch/";
+
+    //alert($('#searchString').val());
+
+    src = src + $('#searchString').val();
+
+    src = src + '&' + $('#quantityOutput').val();
+
+    if ($('#preposiciones').is(':checked')) {
+      src = src + '&' + '1';
+    }  
+    else{
+      src = src + '&' + '0';
+    }
+
+    if ($('#articulos').is(':checked')) {
+      src = src + '&' + '1';
+    }  
+    else{
+      src = src + '&' + '0';
+    }
+
+    //set the url to the iframe
+    iframe.src = src;
+
+    //reload the iframe
+    //iframe.contentWindow.location.reload(true);
+    document.getElementById('iframe').src = document.getElementById('iframe').src;
+    
+    //window.frames['some_frame_id'].location.href.reload()
+  }
+
+  $('#quantity').on('propertychange input', function (e) {
+    var valueChanged = false;
+
+    if (e.type=='propertychange') {
+        valueChanged = e.originalEvent.propertyName=='value';
+    } else {
+        valueChanged = true;
+    }
+    if (valueChanged) {
+        $('#quantityOutput').val($('#quantity').val());
+    }
+});
+
+</script>  
+{% endblock %}
