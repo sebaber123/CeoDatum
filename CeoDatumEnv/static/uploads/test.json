@@ -1,0 +1,56 @@
+{
+	"persona":[ 
+		{	
+			"nombre": "sebastian",
+			"edad": "24",
+		    	"vehiculo": [{
+				"marca": {
+					"nombre" : "peugeot",
+					"creador" : "juan perez"
+					},
+				"anio": "2012"
+			}]
+		},
+		{	
+			"nombre": "martin",
+			"edad": "21",
+		    	"vehiculo": [{
+				"marca": {
+					"nombre" : "amarok",
+					"creador" : "carlos garcia"
+					},
+				"anio": "2014"
+			}]
+		},
+		{	
+			"nombre": "ivan",
+			"edad": "53",
+		    	"vehiculo": [{
+				"marca": {
+					"nombre" : "amarok",
+					"creador" : "carlos garcia"
+					},
+				"anio": "2014"
+				},
+				{
+				"marca": {
+					"nombre" : "peugeot",
+					"creador" : "juan perez"
+					},
+				"anio" : "2021"
+				}	
+			]
+		},
+		{	
+			"nombre": "ariel",
+			"edad": "53",
+		    	"vehiculo": [{
+				"marca": {
+					"nombre" : "fiat",
+					"creador" : "seba bertora"
+					},
+				"anio": "2014"
+			}]
+		}
+]
+}

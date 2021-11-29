@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block header %} 
   <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/login.css') }}">
+  <meta charset="utf-8">
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 {% endblock %}
 {% block title %} Login  {% endblock %}
 {% block content %}
@@ -8,84 +10,146 @@
   <div class="row" style="height: 100%">
    <div class="col-3">
    </div>
-   <div class="col-6 blue-background" align="center">
-      {{error}}
-      <h2>CeoDatum</h2>
-      <p>Formulario de registro</p>
-        {{ emailExist }}
+   <div class="col-6 blue-background">   
+      <h3 align="center" style="color: #012a4a">Formulario de registro</h3>
+        <label class="text-alert">{{error}}</label>
+        <label class="text-alert">{{ emailExist }}</label>
+        <label class="text-alert">{{ emptyField }}</label>
         <div class="main">
          <div class="login-form">
-            <form action="/register" method='POST'>
+            <form action="/register" method='POST' onsubmit="return validate();">
               <div class="form-group">
-                  <label>Correo electrónico</label>
-                  <input type="text" name="email" class="form-control" placeholder="Correo electrónico">
+                  <label class="text-white">Correo electrónico</label>
+                  <label class="text-white contador_caracteres" id="email-contador"></label>
+                  <input type="email" name="email" id="emailInput" class="form-control" placeholder="Correo electrónico" required>
                </div>
                <div class="form-group">
-                  <label>Nombre de usuario</label>
-                  <input type="text" name="name" class="form-control" placeholder="Nombre de usuario">
+                  <label class="text-white">Nombre de usuario</label>
+                  <input type="text" name="username" class="form-control" placeholder="Nombre de usuario" required>
                </div>
                <div class="form-group">
-                  <label>Contraseña</label>
-                  <input type="password" name="password" class="form-control" placeholder="Contraseña">
+                  <label class="text-white">Contraseña</label>
+                  <label class="contador_caracteres text-white mt-1" id="password-contador"></label>
+                  <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña" required>
                </div>
+                <div class="form-group" for="password_repeat">
+                  <label class="text-white">Repetir contraseña</label>
+                  <input type="password" name="password_repeat" id="password_repeat" class="form-control" placeholder="Repetir contraseña" required>
+                </div>
+                <label class="d-none d-block text-danger" id="passwordcheck_error"></label>
                 <div class="form-group">
-                  <label>Repetir contraseña</label>
-                  <input type="password" name="password_repeat" class="form-control" placeholder="Repetir contraseña">
+                  <label class="text-white" for="name">Nombre</label>
+                  <input type="text" name="name" class="form-control" placeholder="Nombre" required>
                 </div>
                 <div class="form-group">
-                <label for="provinceFormControlSelect">Provincia</label>
-                <select class="form-control" id="provinceFormControlSelect">
-                    <option value="1">BUENOS AIRES</option>
-                    <option value="2">CATAMARCA</option>
-                    <option value="5">CHACO</option>
-                    <option value="6">CHUBUT</option>
-                    <option value="50">CIUDAD AUTONOMA DE Bs As</option>
-                    <option value="3">CORDOBA</option>
-                    <option value="4">CORRIENTES</option>
-                    <option value="7">ENTRE RIOS</option>
-                    <option value="8">FORMOSA</option>
-                    <option value="9">JUJUY</option>
-                    <option value="10">LA PAMPA</option>
-                    <option value="11">LA RIOJA</option>
-                    <option value="12">MENDOZA</option>
-                    <option value="13">MISIONES</option>
-                    <option value="14">NEUQUEN</option>
-                    <option value="15">RIO NEGRO</option>
-                    <option value="16">SALTA</option>
-                    <option value="17">SAN LUIS</option>
-                    <option value="19">SANTA CRUZ</option>
-                    <option value="20">SANTA FE</option>
-                    <option value="21">SANTIAGO DEL ESTERO</option>
-                    <option value="22">TIERRA DEL FUEGO</option>
-                    <option disabled="true" selected="true" value="">Seleccionar una Provincia</option>
-                </select>
+                  <label class="text-white" for="surname">Apellido</label>
+                  <input type="text" name="surname" class="form-control" placeholder="Apellido" required>
                 </div>
                 <div class="form-group">
-                <label for="provinceFormControlSelect">Ciudad</label>
-                <select class="form-control" id="cityFormControlSelect">
-                    <option disabled="true" selected="true" value="">Seleccionar una ciudad</option>
-                </select>
+                  <label class="text-white" for="birthday">Fecha de nacimiento</label>
+                  <input type="date" name="birthday" class="form-control" placeholder="Fecha de nacimiento" required>
                 </div>
                 <div class="form-group">
-                <label for="instituteFormControlSelect">Instituto</label>
-                <select class="form-control" id="instituteFormControlSelect">
-                  <option>Universidad Nacional de La Plata</option>
-                  <option>Escuela Nacional "Rafael Fernandez"</option>
-                  <option>Liceo Victor Mercante</option>
-                </select>
-               </div>
-               <div class="buttons-area">
+                  <label class="text-white" for="provinceFormControlSelect">Provincia</label>
+                  <select class="form-control" id="provinceFormControlSelect" name="provinceFormControlSelect" required> 
+                    <option selected value=""> -- Selecciona una opción -- </option>
+                    {% for provincia in provincias %}
+                    <option value="{{provincia.id}}">{{provincia.jurisdiccion}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                  <div class="form-group d-none" id="cityFormGroup">
+                  <label class="text-white" for="cityFormControlSelect">Ciudad</label>
+                  <select class="form-control" id="cityFormControlSelect" name="cityFormControlSelect" required>
+                  <option selected value=""> -- Selecciona una opción -- </option>                  
+                  </select>
+                </div>
+                <div class="form-group d-none" id="instituteFormGroup">
+                  <label class="text-white" for="instituteFormControlSelect">Establecimiento educativo</label>
+                  <select class="form-control" id="instituteFormControlSelect" name="instituteFormControlSelect" required>
+                   <option selected value=""> -- Selecciona una opción -- </option>
+                  </select>
+                </div>
+                <div class="buttons-area" align="center">
                   <button type="submit" name="submit" class="btn btn-dark" value="register">Registrarse</button>
                   <a type="back" name="back" class="btn btn-dark" href="{{url_for('loginForm')}}">Volver</a>
                </div>
             </form>
          </div>
-        }
    </div>
 </div>
     <div class="col-3">
    </div>
     </div>
   </div>
+  <script>
+    $('#provinceFormControlSelect').on('change', function() {
+      $('#cityFormGroup').removeClass('d-none');
+      $.getJSON($SCRIPT_ROOT + "showRegister/" + $('#provinceFormControlSelect').val() , {
+        }, function(data) {
+          $("#cityFormControlSelect").empty();
+          $("#instituteFormControlSelect").empty();
+          $("#cityFormControlSelect").append("<option selected value=\"\"> -- Selecciona una opción -- </option>");
+          //load the HTML in the "valor" box
+          for (var i =  0; i < data.result.length; i++) {
+            $( "#cityFormControlSelect" ).append("<option value=\"" + data.result[i][0] + "\">" + data.result[i][2] + "</option><br/>");  
+
+          }
+        });
+      return false;
+    });
+
+    $('#cityFormControlSelect').on('change', function() {
+      $('#instituteFormGroup').removeClass('d-none');
+      $.getJSON($SCRIPT_ROOT + "showRegister/ciudad/" + $('#cityFormControlSelect').val() , {
+        }, function(data) {
+          $( "#instituteFormControlSelect" ).empty();
+          //load the HTML in the "valor" box
+          $( "#instituteFormControlSelect" ).append("<option selected value=\"\"> -- Selecciona una opción -- </option>");
+          $("#instituteFormControlSelect").append("<option value=-1>Ninguno</option>")
+          for (var i =  0; i < data.result.length; i++) {
+            $( "#instituteFormControlSelect" ).append("<option value=\"" + data.result[i][0] + "\">" + data.result[i][3] + "</option><br/>");  
+          }
+        });
+      return false;
+    });
+
+    let caracteres_password = 8;
+
+    function validate(){
+       var password = $('#password').val()
+       var password_repeat = $('#password_repeat').val()
+       if( password.length < caracteres_password){
+        $('#passwordcheck_error').removeClass('d-none');
+        $('#passwordcheck_error').empty();
+        $('#passwordcheck_error').append("La contraseña debe tener 8 o más caracteres")
+        return false;
+       }
+       if( password != password_repeat ){
+        $('#passwordcheck_error').removeClass('d-none');
+        $('#passwordcheck_error').empty();
+        $('#passwordcheck_error').append("Las contraseñas deben coincidir")
+        return false;
+       }
+       else{
+        return true;
+       }
+    }
+
+    $('#password').on('input', function() {
+      let total_caracteres = this.value.length;
+      $('#password-contador').empty();
+      if (total_caracteres<caracteres_password){
+        let string = "Quedan " + (caracteres_password-this.value.length) + " caracteres"
+        $('#password-contador').append(string);
+      }
+      else{
+        $('#password-contador').append("Contraseña válida!");
+      }
+      return false;
+    });
+
+
+  </script>
    
 {% endblock %}

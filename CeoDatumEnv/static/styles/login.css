@@ -4,7 +4,7 @@ body {
 
 
 .blue-background{
-    background-color: #0c6b7e;
+    background-color: #2c7da0;
     padding: 80px
 }
 
@@ -39,4 +39,18 @@ select{
 
 .link-login:hover{
     color:black;
+}
+
+.form-group{
+    width: 100%;
+}
+
+.contador_caracteres{
+    float: right;
+    font-weight: bold;
+    font-size: 80%;
+}
+
+.text-white{
+    margin-top: 1%;
 }

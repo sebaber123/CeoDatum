@@ -30,7 +30,7 @@
   <tr valign="top">
     <td style="width:10px"></td>
     <td style=" text-align: center; vertical-align: middle;">
-      <h1> {{database.name}}</h1>
+      <h1>{{database.name}}</h1>
     </td>
     <td style="width:25px;"></td>
     <td style="width:250px;"></td>
@@ -60,8 +60,8 @@
       <div  id="order-columns" class="card overflow-auto list-group" style="height:582.5px; width: 250px; ">
         {% for column in columns %}
           <div class="list-group-item">{{column.name}}
-            <input type="hidden" id="{{column.name}}" type="text" name="{{column.name}}" value="{{column.name}}">
-            <input type="hidden" type="text" value="{{column.type}}">
+            <input type="hidden" id="{{column.name}}" type="text" name="{{column.name}}" columnType="{{column.type}}" value="{{column.name}}">
+            
 
           </div>
         {% endfor %}  
@@ -169,6 +169,16 @@
     $("input[type=radio][name=columnModal]").prop('checked', false);
     $("input[type=radio][name=columnCondition]").prop('checked', false);
     console.log( "ready!" );
+
+    $("#order-columns > .list-group-item").each(function(index){
+      
+      //alert(JSON.stringify($(this).children(0).attr('columnType')))
+      if ($(this).children(0).attr('columnType') == 'object') { 
+        alert('22')
+        
+      }
+    });
+
   });
 
 
@@ -328,7 +338,7 @@
 
 
     //check if the column selected type is date or number to show the options "mayor que", "menor que" and "dentro del rango" in the "accion" radio
-    if ($(this).attr('columnType') == 'date' || $(this).attr('columnType')== 'number' ) { 
+    if ($(this).attr('columnType') == 'date' || $(this).attr('columnType')== 'int' ) { 
 
 
       $("#label-higher").css("display", "contents"); 

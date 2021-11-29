@@ -9,27 +9,27 @@ class User(object):
 
 	@classmethod
 	def get_all_users(cls):
-		query = "SELECT *  FROM public.user"
+		query = "SELECT * FROM public.user WHERE role_id != '1'"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
 		return cursor.fetchall()
 
 	@classmethod
-	def login(cls, user, password):
-		query= "SELECT * FROM public.user WHERE name=%s AND password=%s"
+	def login(cls, user, email):
+		query= "SELECT * FROM public.user as u INNER JOIN role ON role.id = u.role_id WHERE (username=%s OR email=%s)"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (user, password))
+		cursor.execute(query, (user, email))
 
 		return cursor.fetchone()
 
 	@classmethod
-	def register(cls, name, password, email):
+	def register(cls, username, password, province, city, institute, email, name, surname, birthday):
 		con = get_db()
 
-		query="INSERT INTO public.user(name, password, email) VALUES(%s, %s, %s)"
+		query="INSERT INTO public.user(username, password, province_id, city_id, establishment_id, email, name, surname, birthday) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (name, password, email))
+		cursor.execute(query, (username, password, province, city, institute, email, name, surname, birthday))
 		con.commit()
 
 		return True

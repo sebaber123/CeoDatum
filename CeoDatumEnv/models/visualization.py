@@ -30,9 +30,27 @@ class Visualization(object):
 
 
 	@classmethod
+	def getColumnsOfObject(cls, databaseName, columnName):
+		query = ("SELECT C.name, C.type FROM public.\"Table\" as t "+
+				"inner join public.\"Table_column\" as tc on t.id = tc.id_table " +
+				"inner join public.\"Column\" as c on tc.id_column = c.id " +
+				"WHERE t.name = \'"+databaseName +"-"+columnName+"\'")
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		return cursor.fetchall()	
+
+
+	@classmethod
 	def get_data(cls, data_db_name, table, column_x, condition, innerColumnsCondition):
 		query = ("SELECT t0." +column_x + ", COUNT(t.id) as count " +
-				" FROM \"" + table + "\" as t INNER JOIN " + "\""+ table + "-" + column_x + "\" as t0 on (t." + column_x + " = t0.id )" + innerColumnsCondition + " " +
+				" FROM \"" + table + "\" as t "+ 
+				"INNER JOIN \""+ data_db_name + "-" + column_x + "\" as t0_0 on (t.id = t0_0.id_"+data_db_name+") "+
+				"INNER JOIN \""+ column_x + "\" as t0 on (t0_0.id_"+column_x+" = t0.id) "+
+				innerColumnsCondition + " "+
+
+				#"INNER JOIN " + "\""+ table + "-" + column_x + "\" as t0 on (t." + column_x + " = t0.id )" + innerColumnsCondition + " " +
+
 				condition + 
 				" GROUP BY t0." + column_x +" ORDER BY " + column_x + " ASC ")
 		cursor = get_db_visualization(data_db_name).cursor(cursor_factory = psycopg2.extras.DictCursor)
@@ -42,7 +60,7 @@ class Visualization(object):
 
 	@classmethod
 	def getColumnData(cls, database, column, condition):
-		query = ("SELECT * FROM \"" + database + "-" + column + "\" as t1 " + condition)
+		query = ("SELECT * FROM \"" + column + "\" as t1 " + condition)
 		cursor = get_db_visualization(database).cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
@@ -51,8 +69,14 @@ class Visualization(object):
 	@classmethod	
 	def get_data_for_data_table(cls, data_db_name, row, column, condition, innerColumnsCondition, counts):
 		query = ("SELECT t0." +row + ", "+ counts +
-				" FROM \"" + data_db_name + "\" as t INNER JOIN " + "\""+ data_db_name + "-" + row + "\" as t0 on (t." + row + " = t0.id ) " + 
-				"INNER JOIN \""+ data_db_name + "-" + column + "\" as t1 on (t."+column+" = t1.id) "+
+				" FROM \"" + data_db_name + "\" as t "+
+				#" INNER JOIN " + "\""+ data_db_name + "-" + row + "\" as t0 on (t." + row + " = t0.id ) " + 
+				"INNER JOIN \""+ data_db_name + "-" + row + "\" as t0_0 on (t.id = t0_0.id_"+data_db_name+") "+
+				"INNER JOIN \""+ row + "\" as t0 on (t0_0.id_"+row+" = t0.id) "+
+				"INNER JOIN \""+ data_db_name + "-" + column + "\" as t1_1 on (t.id = t1_1.id_"+data_db_name+") "+
+				"INNER JOIN \""+ column + "\" as t1 on (t1_1.id_"+column+" = t1.id) "+
+				#" INNER JOIN \""+ data_db_name + "-" + column + "\" as t1 on (t."+column+" = t1.id) "+
+				
 				innerColumnsCondition + " " +
 				condition + 
 				" GROUP BY t0." + row +" ORDER BY " + row + " ASC ")
@@ -64,7 +88,10 @@ class Visualization(object):
 	@classmethod	
 	def get_data_for_data_table_without_column(cls, data_db_name, row, condition, innerColumnsCondition, counts):
 		query = ("SELECT t0." +row + ", "+ counts +
-				" FROM \"" + data_db_name + "\" as t INNER JOIN " + "\""+ data_db_name + "-" + row + "\" as t0 on (t." + row + " = t0.id ) " + 
+				" FROM \"" + data_db_name + "\" as t "+
+				#" INNER JOIN " + "\""+ data_db_name + "-" + row + "\" as t0 on (t." + row + " = t0.id ) " + 
+				"INNER JOIN \""+ data_db_name + "-" + row + "\" as t0_0 on (t.id = t0_0.id_"+data_db_name+") "+
+				"INNER JOIN \""+ row + "\" as t0 on (t0_0.id_"+row+" = t0.id) "+
 				innerColumnsCondition + " " +
 				condition + 
 				" GROUP BY t0." + row +" ORDER BY " + row + " ASC ")

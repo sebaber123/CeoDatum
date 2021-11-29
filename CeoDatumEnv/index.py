@@ -23,6 +23,7 @@ app.run(debug=True)
 from resources import user, visualization, home
 from resources.activities import activities
 from resources.datasets import datasets
+from resources.configuration import configuration
 
 app.add_url_rule('/', 'home', user.index)
 
@@ -44,6 +45,7 @@ app.add_url_rule('/logout', 'logout', user.logout, methods=['GET'])
 
 
 app.add_url_rule('/registerForm', 'registerForm', user.register_form, methods=['GET'])
+app.add_url_rule('/showRegister', 'showRegister', user.show_register, methods=['GET'])
 app.add_url_rule('/register', 'register', user.register, methods=['POST'])
 
 app.add_url_rule('/forgotPassword', 'forgotPassword', user.forgotPassword, methods=['GET'])
@@ -53,11 +55,20 @@ app.add_url_rule('/plotter/<database>&<column>', 'ajax_get_column_data', visuali
 
 app.add_url_rule('/dragAndDrop', 'dragAndDrop', home.dragAndDrop, methods=['GET'])
 app.add_url_rule('/dragAndDrop/uploadFile', 'uploadFile', home.uploadFile, methods=['POST'])
-app.add_url_rule('/dragAndDrop/configurateUpload', 'configurateUpload', home.configurateUpload, methods=['POST'])
+app.add_url_rule('/dragAndDrop/configurateUploadCSV', 'configurateUploadCSV', home.configurateUploadCSV, methods=['POST'])
+app.add_url_rule('/dragAndDrop/configurateUploadJSON', 'configurateUploadJSON', home.configurateUploadJSON, methods=['POST'])
+
 
 app.add_url_rule('/activities', 'activities', activities.activities, methods=['GET'])
+app.add_url_rule('/activities/new_activity', 'new_activity', activities.new_activity)
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
+app.add_url_rule('/configuration', 'configuration', configuration.configuration, methods=['GET'])
+app.add_url_rule('/update_establishment_file', 'update_establishment_file', configuration.upload_establishment_file, methods=['POST'])
+app.add_url_rule('/cambiar_rol/<user_id>/<role_id>', 'cambiar_rol', configuration.cambiar_rol, methods=['GET'])
+
 from resources.educational_establishments import extracting_data
 app.add_url_rule('/get_establishments', 'get_establishments', extracting_data.extract_data, methods=['GET'])
+app.add_url_rule('/showRegister/<province>', 'get_cities_by_province', extracting_data.get_cities_by_province, methods=['GET'])
+app.add_url_rule('/showRegister/ciudad/<city>', 'get_establishment_by_city', extracting_data.get_establishments_by_city, methods=['GET'])
