@@ -66,3 +66,8 @@ app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 #TWITTER
 app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
 app.add_url_rule('/twitter', 'twitter_search', socialGraph.twitter_search, methods=['GET'])
+
+#INSPECT
+app.add_url_rule('/inspectRows2', 'inspect_rows2', visualization.inspect_rows2, methods=['GET'])
+app.add_url_rule('/inspectRows/<databaseId>&<objectString>', 'inspect_rows', visualization.inspect_rows, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/inspectRows/<databaseId>&<objectString>&<condition>', 'inspect_rows', visualization.inspect_rows, methods=['GET'])

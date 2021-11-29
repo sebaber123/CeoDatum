@@ -3,7 +3,7 @@ from datetime import datetime
 from bokeh.plotting import figure, output_file, show
 from bokeh.models.tools import HoverTool
 import pandas as pd
-from bokeh.models import ColumnDataSource, Div, Select, Slider, TextInput, Range1d
+from bokeh.models import ColumnDataSource, Div, Select, Slider, TextInput, Range1d, OpenURL, TapTool
 from bokeh.models.widgets import DataTable, DateFormatter, TableColumn
 from bokeh.io import curdoc
 from bokeh.resources import INLINE
@@ -105,7 +105,7 @@ def queryConstruction(database, rowName, column, condition):
     conditionQueryString = ''
     
     if condition != None:
-        for cond in condition.split(sep='$$$'):
+        for cond in condition.split(sep='%%%'):
             
             #get the name of the column (first part of the condition)
             columnCondition = cond.split(sep='=')[0]
@@ -187,7 +187,7 @@ def conditionsToString(database, condition, dictPositionsInQuery):
     if condition != None:
         
         #loop through the conditions. The conditions in the string are divided by '***'
-        for cond in condition.split(sep='$$$'):
+        for cond in condition.split(sep='%%%'):
             
             #string condition 
             columnCondition = ''
@@ -423,58 +423,8 @@ def graphBar(database, x_axie, condition):
     
     queryConstructionResult = queryConstruction(database, x_axie, 'undefined', condition)
 
-    """dictPositionsInQuery = {}
-
-    columnsToAddToDict = x_axie.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, 0)
-
-    dictPositionsInQuery = aux[0]
-    topPos = aux[1]
-
-    conditionQueryString = ''
     
-    if condition != None:
-        for cond in condition.split(sep='$$$'):
-            
-            #get the name of the column (first part of the condition)
-            columnCondition = cond.split(sep='=')[0]
-            
-            columnCondition = columnCondition[:-1].strip()
-
-            columnsToAddToDict = columnCondition.split(sep='***')
-            columnsToAddToDict.append('object')
-
-            
-            aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, topPos)   
-
-            dictPositionsInQuery = aux[0]
-            topPos = aux[1]
-        
-        #call the method to transform the conditions
-        conditionQueryString = conditionsToString(database, condition, dictPositionsInQuery)        
-
-    fromOfQueryString = 'public.\"'+ database + '\" as t0 '
-
-    fromOfQueryString = generateSelect(dictPositionsInQuery[database], fromOfQueryString , database, database)     
-
-    columnsToAddToDict = x_axie.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
-    pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
-
-    groupByString = 't'+str(pos)+'.'+valueColumn
-    selectString = groupByString + ',  COUNT(t'+str(pos)+'.id) as count'"""
-
-
-
-
-
-
-            
-
+    objectStringCallBack = x_axie[:-(len(x_axie.split('***')[len(x_axie.split('***'))-1])+3)]
 
     #make the bar plot
     bar2 = bar_plot(    queryConstructionResult['valueColumn'], 
@@ -485,7 +435,10 @@ def graphBar(database, x_axie, condition):
                         queryConstructionResult['selectString'], 
                         queryConstructionResult['fromOfQueryString'], 
                         queryConstructionResult['groupByString'], 
-                        queryConstructionResult['whereString'] )
+                        queryConstructionResult['whereString'],
+                        objectStringCallBack,
+                        condition,
+                        x_axie )
     
     #method that return the script and div that is needed to create the graph in the page  
     script, div = components(bar2)
@@ -500,12 +453,15 @@ def graphBar(database, x_axie, condition):
     ).encode(encoding='UTF-8')
 
 #generate the bar plot
-def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString):
+def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, objectStringCallBack, conditionCallBack, columnXCallBack):
 
     #get the data of the database
     #data = Visualization.get_data(data_db_name, table, column_x, condition, innerColumnsCondition)    
     
     data = Visualization.get_data_with_parameters(data_db_name, selectString, fromString, groupByString, whereString)
+
+    database = Visualization.get_database_id(data_db_name)
+    databaseId = database['id']
 
     #get the counts of the data
     y_array = [int(row['count']) for row in data]
@@ -521,7 +477,7 @@ def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
     source = ColumnDataSource(data=dictionary)
 
     #generate the graph
-    bar = figure(x_range= dictionary['x'], title='bar plot', x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=575, plot_width=900)
+    bar = figure(x_range= dictionary['x'], title='bar plot', x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
     bar.vbar(x='x', top='y', source=source, color='blue', width=0.5)
     bar.y_range.start=0
     
@@ -530,9 +486,22 @@ def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
                 (x_axis_name, "@x"),
                 (y_axis_name, "@y")
             ])
+
+    if conditionCallBack:
+
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''
+
+    else:
+
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''
+            
+
+    taptool = bar.select(type=TapTool)
+    taptool.callback = OpenURL(url=url)
     
     #add on hover tool to the graph
     bar.tools.append(hover_tool)
+
 
     #return the graph
     return bar
@@ -542,55 +511,7 @@ def graphLine(database, x_axie, condition):
 
     queryConstructionResult = queryConstruction(database, x_axie, 'undefined', condition)
 
-    #call the method to transform the conditions    
-    #ConditionAndColumns = conditionsToString(database, x_axie, condition)  
-
-    """dictPositionsInQuery = {}
-
-    columnsToAddToDict = x_axie.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, 0)
-
-    dictPositionsInQuery = aux[0]
-    topPos = aux[1]
-
-    conditionQueryString = ''
-    
-    if condition != None:
-        for cond in condition.split(sep='$$$'):
-            
-            #get the name of the column (first part of the condition)
-            columnCondition = cond.split(sep='=')[0]
-            
-            columnCondition = columnCondition[:-1].strip()
-
-            columnsToAddToDict = columnCondition.split(sep='***')
-            columnsToAddToDict.append('object')
-
-            
-            aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, topPos)   
-
-            dictPositionsInQuery = aux[0]
-            topPos = aux[1]
-        
-        #call the method to transform the conditions
-        conditionQueryString = conditionsToString(database, condition, dictPositionsInQuery)        
-
-    fromOfQueryString = 'public.\"'+ database + '\" as t0 '
-
-    fromOfQueryString = generateSelect(dictPositionsInQuery[database], fromOfQueryString , database, database)     
-
-    columnsToAddToDict = x_axie.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
-    pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
-
-    groupByString = 't'+str(pos)+'.'+valueColumn
-    selectString = groupByString + ',  COUNT(t'+str(pos)+'.id) as count'"""
-
-
+    objectStringCallBack = x_axie[:-(len(x_axie.split('***')[len(x_axie.split('***'))-1])+3)]
 
     #make the line plot
     line = line_plot(   queryConstructionResult['valueColumn'], 
@@ -601,7 +522,10 @@ def graphLine(database, x_axie, condition):
                         queryConstructionResult['selectString'], 
                         queryConstructionResult['fromOfQueryString'], 
                         queryConstructionResult['groupByString'], 
-                        queryConstructionResult['whereString'] )
+                        queryConstructionResult['whereString'],
+                        objectStringCallBack,
+                        condition,
+                        x_axie )
     
     #method that return the script and div that is needed to create the graph in the page 
     script, div = components(line)
@@ -616,17 +540,24 @@ def graphLine(database, x_axie, condition):
     ).encode(encoding='UTF-8')
 
 #line plot with datetimes
-def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString):
+def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, objectStringCallBack, conditionCallBack, columnXCallBack):
     
     #get the data of the database
     #data = Visualization.get_data(data_db_name, table, column_x, condition, innerColumnsCondition)
     data = Visualization.get_data_with_parameters(data_db_name, selectString, fromString, groupByString, whereString)
 
+    database = Visualization.get_database_id(data_db_name)
+    databaseId = database['id']
+
     #get the counts of the data
     y_array = [int(row['count']) for row in data]
     
     #get the x axi value
+    #x_array = [datetime.strptime(str(row[column_x]), '%Y-%m-%d') for row in data]
+    x_array_values = [str(row[column_x]) for row in data]
     x_array = [datetime.strptime(str(row[column_x]), '%Y-%m-%d') for row in data]
+
+
 
     #var used to calculate the acumulative count
     countsTotal = []
@@ -639,13 +570,13 @@ def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStr
 
     
     #create a dictionary that  with the 'x_array' and 'y_array' arrays
-    dictionary=dict(  x=x_array, y=countsTotal)
+    dictionary=dict(  x=x_array, y=countsTotal, x_values=x_array_values)
     
     #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
     source = ColumnDataSource(data=dictionary)
 
     #generate the graph
-    p = figure(title="Title", x_axis_type="datetime", x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=575, plot_width=900)
+    p = figure(title="Title", x_axis_type="datetime", x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
     p.line(x='x', y='y', source=source, line_width=2)
     p.circle(x='x', y='y', source=source, fill_color="white", size=8)
 
@@ -659,7 +590,19 @@ def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStr
     )
 
     #add on hover tool to the graph
-    p.tools.append(hover_tool)    
+    p.tools.append(hover_tool)   
+
+    if conditionCallBack:
+
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x_values\''
+
+    else:
+
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x_values\''
+            
+
+    taptool = p.select(type=TapTool)
+    taptool.callback = OpenURL(url=url) 
 
     #return the graph
     return p
@@ -691,59 +634,6 @@ def data_table(database, rowName, column, condition):
 
     queryConstructionResult = queryConstruction(database, rowName, column, condition)
 
-    """dictPositionsInQuery = {}
-
-    columnsToAddToDict = rowName.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, 0)
-
-    dictPositionsInQuery = aux[0]
-    topPos = aux[1]
-
-    columnsToAddToDict = column.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, topPos)
-
-    dictPositionsInQuery = aux[0]
-    topPos = aux[1]
-
-    conditionQueryString = ''
-    
-    if condition != None:
-        for cond in condition.split(sep='$$$'):
-            
-            #get the name of the column (first part of the condition)
-            columnCondition = cond.split(sep='=')[0]
-            
-            columnCondition = columnCondition[:-1].strip()
-
-            columnsToAddToDict = columnCondition.split(sep='***')
-            columnsToAddToDict.append('object')
-
-            
-            aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, topPos)   
-
-            dictPositionsInQuery = aux[0]
-            topPos = aux[1]
-        
-        #call the method to transform the conditions
-        conditionQueryString = conditionsToString(database, condition, dictPositionsInQuery)        
-
-    fromOfQueryString = 'public.\"'+ database + '\" as t0 '
-
-    fromOfQueryString = generateSelect(dictPositionsInQuery[database], fromOfQueryString , database, database)     
-
-    columnsToAddToDict = rowName.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
-    pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
-
-    groupByString = 't'+str(pos)+'.'+valueColumn
-    selectString = groupByString + ',  COUNT(t'+str(pos)+'.id) as count'"""
-
     #Add the count if there is no column defined
     counts = ['COUNT(t0.id) as count', ['cantidad']]
 
@@ -755,13 +645,13 @@ def data_table(database, rowName, column, condition):
         if condition != None:
 
             #loop through the conditions. The conditions in the string are divided by '***'
-            for cond in condition.split(sep='$$$'):
+            for cond in condition.split(sep='%%%'):
 
                 #check if the columns of the condition is the same of the column of the datatable 
                 if (cond[:+len(column)] == column):
 
                     #add the condition to the string
-                    conditionsOfColumn = conditionsOfColumn + cond + '$$$'
+                    conditionsOfColumn = conditionsOfColumn + cond + '%%%'
 
             #delete the last '***'
             conditionsOfColumn = conditionsOfColumn[:-3]     
@@ -793,73 +683,6 @@ def data_table(database, rowName, column, condition):
 
     data = Visualization.get_data_with_parameters(database, queryConstructionResult['groupByString'] + ', ' + counts[0], queryConstructionResult['fromOfQueryString'], queryConstructionResult['groupByString'], queryConstructionResult['whereString'])
     
-
-
-
-    """#check if the column is defined to know the counts of rows that must be calculated (if its not defined just count all the rows)
-    if column != 'undefined':
-
-        #call the method to transform the conditions
-        conditionAndColumns = conditionsToString(database, [rowName, column], condition) 
-
-        #store the conditions that alterate the columns of the table
-        conditionsOfColumn = ''
-
-        #check if there is any condition
-        if condition != None:
-
-            #loop through the conditions. The conditions in the string are divided by '***'
-            for cond in condition.split(sep='***'):
-
-                #check if the columns of the condition is the same of the column of the datatable 
-                if (cond[:+len(column)] == column):
-
-                    #add the condition to the string
-                    conditionsOfColumn = conditionsOfColumn + cond + '***'
-
-            #delete the last '***'
-            conditionsOfColumn = conditionsOfColumn[:-3]        
-
-        #counts of the rows in the query
-        counts = ''
-
-        #check if there are conditions of the column selected for the table
-        if conditionsOfColumn:
-
-            #call the method to transform the conditions
-            queryConditionsOfColumns = conditionsToString(database,  [rowName, column], conditionsOfColumn) 
-            
-            #generate the counts for the columns needed
-            counts = counts_query_for_data_table(database, column, queryConditionsOfColumns[0])
-        
-        else:
-
-            #generate the counts for all the columns
-            counts = counts_query_for_data_table(database, column, '') 
-
-        #check if there is a condition in the parameters
-        if condition != None:    
-
-            #get the data of the database
-            data = Visualization.get_data_for_data_table(database, rowName, column, conditionAndColumns[0], conditionAndColumns[1], counts[0])
-        else:
-
-            #get the data of the database
-            data = Visualization.get_data_for_data_table(database, rowName, column, '', '', counts[0])        
-
-        
-    
-    else:
-        
-        #call the method to transform the conditions
-        conditionAndColumns = conditionsToString(database, rowName, condition)
-
-        #Add the count if there is no column defined
-        counts = ['COUNT(t.id) as count', ['cantidad']]
-
-        #get the data of the database
-        data = Visualization.get_data_for_data_table_without_column(database, rowName, conditionAndColumns[0], conditionAndColumns[1], counts[0])"""
-
     #Array of 'rowNames' returned by the query
     columnRow = [str(row[ queryConstructionResult['valueColumn']]) for row in data]
 
@@ -900,12 +723,14 @@ def data_table(database, rowName, column, condition):
 
 
 #generate the pie chart
-def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, groupByString, whereString):
+def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, objectStringCallBack, conditionCallBack, columnXCallBack):
 
     #get the data of the database
     #data = Visualization.get_data(data_db_name, table, column_x, condition, innerColumnsCondition)
     data = Visualization.get_data_with_parameters(data_db_name, selectString, fromString, groupByString, whereString)
 
+    database = Visualization.get_database_id(data_db_name)
+    databaseId = database['id']
 
     #get the names of each portion of the graph
     rowData = [str(row[rowName]) for row in data]
@@ -939,7 +764,7 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
 
         
     #generate the graph
-    p = figure(plot_height=525, plot_width=900, title="Pie Chart", x_range=(-0.5, 1.0))
+    p = figure(plot_height=525, plot_width=900, title="Pie Chart", x_range=(-0.5, 1.0), tools="tap, pan, wheel_zoom, save")
     p.wedge(x=0, y=1, radius=0.4,
         start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
         line_color="white", fill_color='color', legend_field=rowName, source=data)
@@ -954,61 +779,29 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
     #add on hover tool to the graph
     p.tools.append(hover_tool)  
 
+    if conditionCallBack:
+
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@'+rowName+'\''
+
+    else:
+
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@'+rowName+'\''
+    
+    
+    taptool = p.select(type=TapTool)
+    taptool.callback = OpenURL(url=url)         
+
+
     #return the graph
     return p
 
 #generate the pie chart
 def pie_chart(database, rowName, condition):
 
-    #call the method to transform the conditions
-    #ConditionAndColumns = conditionsToString(database, rowName, condition)  
-
     queryConstructionResult = queryConstruction(database, rowName, 'undefined', condition)
 
-    """dictPositionsInQuery = {}
+    objectStringCallBack = rowName[:-(len(rowName.split('***')[len(rowName.split('***'))-1])+3)]
 
-    columnsToAddToDict = rowName.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, 0)
-
-    dictPositionsInQuery = aux[0]
-    topPos = aux[1]
-
-    conditionQueryString = ''
-    
-    if condition != None:
-        for cond in condition.split(sep='$$$'):
-            
-            #get the name of the column (first part of the condition)
-            columnCondition = cond.split(sep='=')[0]
-            
-            columnCondition = columnCondition[:-1].strip()
-
-            columnsToAddToDict = columnCondition.split(sep='***')
-            columnsToAddToDict.append('object')
-
-            
-            aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, topPos)   
-
-            dictPositionsInQuery = aux[0]
-            topPos = aux[1]
-        
-        #call the method to transform the conditions
-        conditionQueryString = conditionsToString(database, condition, dictPositionsInQuery)        
-
-    fromOfQueryString = 'public.\"'+ database + '\" as t0 '
-
-    fromOfQueryString = generateSelect(dictPositionsInQuery[database], fromOfQueryString , database, database)     
-
-    columnsToAddToDict = rowName.split(sep='***')
-    columnsToAddToDict.append('object')
-
-    valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
-    pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
-
-    groupByString = 't'+str(pos)+'.'+valueColumn
-    selectString = groupByString + ',  COUNT(t'+str(pos)+'.id) as count'"""
 
     #call the method that generate the graph
     graph = pie_plot(   queryConstructionResult['valueColumn'], 
@@ -1018,7 +811,10 @@ def pie_chart(database, rowName, condition):
                         queryConstructionResult['selectString'], 
                         queryConstructionResult['fromOfQueryString'], 
                         queryConstructionResult['groupByString'], 
-                        queryConstructionResult['whereString'])
+                        queryConstructionResult['whereString'],
+                        objectStringCallBack,
+                        condition,
+                        rowName)
     
 
     #method that return the script and div that is needed to create the graph in the page 
@@ -1038,9 +834,13 @@ def dot_chart(database, rowName, column, condition):
 
     queryConstructionResult = queryConstruction(database, rowName, column, condition)
 
+    objectRowStringCallBack = rowName[:-(len(rowName.split('***')[len(rowName.split('***'))-1])+3)]
+
     valueColumn = 'undefined'
 
     columnToGroupBy = ''
+
+    y_axis_name = 'cantidad'
 
     if column != 'undefined':
 
@@ -1051,9 +851,11 @@ def dot_chart(database, rowName, column, condition):
         posColumn = positionInQuery(columnsToAddToDict, queryConstructionResult['dictPositionsInQuery'])
         columnToGroupBy = ', t'+str(posColumn)+'.'+valueColumn
 
+        y_axis_name = valueColumn
+
 
     graph = dot_plot(    queryConstructionResult['valueColumn'], 
-                        'cantidad', 
+                        y_axis_name, 
                         database, 
                         database, 
                         queryConstructionResult['valueColumn'], 
@@ -1061,7 +863,11 @@ def dot_chart(database, rowName, column, condition):
                         queryConstructionResult['fromOfQueryString'], 
                         queryConstructionResult['groupByString'] + columnToGroupBy, 
                         queryConstructionResult['whereString'],
-                        valueColumn )
+                        valueColumn,
+                        objectRowStringCallBack,
+                        condition,
+                        rowName,
+                        column )
     
 
     #method that return the script and div that is needed to create the graph in the page 
@@ -1076,19 +882,27 @@ def dot_chart(database, rowName, column, condition):
     ).encode(encoding='UTF-8')
 
 
-def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, column_y):
+def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, column_y, objectStringCallBack, conditionCallBack, columnXCallBack, columnYCallBack):
 
     data = Visualization.get_data_with_parameters(data_db_name, selectString, fromString, groupByString, whereString)
+
+    database = Visualization.get_database_id(data_db_name)
+    databaseId = database['id']
+
 
     #get the counts of the data
     counts = [int(row['count']) for row in data]
     maxCount = max(counts)
     radio = []
+    size = []
 
     #put the radio of the circle depending of the count
     for count in counts:
 
-        radio.append((0.14/maxCount)*count + 0.06)
+        #radio.append((0.14/maxCount)*count + 0.06)
+        size.append((30/maxCount)*count + 10)
+
+
     
     #get the x axi value
     x_array = [str(row[column_x]) for row in data]
@@ -1098,18 +912,20 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
     if column_y == 'undefined':
 
         #create a dictionary that  with the 'x_array' and 'y_array' arrays
-        dictionary=dict(  x=x_array, y=counts, radio=radio)
+        dictionary=dict(  x=x_array, y=counts,  size=size)
         
         #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
         source = ColumnDataSource(data=dictionary)
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
+        p = figure(x_range=xCategorical, title="Title", plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
         p.y_range.start=-1
         p.y_range.end= maxCount+3
 
-        p.circle(x='x', y='y', source=source, fill_color="blue", radius='radio')
+        #p.circle(x='x', y='y', source=source, fill_color="blue", radius='radio')
+        p.circle(x='x', y='y', source=source, fill_color="blue", size='size')
+
 
         #on hover tool
         hover_tool = HoverTool(tooltips=[
@@ -1117,6 +933,15 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
                     (y_axis_name, "@y")
                 ])
 
+        if conditionCallBack:
+
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''
+
+        else:
+
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''
+        
+        
     else:
 
         y_array = [(row[column_y]) for row in data]
@@ -1132,16 +957,18 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
         y_array = [str(row[column_y]) for row in data]
 
         #create a dictionary that  with the 'x_array' and 'y_array' arrays
-        dictionary=dict(  x=x_array, y=y_array, radio=radio, counts=counts)
+        dictionary=dict(  x=x_array, y=y_array, counts=counts, size=size)
         
         #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
         source = ColumnDataSource(data=dictionary)
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=575, plot_width=900)
+        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
-        p.circle(x='x', y='y', source=source, fill_color="blue", radius='radio')
+        #p.circle(x='x', y='y', source=source, fill_color="blue", radius='radio')
+        p.circle(x='x', y='y', source=source, fill_color="blue", size='size')
+
 
         #on hover tool
         hover_tool = HoverTool(tooltips=[
@@ -1150,13 +977,29 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
                     ('cantidad', "@counts")
                 ])
 
-    p.tools.append(hover_tool)  
+        if conditionCallBack:
+
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''+'%%%'+columnYCallBack+' =\'@y\''
+
+        else:
+
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''+'%%%'+columnYCallBack+' =\'@y\''
+        
+
+    p.tools.append(hover_tool) 
+
+    taptool = p.select(type=TapTool)
+    taptool.callback = OpenURL(url=url)  
+ 
 
     return p
 
 def scatter_chart(database, rowName, column, dispersionX, dispersionY, condition):
 
     queryConstructionResult = queryConstruction(database, rowName, column, condition)
+
+    objectRowStringCallBack = rowName[:-(len(rowName.split('***')[len(rowName.split('***'))-1])+3)]
+
 
     valueColumn = 'undefined'
 
@@ -1182,7 +1025,11 @@ def scatter_chart(database, rowName, column, dispersionX, dispersionY, condition
                         queryConstructionResult['whereString'],
                         valueColumn,
                         dispersionX,
-                        dispersionY )
+                        dispersionY,
+                        objectRowStringCallBack,
+                        condition,
+                        rowName,
+                        column )
     
 
     #method that return the script and div that is needed to create the graph in the page 
@@ -1196,9 +1043,12 @@ def scatter_chart(database, rowName, column, dispersionX, dispersionY, condition
         css_resources=INLINE.render_css(),
     ).encode(encoding='UTF-8')
 
-def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString, fromString, groupByString, whereString, column_y, dispersionX, dispersionY):
+def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString, fromString, groupByString, whereString, column_y, dispersionX, dispersionY, objectStringCallBack, conditionCallBack, columnXCallBack, columnYCallBack):
 
     data = Visualization.get_data_with_parameters_for_scatter(data_db_name, groupByString, fromString, groupByString, whereString)
+
+    database = Visualization.get_database_id(data_db_name)
+    databaseId = database['id']
     
     x_array = [(row[column_x]) for row in data]
 
@@ -1225,7 +1075,7 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, y_range=['unico valor'], title="Title", plot_height=575, plot_width=900)
+        p = figure(x_range=xCategorical, y_range=['unico valor'], title="Title", plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
         p.circle(x=jitter('x',width=float(dispersionX), range = p.x_range), y=jitter('y',width=float(dispersionY), range = p.y_range), source=source, fill_color="blue", size=30, alpha= 0.3)
 
@@ -1233,6 +1083,14 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
         hover_tool = HoverTool(tooltips=[
                     (x_axis_name, "@x")
                 ])
+
+        if conditionCallBack:
+
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''
+
+        else:
+
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''
 
     else:
 
@@ -1254,7 +1112,7 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
         #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
         source = ColumnDataSource(data=dictionary)
         
-        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=575, plot_width=900)
+        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
         p.circle(x=jitter('x',width=float(dispersionX), range = p.x_range), y=jitter('y',width=float(dispersionY), range = p.y_range), source=source, fill_color="blue", size=30, alpha= 0.3)
 
@@ -1264,7 +1122,18 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
                     (y_axis_name, "@y")
                 ])
 
+        if conditionCallBack:
+
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''+'%%%'+columnYCallBack+' =\'@y\''
+
+        else:
+
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''+'%%%'+columnYCallBack+' =\'@y\''
+
     p.tools.append(hover_tool)  
+
+    taptool = p.select(type=TapTool)
+    taptool.callback = OpenURL(url=url) 
 
     return p
 
@@ -1307,3 +1176,283 @@ def ajaxGetColumnData(database, column):
 
 
     return jsonify(result = ajaxData)
+
+def inspect_rows2():
+
+
+
+    return render_template('home/inspectRows.html')
+
+def recursion_query(databaseStructure, dictPositionsInQuery, pos, objectString, select, positionOfTheQuery, posOfQueryReturn):
+
+    dictPositionsInQueryRecursion = dictPositionsInQuery
+    posRecursion = pos
+    selectToReturn = select
+    positionOfTheQueryRecusion = positionOfTheQuery
+    posOfQueryReturnRecursion = posOfQueryReturn
+
+    for x in databaseStructure.keys():
+
+        stringToAdd = objectString+'***'+x
+
+        columnsToAddToDict = stringToAdd.split(sep='***')
+        if not isinstance(databaseStructure[x], dict):            
+            columnsToAddToDict.append('object')
+
+        aux = addPosInQuery(columnsToAddToDict, dictPositionsInQueryRecursion, posRecursion)
+        dictPositionsInQueryRecursion = aux[0]
+        posRecursion = aux[1]
+
+
+        
+        if isinstance(databaseStructure[x], dict):
+
+            selectToReturn = selectToReturn + 't'+str(positionInQuery((objectString+'***'+x).split(sep='***'), dictPositionsInQuery))+'.id_'+((objectString+'***'+x).split(sep='***')[len((objectString+'***'+x).split(sep='***'))-1])+', ' 
+
+            positionOfTheQueryRecusion[str(posOfQueryReturnRecursion)] = objectString+'***'+x+'***id_'+x
+            posOfQueryReturnRecursion = posOfQueryReturnRecursion + 1     
+
+            aux = recursion_query(databaseStructure[x], dictPositionsInQueryRecursion, posRecursion, objectString+'***'+x, selectToReturn, positionOfTheQueryRecusion, posOfQueryReturnRecursion)
+            dictPositionsInQueryRecursion= aux[0]
+            posRecursion = aux[1]
+            selectToReturn = aux[2]
+            positionOfTheQueryRecusion = aux[3]
+            posOfQueryReturnRecursion = aux[4]
+
+        else:
+    
+            selectToReturn = selectToReturn + ' t'+ str(posRecursion-1) +'.'+x+','
+
+            positionOfTheQueryRecusion [str(posOfQueryReturnRecursion)] = stringToAdd
+            posOfQueryReturnRecursion = posOfQueryReturnRecursion + 1
+
+    return [dictPositionsInQueryRecursion, posRecursion, selectToReturn, positionOfTheQueryRecusion, posOfQueryReturnRecursion]        
+
+def inspect_rows(databaseId, objectString, condition):
+
+    #get the columns of the database
+    columns = Visualization.get_db_data(databaseId)
+    
+    #get the database
+    database = Visualization.get_database(databaseId)
+
+    #get the structure of the dataset
+    databaseStructure = {}
+
+    for column in columns:
+        if column['type'] == 'object': 
+
+            dictionaryObject = {}
+
+            columnsOfObject = Visualization.getColumnsOfObject(database['name'],column['name'])
+
+            for columnOfObject in columnsOfObject:
+                if columnOfObject['type'] == 'object':
+
+                    dictionaryObject[columnOfObject['name']] = generateStructureRecursion(database['name'], column['name'], columnOfObject['name'])
+
+                else:   
+
+                    dictionaryObject[columnOfObject['name']] = columnOfObject['type'] 
+
+            databaseStructure[column['name']] = dictionaryObject        
+
+        else:    
+            databaseStructure[column['name']] = column['type']
+
+    objectColumns = objectString.split(sep='***')
+
+    objectStringLast = objectColumns[len(objectColumns)-1]
+    
+    objectColumns.pop(0)
+
+    for column in objectColumns:
+        databaseStructure = databaseStructure[column]
+
+    dictPositionsInQuery = {}
+    pos = 0
+
+    select = ''
+
+
+    posOfQueryReturn = 1
+    positionOfTheQuery = {}
+
+    positionOfTheQuery['0'] = objectString+'***id'
+
+    for x in databaseStructure.keys():
+
+        stringToAdd = objectString+'***'+x
+
+        columnsToAddToDict = stringToAdd.split(sep='***')
+        if not isinstance(databaseStructure[x], dict):            
+            columnsToAddToDict.append('object')
+
+        aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, pos)
+        dictPositionsInQuery = aux[0]
+        pos = aux[1]
+        
+        if isinstance(databaseStructure[x], dict):         
+
+            select = select + 't'+str(positionInQuery((objectString+'***'+x).split(sep='***'), dictPositionsInQuery))+'.id_'+((objectString+'***'+x).split(sep='***')[len((objectString+'***'+x).split(sep='***'))-1])+', ' 
+
+            positionOfTheQuery[str(posOfQueryReturn)] = objectString+'***'+x+'***id_'+x
+            posOfQueryReturn = posOfQueryReturn + 1        
+
+            aux = recursion_query(databaseStructure[x], dictPositionsInQuery, pos, objectString+'***'+x, select, positionOfTheQuery, posOfQueryReturn)
+            dictPositionsInQuery= aux[0]
+            pos = aux[1]
+            select = aux[2]
+            positionOfTheQuery = aux[3] 
+            posOfQueryReturn = aux[4]
+
+        else:
+
+            select = select + ' t'+ str(pos-1) +'.'+x+','
+            
+            positionOfTheQuery[str(posOfQueryReturn)] = stringToAdd
+            posOfQueryReturn = posOfQueryReturn + 1        
+
+    conditionQueryString = ''
+
+    if condition != None:
+        for cond in condition.split(sep='%%%'):
+            
+            #get the name of the column (first part of the condition)
+            columnCondition = cond.split(sep='=')[0]
+            
+            columnCondition = columnCondition[:-1].strip()
+
+            columnsToAddToDict = columnCondition.split(sep='***')
+            columnsToAddToDict.append('object')
+
+            
+            aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, pos)   
+
+            dictPositionsInQuery = aux[0]
+            pos = aux[1]
+        
+        #call the method to transform the conditions
+        conditionQueryString = conditionsToString(database, condition, dictPositionsInQuery)
+
+    fromOfQueryString = 'public.\"'+  database['name'] + '\" as t0 '
+
+    fromOfQueryString = generateSelect(dictPositionsInQuery[database['name']], fromOfQueryString , database['name'], database['name'])  
+
+    if database['name'] == objectString:
+
+        selectString = 't'+str(positionInQuery(objectString.split(sep='***'), dictPositionsInQuery))+'.id'+', ' + select[:-1]
+
+    else:
+
+        selectString = 't'+str(positionInQuery(objectString.split(sep='***'), dictPositionsInQuery))+'.id_'+objectString.split(sep='***')[len(objectString.split(sep='***'))-1]+', ' + select[:-1]
+
+    
+
+    dataQuery = Visualization.get_data_with_parameters_for_inspection(database['name'], selectString, fromOfQueryString, conditionQueryString)
+
+    data = {}
+    dataIds= []
+
+    for row in dataQuery:
+
+        rowPosition = 1
+
+        if row[0] not in dataIds:
+
+            dataIds.append(row[0])
+            data[str(row[0])] = {} 
+            
+            for x in databaseStructure.keys():
+                
+                if isinstance(databaseStructure[x], dict):
+
+                    
+                    aux = recursionDataToReturn(rowPosition, row, databaseStructure[x], data[str(row[0])], x)
+
+                    rowPosition = aux[0]
+
+
+                else:
+                    data[str(row[0])][x] = row[rowPosition]
+
+                    rowPosition = rowPosition + 1         
+
+        else:
+
+            for x in databaseStructure.keys():
+                
+                if isinstance(databaseStructure[x], dict):
+
+                    
+                    aux = recursionDataToReturn(rowPosition, row, databaseStructure[x], data[str(row[0])], x)
+
+                    rowPosition = aux[0]
+
+
+                else:
+
+                    rowPosition = rowPosition + 1                 
+                     
+    
+    return render_template('home/inspectRows.html', data=data, database=database['name'], objectString=objectStringLast) 
+
+
+def recursionDataToReturn(rowPosition, row, databaseStructure, data, column):   
+
+    if column not in data:
+
+        data[column] = []
+
+    allKeys = []
+
+    if data[column] :
+        allKeys = set().union(*(d.keys() for d in data[column]))
+
+    columnToAdd = {}
+
+    rowPositionId = rowPosition
+
+    rowPosition = rowPosition + 1
+
+    if str(row[rowPositionId]) not in allKeys:
+
+        columnToAdd[str(row[rowPositionId])] = {}
+
+        for x in databaseStructure.keys():
+                
+                if isinstance(databaseStructure[x], dict):
+                    
+                    aux = recursionDataToReturn(rowPosition, row, databaseStructure[x], columnToAdd[str(row[rowPositionId])], x)
+
+                    rowPosition = aux[0]
+
+
+                else:
+                    columnToAdd[str(row[rowPositionId])][x] = row[rowPosition]
+
+                    rowPosition = rowPosition + 1 
+    
+    else:
+
+
+        for x in databaseStructure.keys():
+                
+            if isinstance(databaseStructure[x], dict):
+
+                
+                aux = recursionDataToReturn(rowPosition, row, databaseStructure[x], columnToAdd[str(row[rowPositionId])], x)
+
+                rowPosition = aux[0]
+
+
+            else:
+
+                rowPosition = rowPosition + 1         
+        
+
+
+
+    data[column].append(columnToAdd)                
+
+    return [rowPosition]            
