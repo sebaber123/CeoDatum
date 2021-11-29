@@ -1,0 +1,224 @@
+{% extends "layout.html" %}
+{% block content %}
+<head>
+  <meta charset="utf-8">
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+  <style>
+    img {
+          width: 30px;
+          height: 25px;
+          margin-left: 18px;
+    }
+
+    
+
+  </style>
+</head>
+<body>
+
+  <div class="container mt-2">
+    <h2>{{database}}, objecto: {{objectString}}</h2>
+    <p>explore los datos de la base de datos</p>            
+    
+    {% set ns = namespace(hasObject=False) %}
+
+    {% for key in (data[(data.keys() | list)[0]]) %}
+      {% if (data[(data.keys() | list)[0]][key] is iterable and (data[(data.keys() | list)[0]][key] is not string and data[(data.keys() | list)[0]][key] is not mapping)) %}
+        
+        {% set ns.hasObject = True%}
+
+      {% endif %}
+
+    {% endfor %}
+
+    <table class="table table-bordered table-light">
+      <thead>
+        <tr id="r1">
+          {% if ns.hasObject == True %}
+            <th width="50px">Expandir</th>
+          {% endif %}
+          {% set ns = namespace(hasObject=False) %}
+
+          {% for key in (data[(data.keys() | list)[0]]) %}
+            {% if not (data[(data.keys() | list)[0]][key] is iterable and (data[(data.keys() | list)[0]][key] is not string and data[(data.keys() | list)[0]][key] is not mapping)) %}
+              <th>{{key}}</th>     
+            {% else %}
+
+              {% set ns.hasObject = True%}
+
+            {% endif %}
+
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for key in data %}
+          <tr class="parent" id="p{{key}}">
+            {% if ns.hasObject == True %}
+              <td><img src="{{url_for('static', filename='expand_arrow.png') }}"></td>
+            {% endif %}
+            
+            {%for key2 in data[key]%}
+              {% if not (data[key][key2] is iterable and (data[key][key2] is not string and data[key][key2] is not mapping)) %}
+                <td>{{data[key][key2]}}</td>
+              
+              
+              {% endif %}
+
+            {% endfor %}
+          </tr>
+          {% if ns.hasObject == True %}
+            <tr class=" trChild" id="{{key}}">
+            
+              <td colspan="10" class="table-secondary">
+                {%for key2 in data[key]%}
+                  {% if not (data[key][key2] is iterable and (data[key][key2] is not string and data[key][key2] is not mapping)) %}
+                    
+                  {%else%}
+
+                    {% set dataRecursion = data[key][key2]%}
+                    
+
+                    {% macro tableRecursion(dataRecursion, title, key) %} 
+
+                      
+
+                      {% set dataRecursion2 = dataRecursion[0][(dataRecursion[0].keys() | list)[0]]%} 
+                      {% set ns = namespace(hasObjectRecursion=False) %}
+
+
+                      <h3>{{title}}</h3>
+
+                      <table class="table table-bordered table-light">
+
+                        {% set ns = namespace(hasObjectRecursion=False) %}
+
+
+                        {% for rowRecursion in dataRecursion %}
+                              {% for key4 in rowRecursion %}
+                                {% for key5 in rowRecursion[key4] %}
+                                  {% if (rowRecursion[key4][key5] is iterable and (rowRecursion[key4][key5] is not string and rowRecursion[key4][key5] is not mapping)) %}
+                                    {% set ns.hasObjectRecursion = True %}
+                                  {% endif %}
+                                {% endfor %}
+                              {% endfor %}
+                            
+                          {% endfor %}  
+
+                        <thead>
+                          <tr id="r1">
+                            {% if ns.hasObjectRecursion %}
+                              <th width="50px">Expandir</th>
+                            {% endif %}
+                            {%for key3 in dataRecursion2%}
+                              
+                              {% if not (dataRecursion2[key3] is iterable and (dataRecursion2[key3] is not string and dataRecursion2[key3] is not mapping)) %}
+                                
+                                <th>{{key3}}</th>
+                                
+                              {% endif %}
+                            {% endfor %}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for rowRecursion in dataRecursion %}
+
+                            {% set loopRecursion = loop.index %}
+
+                            {% if ns.hasObjectRecursion %}
+                              <tr class="parent" id="{{key}}-{{loopRecursion}}">
+                                <td><img src="{{url_for('static', filename='expand_arrow.png') }}"></td>
+                            {% else %}
+                              <tr>    
+                            {% endif %}
+                              {% for key4 in rowRecursion %}
+                                
+                                {% for key5 in rowRecursion[key4] %}
+                                  
+                                  {% if not (rowRecursion[key4][key5] is iterable and (rowRecursion[key4][key5] is not string and rowRecursion[key4][key5] is not mapping)) %}
+                                  
+                                    <td>{{rowRecursion[key4][key5]}}</td>
+                                  
+                                  {% endif %}
+                                {% endfor %}
+                              {% endfor %}
+                            </tr>
+                            {% if ns.hasObjectRecursion %}
+
+                            <tr class="trChild" id="{{key}}-{{loopRecursion}}-{{loopRecursion}}">
+                              <td colspan="10" class="table-secondary" style="border-bottom-width: 1px;">
+
+                                {% for key4 in rowRecursion %}
+                                  
+                                  {% for key5 in rowRecursion[key4] %}
+                                    
+                                    {% if (rowRecursion[key4][key5] is iterable and (rowRecursion[key4][key5] is not string and rowRecursion[key4][key5] is not mapping)) %}
+                                    
+                                      {{tableRecursion (rowRecursion[key4][key5], key5, key+'-'+(loopRecursion|string)+'-'+(loopRecursion|string)) }}  
+                                    
+                                    {% endif %}
+                                  {% endfor %}
+                                {% endfor %}
+
+                              </td>  
+                            </tr>  
+
+
+
+                            {% endif %}
+                            
+                          {% endfor %}
+
+
+                            
+                          
+                        </tbody>
+                      </table>
+
+                    {%- endmacro %}
+
+                    {{tableRecursion (dataRecursion, key2, key) }}  
+
+                      
+
+                  
+                  {% endif %}
+
+                {% endfor %}
+              </td>
+            </tr>
+          
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+
+<script>
+  $(document).ready( function() {
+    $('tr.trChild').slideUp();
+    $('.parent').click( function(){
+
+        console.log($(this).children(0).children(0)[0])
+
+        var theId = ($(this).attr('id'));
+        
+        if (theId.charAt(0) == 'p'){
+          theId = theId.substring(1)
+          stringToAdd = ''
+        } 
+        else{
+          stringToAdd = '-'+theId.split('-')[theId.split('-').length - 1]
+          //stringToAdd = ''
+        }
+
+        
+
+
+        $('#'+theId+stringToAdd ).slideToggle();
+    });
+  });
+
+</script>
+{% endblock %}

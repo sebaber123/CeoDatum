@@ -6,8 +6,8 @@
   <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
   <style>
     img {
-          width: 150px;
-          height: 150px;
+          width: 100px;
+          height: 100px;
     }
 
     .row{
@@ -48,6 +48,12 @@
       <label>
         <input type="radio" id="pie_chart" name="chart" value="pie" /><img src="{{url_for('static', filename='pie_chart.png') }}">
       </label>
+      <label>
+        <input type="radio" id="dot_chart" name="chart" value="dot" /><img src="{{url_for('static', filename='dot_chart.png') }}">
+      </label>
+      <label>
+        <input type="radio" id="scatter_chart" name="chart" value="scatter" /><img src="{{url_for('static', filename='scatter_chart.png') }}">
+      </label>
        <button onclick="GenerateChart()">Generar grafico</button> 
     </td>
   </tr>
@@ -57,27 +63,84 @@
     <td style="width:10px"></td>
     <td>
       <h3>Columnas del dataset</h3>
-      <div  id="order-columns" class="card overflow-auto list-group" style="height:582.5px; width: 250px; ">
-        {% for column in columns %}
-          <div class="list-group-item">{{column.name}}
-            <input type="hidden" id="{{column.name}}" type="text" name="{{column.name}}" columnType="{{column.type}}" value="{{column.name}}">
-            
+      {% set widthCard = 240 %}
 
-          </div>
-        {% endfor %}  
+      {% set columnPath = database.name %}
+      
+      {% set ns = namespace(cardId=0) %}
+      <div   class="card " style="height:582.5px; width: 250px; "> 
+        <div  name="" id="order-columns" class="card overflow-auto list-group"> 
+
+        {% macro columnsRecursion(databaseStructureRecursion, widthcardRecursion, cardId, parentId, columnPath) %}  
+
+
+
+          {% for key in databaseStructureRecursion %}
+            {% if databaseStructureRecursion[key] is mapping %}
+              </div>
+              {{key}}
+
+              <div name="columns-dataset" id="box{{ns.cardId}}" class="card overflow-auto list-group" style= "width: {{widthcardRecursion}}px">
+              {% set ns.cardId = ns.cardId + 1 %}
+              {{columnsRecursion (databaseStructureRecursion[key], widthcardRecursion-10, ns.cardId, ns.cardId-1, columnPath+'***'+key) }}
+
+              
+            {%else%}
+              <div class="list-group-item" parentBox="box{{parentId}}">{{key}}
+                <input type="hidden" id="{{key}}" type="text" name="{{key}}" columnType="{{databaseStructureRecursion[key]}}"  value="{{columnPath}}***{{key}}">
+                
+
+              </div>
+            {% endif %}
+          {% endfor %}
+
+        {%- endmacro %}
+
+        {% for key in databaseStructure %}
+          {% if databaseStructure[key] is mapping %}
+            
+            </div>
+            {{key}}
+            
+            <div id="box{{ns.cardId}}" name="columns-dataset" class="card overflow-auto list-group" style= "width: {{widthCard}}px">
+              {% set ns.cardId = ns.cardId + 1 %}
+              {{columnsRecursion (databaseStructure[key], widthCard-10, ns.cardId, 0, columnPath+'***'+key) }}
+              
+          {%else%}
+            <div class="list-group-item" parentBox="order-columns">{{key}}
+              <input type="hidden" id="{{key}}" type="text" name="{{key}}" columnType="{{databaseStructure[key]}}"  value="{{columnPath}}***{{key}}">
+              
+
+            </div>
+          {% endif %}
+        {% endfor %}
+        
+
+
       </div>    
+    </div>
+
     </td>
     <td style="width:25px;"></td>
     <td>
         <h3>Eje X</h3>
         <div  id="order-axi-x" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
         </div>
+        <div id="divDispersionX" style="visibility: hidden;">
+          <label style="margin-right: 10px;" for="dispersionX">Dispersion en eje X: </label><output id="dispersionYOutput">0.5</output>
+          <input  id="dispersionX" name="dispersionX" type='range' min='0' max='1' step='.05' value='0.5' oninput="this.previousElementSibling.value = this.value"/>  
+        </div>
+        
         <div style="height:190px ">
           <div style= "" id="container-order-y">
             <h3>Eje Y</h3>
             <div  id="order-axi-y" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
             </div>
           </div>
+        </div>
+        <div id="divDispersionY" style="visibility: hidden;">
+          <label style="margin-right: 10px;" for="dispersionY">Dispersion en eje Y: </label><output id="dispersionYOutput">0.5</output>
+          <input  id="dispersionY" name="dispersionY" type='range' min='0' max='1' step='.05' value='0.5' oninput="this.previousElementSibling.value = this.value"/>
         </div>
         <h3>condiciones</h3>
         <div  id="order-conditions" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
@@ -90,8 +153,8 @@
     </td>
     <td style="width:100px;"></td>
     <td>
-      <div  class="card" style="height:622.5px; width: 900px; ">
-      <iframe id="iframe" name="iframe" src="" height="550" width="850"></iframe>  
+      <div  class="card" style="height:722.5px; width: 1000px; ">
+      <iframe id="iframe" name="iframe" src="" height="600" width="1000"></iframe>  
     </td>  
   </tr>
 </table>
@@ -109,10 +172,38 @@
         <div class="modal-body">
           
           <h3>Columna</h3>
-          {% for column in columns %}
+          {% macro columnsConditionRecursion(databaseStructureRecursion, columnPath) %}  
+
+
+
+            {% for key in databaseStructureRecursion %}
+              {% if databaseStructureRecursion[key] is mapping %}
+                
+                
+                {{key}}
+                {{columnsConditionRecursion (databaseStructureRecursion[key], columnPath+'***'+key) }}
+                  
+              {%else%}
+              <label>
+                  <input type="radio" id="{{key}}ModalId" name="columnModal" value="{{columnPath}}***{{key}}" columnType="{{databaseStructureRecursion[key]}}" required="required"/>{{key}}
+                </label>
+              {% endif %}
+            {% endfor %}
+
+          {%- endmacro %}
+
+          {% for key in databaseStructure %}
+            {% if databaseStructure[key] is mapping %}
+              
+              
+              {{key}}
+              {{columnsConditionRecursion (databaseStructure[key], columnPath+'***'+key) }}
+                
+            {%else%}
             <label>
-              <input type="radio" id="{{column.name}}ModalId" name="columnModal" value="{{column.name}}" columnType="{{column.type}}" required="required"/>{{column.name}}
-            </label>
+                <input type="radio" id="{{key}}ModalId" name="columnModal" value="{{columnPath}}***{{key}}" columnType="{{databaseStructure[key]}}" required="required"/>{{key}}
+              </label>
+            {% endif %}
           {% endfor %}
             
           <h3>accion</h3>
@@ -165,6 +256,10 @@
 
   //when the page loads it puts the input radios without a marked option
   $( document ).ready(function() {
+
+    observer.observe(targetNode, config);  
+
+
     $("input[type=radio][name=chart]").prop('checked', false);
     $("input[type=radio][name=columnModal]").prop('checked', false);
     $("input[type=radio][name=columnCondition]").prop('checked', false);
@@ -179,6 +274,8 @@
       }
     });
 
+
+
   });
 
 
@@ -192,33 +289,38 @@
   $('input:radio[name="chart"]').change(function(){
     
     if($(this).val() == 'bar' || $(this).val() == 'line' || $(this).val() == 'pie'  ){
-      
-      // Start observing the target node for configured mutations
-      observer.observe(targetNode, config);  
 
       //hide the "Eje y" Box 
       $("#container-order-y").css("display", "none"); 
-      
+      $("#divDispersionX").css("visibility", "visible")
 
     } else {
-
-      //disconnect the observer
-      observer.disconnect();
 
       //show the "Eje y" Box
       $("#container-order-y").css("display", "contents"); 
 
     }
 
+    if ($(this).val() == 'scatter'){
+      $("#divDispersionX").css("visibility", "visible");
+      $("#divDispersionY").css("visibility", "visible");
+    }else{
+      $("#divDispersionX").css("visibility", "hidden");
+      $("#divDispersionY").css("visibility", "hidden");
+    }
+
+
     //clear the "Eje X" and "Eje y" Box and put the columns in the "Columnas del dataset" Box
     $('#order-axi-x .list-group-item').each(function(index){
       var column = $(this).clone();
-      $('#order-columns').append(column);
+      var parentBox = $(this).attr('parentBox');
+      $('#'+parentBox).append(column);
       $(this).remove();
     });
     $('#order-axi-y .list-group-item').each(function(index){
       var column = $(this).clone();
-      $('#order-columns').append(column);
+      var parentBox = $(this).attr('parentBox');
+      $('#'+parentBox).append(column);
       $(this).remove();
     });
 
@@ -243,7 +345,7 @@
       src = src + "graphBar/{{database.name}}&";
 
       //add the axi x parameter
-      src = src + $('#order-axi-x').children(0).children(0).prop('name');
+      src = src + $('#order-axi-x').children(0).children(0).prop('value');
 
 
     } else {
@@ -255,7 +357,7 @@
         src = "/graphLine/{{database.name}}&";
 
         //add the axi x parameter
-        src = src + $('#order-axi-x').children(0).children(0).prop('name');
+        src = src + $('#order-axi-x').children(0).children(0).prop('value');
       }
       else{
 
@@ -266,10 +368,10 @@
           src = "/dataTable/{{database.name}}&";
 
           //add the axi x parameter
-          src = src + $('#order-axi-x').children(0).children(0).prop('name') + "&";
+          src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
           
           //add the axi y parameter
-          src = src + $('#order-axi-y').children(0).children(0).prop('name');
+          src = src + $('#order-axi-y').children(0).children(0).prop('value');
         }
         else{
 
@@ -280,7 +382,40 @@
             src = "/pieChart/{{database.name}}&"
 
             //add the axi x parameter
-            src = src + $('#order-axi-x').children(0).children(0).prop('name');
+            src = src + $('#order-axi-x').children(0).children(0).prop('value');
+          }
+
+          else{
+            
+            if (selection == 'dot'){
+
+              //add the start of the url and the database parameter
+              src = "/dotChart/{{database.name}}&";
+
+              //add the axi x parameter
+              src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+              
+              //add the axi y parameter
+              src = src + $('#order-axi-y').children(0).children(0).prop('value');
+
+            }
+
+            else{
+              if (selection = 'scatter') {
+                //add the start of the url and the database parameter
+                src = "/scatterChart/{{database.name}}&";
+
+                //add the axi x parameter
+                src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+                
+                //add the axi y parameter
+                src = src + $('#order-axi-y').children(0).children(0).prop('value')+ "&";
+
+                src = src + $('#dispersionX').val().toString() + "&";
+
+                src = src + $('#dispersionY').val().toString();
+              }
+            }
           }
         }
       }
@@ -298,11 +433,11 @@
         //loop through the conditions
         $('[name=condition]').each(function(index) {
 
-          //add the condition and the separator "***"
-          stringConditions = stringConditions + $(this).children(0)[1].value + '***';
+          //add the condition and the separator "$$$"
+          stringConditions = stringConditions + $(this).children(0)[1].value + '%%%';
         });
 
-        //delete the las separator "***"
+        //delete the las separator "$$$"
         src = src + '&' + (stringConditions.slice(0, -3));
 
         
@@ -312,8 +447,10 @@
     iframe.src = src
 
     //reload the iframe
-    iframe.contentWindow.location.reload(true);
+    //iframe.contentWindow.location.reload(true);
     document.getElementById('iframe').src = document.getElementById('iframe').src;
+    
+    //window.frames['some_frame_id'].location.href.reload()
   }
 
 
@@ -399,7 +536,7 @@
 
           //load the HTML in the "valor" box
           for (var i =  0; i < data.result.length; i++) {
-            $( "#optionContainer" ).append("<input class=\"form-check-input\" type=\"checkbox\" value=\"" + data.result[i][1] + "\">" + "<label class=\"form-check-label\" for=\"flexCheckDefault\">"  + data.result[i][1] + "</label><br/>");  
+            $( "#optionContainer" ).append("<input class=\"form-check-input\" type=\"checkbox\" value=\"" + data.result[i][0] + "\">" + "<label class=\"form-check-label\" for=\"flexCheckDefault\">"  + data.result[i][0] + "</label><br/>");  
           }
         });
       return false;
@@ -522,6 +659,11 @@
       //the 'accion' selected is 'dentro del rango'
       else {
 
+        var colValue = column.split('***');
+        colValue = colValue[(colValue.length)-1];
+
+        conditionToShow = condition + colValue + " >= "+ "\'" +$('#inputStart').val() + "\' and " + colValue + " <= \'" +$('#inputEnd').val() + "\'";  
+
         //add the 'columna' and the '>=' to the condition
         condition = condition + column + " >= ";
 
@@ -539,12 +681,22 @@
     //append the html of the conditions to the 
     for (condition of conditions){
       var divId = 'cond'+cant.toString();
-      $( "#order-conditions" ).append(
-          "<div class=\"list-group-item\" id=\""+divId+"\" name=\"condition\">"+
-            condition+
-            " <button onclick=\"deleteCondition(\'"+divId+"\')\" style=\"float:right;\"><img style=\"width: 20px; height: 20px;\" src=\"{{url_for('static', filename='trash.svg') }}\"/></button>"+
-            " <input type=\"hidden\" id=\""+condition+"\" type=\"text\" name=\""+condition+"\" value=\""+condition+"\">"+
-          "</div>");  
+      if ($('input:radio[name="columnCondition"]:checked').val() == 'between') {
+        $( "#order-conditions" ).append(
+            "<div class=\"list-group-item\" id=\""+divId+"\" name=\"condition\">"+
+              conditionToShow+
+              " <button onclick=\"deleteCondition(\'"+divId+"\')\" style=\"float:right;\"><img style=\"width: 20px; height: 20px;\" src=\"{{url_for('static', filename='trash.svg') }}\"/></button>"+
+              " <input type=\"hidden\" id=\""+condition+"\" type=\"text\" name=\""+condition+"\" value=\""+condition+"\">"+
+            "</div>");  
+      } 
+      else {
+        $( "#order-conditions" ).append(
+            "<div class=\"list-group-item\" id=\""+divId+"\" name=\"condition\">"+
+              condition.split('***').pop()+
+              " <button onclick=\"deleteCondition(\'"+divId+"\')\" style=\"float:right;\"><img style=\"width: 20px; height: 20px;\" src=\"{{url_for('static', filename='trash.svg') }}\"/></button>"+
+              " <input type=\"hidden\" id=\""+condition+"\" type=\"text\" name=\""+condition+"\" value=\""+condition+"\">"+
+            "</div>"); 
+      }
       cant = cant + 1;
     }  
   }
@@ -577,7 +729,8 @@
                 $("#order-axi-x > .list-group-item").each(function(index){
                   if(index > 0 && ! $(this).prop('draggable')){
                     var column = $(this).clone();
-                    $('#order-columns').append(column);
+                    var parentBox = $(this).attr('parentBox');
+                    $('#'+parentBox).append(column);
                     $(this).remove();
                   }
                 });
@@ -593,11 +746,31 @@
 
 <script src="{{url_for('static', filename='/scripts/Sortable.js') }}"></script>
 <script>
+
+  $('[name="columns-dataset"]').each(function(index) {
+
+      new Sortable(document.getElementById('box'+index.toString()),{
+        group: 'shared',
+        animation: 150,
+        ghostClass: 'bg-info'
+      })
+    });
+
   new Sortable(document.getElementById('order-columns'),{
     group: 'shared',
     animation: 150,
     ghostClass: 'bg-info'
   })
+
+  /*for (var i = 0; i < {{ns.cardId}}; i++) {
+    new Sortable('column'+i.toString(), {
+      group: 'nested',
+      filter: '.filtered',
+      animation: 150,
+      fallbackOnBody: true,
+      swapThreshold: 0.65
+    });
+  }*/
   new Sortable(document.getElementById('order-axi-x'),{
     group: 'shared',
     animation: 150,

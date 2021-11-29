@@ -375,133 +375,129 @@ def JSONRecursion(database, data, firstRow, sqlContext, spark, idTable, pos, pos
 def configurateUploadCSV():
 	if request.method == 'POST':
 
-		if filename.rsplit('.', 1)[1] == 'csv':
+		
 
-			filename = request.form['filename']
+		filename = request.form['filename']
 
-			database = request.form['database']
+		database = request.form['database']
 
-			Home.create_database(database)
+		Home.create_database(database)
 
-			databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database)
+		databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database)
 
-			spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
-			sqlContext = SQLContext(spark)
+		spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
+		sqlContext = SQLContext(spark)
 
-			data = sqlContext.read.format("csv").option("encoding", "UTF-8").load(os.path.join(UPLOAD_FOLDER,filename))
+		data = sqlContext.read.format("csv").option("encoding", "UTF-8").load(os.path.join(UPLOAD_FOLDER,filename))
+
+		w = Window.orderBy('id2')
+		data = data.withColumn("id2", F.monotonically_increasing_id()).withColumn("id", F.row_number().over(w))    
+
+		data.registerTempTable('factTable')
+
+		factTableInCeoDatum = Home.add_fact_table_ceoDatum(database, databaseInCeoDatum['id'])		
+
+		loop = 1
+			
+		#creationColumnsFactTable = ''
+
+		#selectPySparkFactTableQuery = ''
+
+		#innerJoinsPysparkFactTableQuery = ''
+
+		while request.form.get('nameColumn'+ str(loop)):
+
+			Home.create_table_recursion('object-'+database+'-'+request.form.get('nameColumn'+ str(loop)), database, request.form.get('select'+ str(loop)), request.form.get('nameColumn'+ str(loop)) )
+
+			tableInCeoDatum = Home.add_columns_to_ceoDatum(request.form.get('nameColumn'+ str(loop)), factTableInCeoDatum['id'], request.form.get('select'+ str(loop)))
+
+			#creationColumnsFactTable = creationColumnsFactTable + request.form.get('nameColumn'+ str(loop))+" int NOT NULL, "
+
+			table = data.select("_c"+str(loop-1)).withColumnRenamed(('_c'+str(loop-1)),request.form.get('nameColumn'+ str(loop))).distinct()
+
+			if request.form.get('select'+ str(loop)) == 'date':
+
+				table =  table.select(to_date(col(request.form.get('nameColumn'+ str(loop))),"dd/MM/yyyy").alias(request.form.get('nameColumn'+ str(loop))))
+
+			else:	
+
+				table = table.withColumn(request.form.get('nameColumn'+ str(loop)), table[request.form.get('nameColumn'+ str(loop))].cast(dictionaryTypes[request.form.get('select'+ str(loop))]))
+
+			#selectPySparkFactTableQuery = selectPySparkFactTableQuery + 't'+str(loop)+'.id as ' + request.form.get('nameColumn'+ str(loop)) + ', '
+
+			#innerJoinsPysparkFactTableQuery = innerJoinsPysparkFactTableQuery + 'INNER JOIN t'+str(loop)+' as t'+str(loop)+' ON factTable._c'+str(loop-1)+' = t'+str(loop)+'.'+request.form.get('nameColumn'+ str(loop)) + ' '
+
+			table.write.format("jdbc")\
+			    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
+			    .option("dbtable", ("\"object-"+database+"-"+request.form.get('nameColumn'+ str(loop))+"\"")) \
+			    .option("user", "sebaber12") \
+			    .option("password", "sebas") \
+			    .option("driver", "org.postgresql.Driver") \
+			    .mode("append")\
+			    .save()
+
+			if request.form.get('select'+ str(loop)) == 'date':
+				table = data.select("_c"+str(loop-1)).withColumnRenamed(('_c'+str(loop-1)),request.form.get('nameColumn'+ str(loop))).distinct()
+				    
 
 			w = Window.orderBy('id2')
-			data = data.withColumn("id2", F.monotonically_increasing_id()).withColumn("id", F.row_number().over(w))    
+			table = table.withColumn("id2", F.monotonically_increasing_id()).withColumn("id", F.row_number().over(w))    
 
-			data.registerTempTable('factTable')
+			table.registerTempTable("t"+str(loop))
 
-			factTableInCeoDatum = Home.add_fact_table_ceoDatum(database, databaseInCeoDatum['id'])		
+			Home.create_relation_table(database, request.form.get('nameColumn'+ str(loop)))
 
-			loop = 1
-				
-			#creationColumnsFactTable = ''
+			relationTable = sqlContext.sql('SELECT factTable.id as id_'+database+', t'+ str(loop) +'.id as id_'+request.form.get('nameColumn'+ str(loop))+' FROM factTable as factTable ' + 'INNER JOIN t'+str(loop)+' as t'+str(loop)+' ON factTable._c'+str(loop-1)+' = t'+str(loop)+'.'+request.form.get('nameColumn'+ str(loop)) )
 
-			#selectPySparkFactTableQuery = ''
+			relationTable.write.format("jdbc")\
+				.option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
+				.option("dbtable", ("\""+database+"-"+request.form.get('nameColumn'+ str(loop))+"\"")) \
+				.option("user", "sebaber12") \
+		    	.option("password", "sebas") \
+		    	.option("driver", "org.postgresql.Driver") \
+		    	.mode("append")\
+		    	.save()
 
-			#innerJoinsPysparkFactTableQuery = ''
+			loop = loop + 1
 
-			while request.form.get('nameColumn'+ str(loop)):
+		#fact_table
+		Home.create_fact_table(database)	
 
-				Home.create_table(request.form.get('nameColumn'+ str(loop)), database, request.form.get('select'+ str(loop)) )
+		factTable = sqlContext.sql(' SELECT factTable.id FROM factTable as factTable ')
 
-				tableInCeoDatum = Home.add_columns_to_ceoDatum(request.form.get('nameColumn'+ str(loop)), factTableInCeoDatum['id'], request.form.get('select'+ str(loop)))
-
-				#creationColumnsFactTable = creationColumnsFactTable + request.form.get('nameColumn'+ str(loop))+" int NOT NULL, "
-
-				table = data.select("_c"+str(loop-1)).withColumnRenamed(('_c'+str(loop-1)),request.form.get('nameColumn'+ str(loop))).distinct()
-
-				if request.form.get('select'+ str(loop)) == 'date':
-
-					table =  table.select(to_date(col(request.form.get('nameColumn'+ str(loop))),"dd/MM/yyyy").alias(request.form.get('nameColumn'+ str(loop))))
-
-				else:	
-
-					table = table.withColumn(request.form.get('nameColumn'+ str(loop)), table[request.form.get('nameColumn'+ str(loop))].cast(dictionaryTypes[request.form.get('select'+ str(loop))]))
-
-				#selectPySparkFactTableQuery = selectPySparkFactTableQuery + 't'+str(loop)+'.id as ' + request.form.get('nameColumn'+ str(loop)) + ', '
-
-				#innerJoinsPysparkFactTableQuery = innerJoinsPysparkFactTableQuery + 'INNER JOIN t'+str(loop)+' as t'+str(loop)+' ON factTable._c'+str(loop-1)+' = t'+str(loop)+'.'+request.form.get('nameColumn'+ str(loop)) + ' '
-
-				table.write.format("jdbc")\
-				    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
-				    .option("dbtable", ("\""+request.form.get('nameColumn'+ str(loop))+"\"")) \
-				    .option("user", "sebaber12") \
-				    .option("password", "sebas") \
-				    .option("driver", "org.postgresql.Driver") \
-				    .mode("append")\
-				    .save()
-
-				if request.form.get('select'+ str(loop)) == 'date':
-					table = data.select("_c"+str(loop-1)).withColumnRenamed(('_c'+str(loop-1)),request.form.get('nameColumn'+ str(loop))).distinct()
-					    
-
-				w = Window.orderBy('id2')
-				table = table.withColumn("id2", F.monotonically_increasing_id()).withColumn("id", F.row_number().over(w))    
-
-				table.registerTempTable("t"+str(loop))
-
-				Home.create_relation_table(database, request.form.get('nameColumn'+ str(loop)))
-
-				relationTable = sqlContext.sql('SELECT factTable.id as id_'+database+', t'+ str(loop) +'.id as id_'+request.form.get('nameColumn'+ str(loop))+' FROM factTable as factTable ' + 'INNER JOIN t'+str(loop)+' as t'+str(loop)+' ON factTable._c'+str(loop-1)+' = t'+str(loop)+'.'+request.form.get('nameColumn'+ str(loop)) )
-
-				relationTable.write.format("jdbc")\
-					.option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
-					.option("dbtable", ("\""+database+"-"+request.form.get('nameColumn'+ str(loop))+"\"")) \
-					.option("user", "sebaber12") \
-			    	.option("password", "sebas") \
-			    	.option("driver", "org.postgresql.Driver") \
-			    	.mode("append")\
-			    	.save()
-
-				loop = loop + 1
-
-			#fact_table
-			Home.create_fact_table(database)	
-
-			factTable = sqlContext.sql(' SELECT factTable.id FROM factTable as factTable ')
-
-			factTable.write.format("jdbc")\
-				    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
-				    .option("dbtable", ("\""+database+"\"")) \
-				    .option("user", "sebaber12") \
-				    .option("password", "sebas") \
-				    .option("driver", "org.postgresql.Driver") \
-				    .mode("append")\
-				    .save()
+		factTable.write.format("jdbc")\
+			    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
+			    .option("dbtable", ("\""+database+"\"")) \
+			    .option("user", "sebaber12") \
+			    .option("password", "sebas") \
+			    .option("driver", "org.postgresql.Driver") \
+			    .mode("append")\
+			    .save()
 
 
-			"""creationColumnsFactTable = creationColumnsFactTable[:-2]	
+		"""creationColumnsFactTable = creationColumnsFactTable[:-2]	
 
-			selectPySparkFactTableQuery = selectPySparkFactTableQuery [:-2]
+		selectPySparkFactTableQuery = selectPySparkFactTableQuery [:-2]
 
-			#fact_table
-			Home.create_fact_table(database, creationColumnsFactTable)	
+		#fact_table
+		Home.create_fact_table(database, creationColumnsFactTable)	
 
-			factTable = sqlContext.sql(' SELECT ' + selectPySparkFactTableQuery + ' FROM factTable as factTable ' + innerJoinsPysparkFactTableQuery)
+		factTable = sqlContext.sql(' SELECT ' + selectPySparkFactTableQuery + ' FROM factTable as factTable ' + innerJoinsPysparkFactTableQuery)
 
-			factTable.write.format("jdbc")\
-				    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
-				    .option("dbtable", ("\""+database+"\"")) \
-				    .option("user", "sebaber12") \
-				    .option("password", "sebas") \
-				    .option("driver", "org.postgresql.Driver") \
-				    .mode("append")\
-				    .save()
+		factTable.write.format("jdbc")\
+			    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
+			    .option("dbtable", ("\""+database+"\"")) \
+			    .option("user", "sebaber12") \
+			    .option("password", "sebas") \
+			    .option("driver", "org.postgresql.Driver") \
+			    .mode("append")\
+			    .save()
 
-			"""
+		"""
 
-			return '5'
+		return '5'
 
-		else:	
-
-
-
-			return '4'
+		
 
 	else:
 
