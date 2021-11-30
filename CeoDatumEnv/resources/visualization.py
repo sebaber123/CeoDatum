@@ -135,7 +135,7 @@ def queryConstruction(database, rowName, column, condition):
     pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
 
     groupByString = 't'+str(pos)+'.'+valueColumn
-    selectString = groupByString + ',  COUNT(t'+str(pos)+'.id) as count'
+    selectString = groupByString + ',  COUNT(DISTINCT t'+str(pos)+'.id) as count'
 
     return {'groupByString':groupByString, 'selectString':selectString, 'fromOfQueryString':fromOfQueryString, 'pos':pos, 'valueColumn':valueColumn, 'whereString':conditionQueryString, 'dictPositionsInQuery':dictPositionsInQuery, 'columnToGroupBy':columnToGroupBy}
 
@@ -156,37 +156,10 @@ def conditionsToString(database, condition, dictPositionsInQuery):
     #string of negative conditions
     queryConditionNegative = '' 
 
-    """#axi_x name
-    axie_x = ''
-
-    #axi_y name
-    axie_y = ''
-
-    #position to add to the tX (rename of the inner joins in the query). only 1 if only the axi_x is defined
-    positionToAdd = 1
-
-    if type(axis) != str:
-    #if len(axis)>1:
-        
-        #get the values of the parameters
-        axie_x = axis[0]
-        axie_y = axis[1]
-
-        #position to add to the tX (rename of the inner joins in the query). add 2 if only the axi_x and axi_y is defined
-        positionToAdd = 2
-
-    else:
-        
-        #get the value of the parameter
-        axie_x = axis
-
-        positionToAdd = len(axis.split(sep='***'))   """
-
-
     #check if there is a condition to transform
     if condition != None:
         
-        #loop through the conditions. The conditions in the string are divided by '***'
+        #loop through the conditions. The conditions in the string are divided by '%%%'
         for cond in condition.split(sep='%%%'):
             
             #string condition 
@@ -203,32 +176,6 @@ def conditionsToString(database, condition, dictPositionsInQuery):
                     
                     #if the condition is 'mayor que' or 'menor que' delete the white space and the '<' or '>'
                     columnCondition = columnCondition[:-2]
- 
-                """
-                #check if the column is in the array
-                if columnCondition in columnsToInner:
-
-                    #if the column is in the array add the index to the position to get the tX (rename of the inner joins in the query)
-                    pos = columnsToInner.index(columnCondition) + positionToAdd
-                else:
-
-                    #check if the column is equal to the axi_x
-                    if columnCondition == axie_x:
-
-                        #if the column is equal to the axi_x the tX is 0
-                        pos = 0
-                    else:
-
-                        #check if the column is equal to the axi_y
-                        if columnCondition == axie_y:
-                            
-                            #if the column is equal to the axi_y the tX is 0
-                            pos = 1    
-                        
-                        else:                                
-
-                            #else get the length and add it to the position to get the tX (rename of the inner joins in the query)
-                            pos = len(columnsToInner) + positionToAdd"""
 
                 columnsToAddToDict = columnCondition.split(sep='***')
                 columnsToAddToDict.append('object')
@@ -264,31 +211,7 @@ def conditionsToString(database, condition, dictPositionsInQuery):
                 #get the name of the column (first part of the condition)
                 columnCondition = cond.split(sep='!=')[0].strip()
 
-                """
-                #check if the column is in the array
-                if columnCondition in columnsToInner:
-
-                    #if the column is in the array add the index to the position to get the tX (rename of the inner joins in the query)
-                    pos = columnsToInner.index(columnCondition) + positionToAdd
-                else:
-
-                    #check if the column is equal to the axi_x
-                    if columnCondition == axie_x:
-
-                        #if the column is equal to the axi_x the tX is 0
-                        pos = 0
-                    else:
-
-                        #check if the column is equal to the axi_y
-                        if columnCondition == axie_y:
-                            
-                            #if the column is equal to the axi_y the tX is 0
-                            pos = 1    
-                        
-                        else:                                
-
-                            #else get the length and add it to the position to get the tX (rename of the inner joins in the query)
-                            pos = len(columnsToInner) + positionToAdd""" 
+                
 
                 columnsToAddToDict = columnCondition.split(sep='***')
                 columnsToAddToDict.append('object')
@@ -305,22 +228,6 @@ def conditionsToString(database, condition, dictPositionsInQuery):
 
                 #Add the condition
                 queryConditionNegative = queryConditionNegative + condition
-
-
-            """if columnCondition != axie_x and columnCondition != axie_y :
-                if columnCondition not in columnsToInner:
-                    columnsToInner.append(columnCondition)"""    
-           
-
-        """#loop through the columnsToInner
-        for column in columnsToInner:
-
-            #
-            innerColumnsCondition = (innerColumnsCondition + " inner join \""+database+"-"+column + "\" as "+
-                "t"+str(columnsToInner.index(column)+positionToAdd)+"_"+str(columnsToInner.index(column)+positionToAdd)+
-                " on t.id = t"+str(columnsToInner.index(column)+positionToAdd)+"_"+str(columnsToInner.index(column)+positionToAdd)+".id_" +database +
-                " INNER JOIN \""+column+"\" as t"+str(columnsToInner.index(column)+positionToAdd)+" "+
-                "on t"+str(columnsToInner.index(column)+positionToAdd)+"_"+str(columnsToInner.index(column)+positionToAdd)+".id_" +column + "  = t"+str(columnsToInner.index(column)+positionToAdd)+".id ")"""
 
         #add the negative part of conditions
         #if there is no negative conditions just add a '(False)'
@@ -477,7 +384,7 @@ def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
     source = ColumnDataSource(data=dictionary)
 
     #generate the graph
-    bar = figure(x_range= dictionary['x'], title='bar plot', x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
+    bar = figure(x_range= dictionary['x'], title='bar plot', x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
     bar.vbar(x='x', top='y', source=source, color='blue', width=0.5)
     bar.y_range.start=0
     
@@ -576,7 +483,7 @@ def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStr
     source = ColumnDataSource(data=dictionary)
 
     #generate the graph
-    p = figure(title="Title", x_axis_type="datetime", x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
+    p = figure(title="Title", x_axis_type="datetime", x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
     p.line(x='x', y='y', source=source, line_width=2)
     p.circle(x='x', y='y', source=source, fill_color="white", size=8)
 
@@ -707,7 +614,7 @@ def data_table(database, rowName, column, condition):
         dataTableColumns.append(TableColumn(field=x, title=x))
 
     #create the data table
-    dataTable = DataTable(source=source, columns=dataTableColumns, index_position=None, width=900, height=570)
+    dataTable = DataTable(source=source, columns=dataTableColumns, index_position=None, width=900, height=675)
 
     #method that return the script and div that is needed to create the graph in the page 
     script, div = components(dataTable)
@@ -764,7 +671,7 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
 
         
     #generate the graph
-    p = figure(plot_height=525, plot_width=900, title="Pie Chart", x_range=(-0.5, 1.0), tools="tap, pan, wheel_zoom, save")
+    p = figure(plot_height=675, plot_width=900, title="Pie Chart", x_range=(-0.5, 1.0), tools="tap, pan, wheel_zoom, save")
     p.wedge(x=0, y=1, radius=0.4,
         start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
         line_color="white", fill_color='color', legend_field=rowName, source=data)
@@ -919,7 +826,7 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, title="Title", plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
+        p = figure(x_range=xCategorical, title="Title", plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
         p.y_range.start=-1
         p.y_range.end= maxCount+3
 
@@ -964,7 +871,7 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
+        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
         #p.circle(x='x', y='y', source=source, fill_color="blue", radius='radio')
         p.circle(x='x', y='y', source=source, fill_color="blue", size='size')
@@ -1075,7 +982,7 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, y_range=['unico valor'], title="Title", plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
+        p = figure(x_range=xCategorical, y_range=['unico valor'], title="Title", plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
         p.circle(x=jitter('x',width=float(dispersionX), range = p.x_range), y=jitter('y',width=float(dispersionY), range = p.y_range), source=source, fill_color="blue", size=30, alpha= 0.3)
 
@@ -1112,7 +1019,7 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
         #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
         source = ColumnDataSource(data=dictionary)
         
-        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=575, plot_width=900, tools="tap, pan, wheel_zoom, save")
+        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
         p.circle(x=jitter('x',width=float(dispersionX), range = p.x_range), y=jitter('y',width=float(dispersionY), range = p.y_range), source=source, fill_color="blue", size=30, alpha= 0.3)
 
@@ -1325,7 +1232,6 @@ def inspect_rows(databaseId, objectString, condition):
 
             columnsToAddToDict = columnCondition.split(sep='***')
             columnsToAddToDict.append('object')
-
             
             aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, pos)   
 
@@ -1347,8 +1253,6 @@ def inspect_rows(databaseId, objectString, condition):
 
         selectString = 't'+str(positionInQuery(objectString.split(sep='***'), dictPositionsInQuery))+'.id_'+objectString.split(sep='***')[len(objectString.split(sep='***'))-1]+', ' + select[:-1]
 
-    
-
     dataQuery = Visualization.get_data_with_parameters_for_inspection(database['name'], selectString, fromOfQueryString, conditionQueryString)
 
     data = {}
@@ -1367,11 +1271,9 @@ def inspect_rows(databaseId, objectString, condition):
                 
                 if isinstance(databaseStructure[x], dict):
 
-                    
                     aux = recursionDataToReturn(rowPosition, row, databaseStructure[x], data[str(row[0])], x)
 
                     rowPosition = aux[0]
-
 
                 else:
                     data[str(row[0])][x] = row[rowPosition]
@@ -1384,11 +1286,9 @@ def inspect_rows(databaseId, objectString, condition):
                 
                 if isinstance(databaseStructure[x], dict):
 
-                    
                     aux = recursionDataToReturn(rowPosition, row, databaseStructure[x], data[str(row[0])], x)
 
                     rowPosition = aux[0]
-
 
                 else:
 
@@ -1427,7 +1327,6 @@ def recursionDataToReturn(rowPosition, row, databaseStructure, data, column):
 
                     rowPosition = aux[0]
 
-
                 else:
                     columnToAdd[str(row[rowPositionId])][x] = row[rowPosition]
 
@@ -1435,23 +1334,17 @@ def recursionDataToReturn(rowPosition, row, databaseStructure, data, column):
     
     else:
 
-
         for x in databaseStructure.keys():
                 
             if isinstance(databaseStructure[x], dict):
-
-                
+             
                 aux = recursionDataToReturn(rowPosition, row, databaseStructure[x], columnToAdd[str(row[rowPositionId])], x)
 
                 rowPosition = aux[0]
 
-
             else:
 
                 rowPosition = rowPosition + 1         
-        
-
-
 
     data[column].append(columnToAdd)                
 
