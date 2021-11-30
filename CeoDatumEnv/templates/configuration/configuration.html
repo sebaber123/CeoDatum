@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block header %}
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/configuration.css') }}">
+{% endblock%}
+{% block title %}Datasets{% endblock %}
+{% block content %}
+	<div class="container">
+		<hr>
+		<h3>Dataset de institutos</h3>
+		<div class="d-blolck">
+			<label>ARCHIVO ACTUAL + {{data.establishment_filename}}</label>
+		</div>
+		<form method="POST" enctype=multipart/form-data action="/update_establishment_file">
+		  <div class="form-group">
+		    <label for="exampleInputEmail1">Archivo nuevo</label>
+			<input type="file" name="file">
+		  </div>
+		  <button type="submit" class="btn btn-primary mt-1">Submit</button>
+		</form>
+		<hr>
+		<input type="text" id="myInput" onkeyup="filtrar();" placeholder="Buscar por nombre">
+		<table class="table" id="myTable">
+		  <thead>
+		  	<tr>
+		  		<th>Nombre</th>
+		  		<th>Email</th>
+		  		<th>Rol</th>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		  	{% for user in users %}
+		    <tr>
+		      <td>{{user.name + " " + user.surname}}</td>
+		      <td>{{user.email}}</td>
+		      <td name="usuario{{user.id}}">
+		      	<select id="select{{user.id}}" onchange="cambiarRol({{user.id}});">
+		      		<option value="1" {% if (user.role_id == 1) %}selected{% endif %}>Admin</option>
+		      		<option value="2" {% if (user.role_id == 2) %}selected{% endif %}>Profesor</option>
+		      		<option value="3" {% if (user.role_id == 3) %}selected{% endif %}>Alumno</option>
+		      	</select>
+		      </td>
+		    </tr>
+		    {% endfor %}
+		  </tbody>
+		</table>
+		<script>
+			function cambiarRol(user){
+				let role_id = $('#select' + user).val();
+				$.getJSON($SCRIPT_ROOT + "cambiar_rol/" + user + "/" + role_id  , {}, function(data) { return true
+				});
+			}
+
+			function filtrar() {
+			  // Declare variables
+			  var input, filter, table, tr, td, i, txtValue;
+			  input = document.getElementById("myInput");
+			  filter = input.value.toUpperCase();
+			  table = document.getElementById("myTable");
+			  tr = table.getElementsByTagName("tr");
+
+			  // Loop through all table rows, and hide those who don't match the search query
+			  for (i = 0; i < tr.length; i++) {
+			    td = tr[i].getElementsByTagName("td")[0];
+			    if (td) {
+			      txtValue = td.textContent || td.innerText;
+			      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+			        tr[i].style.display = "";
+			      } else {
+			        tr[i].style.display = "none";
+			      }
+			    }
+			  }
+			}
+		</script>
+	
+{% endblock %}

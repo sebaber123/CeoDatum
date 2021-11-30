@@ -22,7 +22,10 @@ dictionaryTypes = { 'int' : 'integer',
 					 }
 
 def dragAndDrop():
-	return render_template('home/dragAndDrop.html')
+	if session['username']:
+		return render_template('home/dragAndDrop.html')
+	else:
+		return redirect(url_for('loginForm'))
 
 def allowed_file(filename):
     return '.' in filename and \

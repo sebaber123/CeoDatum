@@ -10,7 +10,9 @@ from bokeh.models import ColumnDataSource, Div, Select, Slider, TextInput
 from bokeh.io import curdoc
 from bokeh.resources import INLINE
 from bokeh.embed import components
-
+from flask_session import Session
+from models.establishment import Establishment
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 def index():
@@ -65,8 +67,12 @@ def embebido():
 def login_form():
     return render_template('user/login_form.html')
 
+def show_register():
+    provincias = Establishment.select_provinces()
+    return render_template('user/register_form.html', provincias=provincias)
+
 def register_form():
-    return render_template('user/register_form.html')
+    return redirect('/showRegister')
 
 def forgotPassword():
     return render_template('user/forgot_password_form.html')
@@ -75,22 +81,40 @@ def login():
     if request.form['submit'] == 'login':
         name = request.form['name']
         password = request.form['password']
-        result = User.login(name, password)
-        if result:
+        result = User.login(name, name)
+        if result and check_password_hash(result['password'], password):
+            session['username'] = result['username']
+            session['name'] = result['name']
+            session['email'] = result['email']
+            session['id'] = result['id']
+            session['role'] = result['rolename']
             return index()
         else:
             return render_template('user/login_form.html', error="Usuario y/o contraseña incorrectos")
     elif request.form['submit'] == 'register':
         return register_form()
 
+def logout():
+    session.clear()
+    return redirect(url_for("loginForm"))
+
 def register():
-    name = request.form['name']
-    password = request.form['password'] 
     email = request.form['email']
     if User.emailExist(email):
         return render_template('user/register_form.html', emailExist="El email ya está en uso")
     else:
-        User.register(name, password, email)
+        username = request.form['username']
+        password = request.form['password']
+        province = request.form['provinceFormControlSelect']
+        city = request.form['cityFormControlSelect']
+        institute = request.form['instituteFormControlSelect']
+        name = request.form['name']
+        surname = request.form['surname']
+        birthday = request.form['birthday']
+        if username=="" or password=="" or name=="" or surname=="":
+            return render_template('user/register_form.html', emptyField="Debe completar todos los campos")
+        password = generate_password_hash(password)
+        User.register(username, password, province, city, institute, email, name, surname, birthday)
     return render_template('user/login_form.html', registerSuccess="Registro exitoso!")
 
 
