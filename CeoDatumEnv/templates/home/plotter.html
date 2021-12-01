@@ -63,12 +63,12 @@
     <td style="width:10px"></td>
     <td>
       <h3>Columnas del dataset</h3>
-      {% set widthCard = 240 %}
+      {% set widthCard = 279 %}
 
       {% set columnPath = database.name %}
       
       {% set ns = namespace(cardId=0) %}
-      <div   class="card " style="height:582.5px; width: 250px; "> 
+      <div   class="card " style="height:682.5px; width: 290px; "> 
         <div  name="" id="order-columns" class="card overflow-auto list-group"> 
 
         {% macro columnsRecursion(databaseStructureRecursion, widthcardRecursion, cardId, parentId, columnPath) %}  
@@ -78,16 +78,27 @@
           {% for key in databaseStructureRecursion %}
             {% if databaseStructureRecursion[key] is mapping %}
               </div>
-              {{key}}
+              {% if widthcardRecursion % 2 == 0 %}
+                <div class="card" style= "margin-top: -2px; background-color: #89C2D9; margin-left: 10px">
+              {% else %}
+                <div class="card" style= "margin-top: -2px; background-color: white; margin-left: 10px; margin-right: -1px;">
+              {% endif %}  
+                <h3 style= "margin-left: 10px ;">{{key}}</h3>
 
-              <div name="columns-dataset" id="box{{ns.cardId}}" class="card overflow-auto list-group" style= "width: {{widthcardRecursion}}px">
-              {% set ns.cardId = ns.cardId + 1 %}
-              {{columnsRecursion (databaseStructureRecursion[key], widthcardRecursion-10, ns.cardId, ns.cardId-1, columnPath+'***'+key) }}
+                <div name="columns-dataset" id="box{{ns.cardId}}" class="card overflow-auto list-group" style= "margin-left: 10px ;width: {{widthcardRecursion}}px">
+                {% set ns.cardId = ns.cardId + 1 %}
+                {{columnsRecursion (databaseStructureRecursion[key], widthcardRecursion-11, ns.cardId, ns.cardId-1, columnPath+'***'+key) }}
 
+              </div>
               
             {%else%}
-              <div class="list-group-item" parentBox="box{{parentId}}">{{key}}
-                <input type="hidden" id="{{key}}" type="text" name="{{key}}" columnType="{{databaseStructureRecursion[key]}}"  value="{{columnPath}}***{{key}}">
+              {% if widthcardRecursion % 2 == 0 %}
+                <div id="div{{columnPath}}***{{key}}" class="list-group-item" parentBox="box{{parentId}}" style="background-color: #89C2D9;">{{key}}
+              {% else %}
+                <div id="div{{columnPath}}***{{key}}" class="list-group-item" parentBox="box{{parentId}}" style="background-color: white;">{{key}}
+              {% endif %}  
+              
+                <input type="hidden" id="{{columnPath}}***{{key}}" type="text" name="{{key}}" columnType="{{databaseStructureRecursion[key]}}"  value="{{columnPath}}***{{key}}">
                 
 
               </div>
@@ -100,15 +111,15 @@
           {% if databaseStructure[key] is mapping %}
             
             </div>
-            {{key}}
+            <h3 style= "margin-left: 10px ;">{{key}}</h3>
             
-            <div id="box{{ns.cardId}}" name="columns-dataset" class="card overflow-auto list-group" style= "width: {{widthCard}}px">
+            <div id="box{{ns.cardId}}" name="columns-dataset" class="card overflow-auto list-group" style= "margin-left: 10px ;width: {{widthCard}}px">
               {% set ns.cardId = ns.cardId + 1 %}
-              {{columnsRecursion (databaseStructure[key], widthCard-10, ns.cardId, 0, columnPath+'***'+key) }}
+              {{columnsRecursion (databaseStructure[key], widthCard-11, ns.cardId, 0, columnPath+'***'+key) }}
               
           {%else%}
-            <div class="list-group-item" parentBox="order-columns">{{key}}
-              <input type="hidden" id="{{key}}" type="text" name="{{key}}" columnType="{{databaseStructure[key]}}"  value="{{columnPath}}***{{key}}">
+            <div class="list-group-item" id="div{{columnPath}}***{{key}}" parentBox="order-columns">{{key}}
+              <input type="hidden" id="{{columnPath}}***{{key}}" type="text" name="columnOfDataSet" columnType="{{databaseStructure[key]}}"  value="{{columnPath}}***{{key}}">
               
 
             </div>
@@ -154,7 +165,7 @@
     <td style="width:100px;"></td>
     <td>
       <div  class="card" style="height:722.5px; width: 1000px; ">
-      <iframe id="iframe" name="iframe" src="" height="600" width="1000"></iframe>  
+      <iframe id="iframe" name="iframe" src="" height="700" width="1000"></iframe>  
     </td>  
   </tr>
 </table>
@@ -166,12 +177,12 @@
 
       <form id="formCondition">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Seleccione la variable por la que quiere filtrar</h5>
+          <h5 class="modal-title" id="staticBackdropLabel">genere la condicion</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           
-          <h3>Columna</h3>
+          <h4>1. Seleccione la variable por la que quiere filtrar</h4>
           {% macro columnsConditionRecursion(databaseStructureRecursion, columnPath) %}  
 
 
@@ -179,14 +190,17 @@
             {% for key in databaseStructureRecursion %}
               {% if databaseStructureRecursion[key] is mapping %}
                 
-                
-                {{key}}
+                <br/>
+                <h5>Variables del objeto {{key}}:</h5>
                 {{columnsConditionRecursion (databaseStructureRecursion[key], columnPath+'***'+key) }}
                   
               {%else%}
-              <label>
-                  <input type="radio" id="{{key}}ModalId" name="columnModal" value="{{columnPath}}***{{key}}" columnType="{{databaseStructureRecursion[key]}}" required="required"/>{{key}}
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="radio" name="columnModal" id="{{key}}ModalId" value="{{columnPath}}***{{key}}" columnType="{{databaseStructureRecursion[key]}}" required="required">
+                    {{key}}
                 </label>
+              </div>
               {% endif %}
             {% endfor %}
 
@@ -195,50 +209,79 @@
           {% for key in databaseStructure %}
             {% if databaseStructure[key] is mapping %}
               
-              
-              {{key}}
+              <br/>
+              <h5>Variables del objeto {{key}}:</h5>
               {{columnsConditionRecursion (databaseStructure[key], columnPath+'***'+key) }}
                 
             {%else%}
-            <label>
-                <input type="radio" id="{{key}}ModalId" name="columnModal" value="{{columnPath}}***{{key}}" columnType="{{databaseStructure[key]}}" required="required"/>{{key}}
-              </label>
+            <div class="form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="radio" name="columnModal" id="{{key}}ModalId" value="{{columnPath}}***{{key}}" columnType="{{databaseStructure[key]}}" required="required">
+                    {{key}}
+                </label>
+              </div>
+            
             {% endif %}
           {% endfor %}
-            
-          <h3>accion</h3>
-            <label style="display: none;" id="label-include">
-              <input type="radio" id="include" name="columnCondition" value="include"/> Incluir
-            </label>
-            <label style="display: none;" id="label-exclude">
-              <input type="radio" id="exclude" name="columnCondition" value="exclude" />Excluir
-            </label>
-            <label style="display: none;" id="label-higher">
-              <input type="radio" id="higher" name="columnCondition" value="higher" />Mayor que
-            </label>
-            <label style="display: none;" id="label-lower">
-              <input type="radio" id="lower" name="columnCondition" value="lower" />Menor que
-            </label>
-            <label style="display: none;" id="label-between">
-              <input type="radio" id="between" name="columnCondition" value="between" />Dentro del rango
-            </label>
-            
-          <h4>valor</h4>
-
-          <input style="display: none;" name="inputConditon" type="date" id="inputCondition">
-          <label style="display: none;" id="label-from">Desde: </label>
-          <input style="display: none;" name="inputConditon" type="date" id="inputStart">
+          
           <br/>
-          <label style="display: none;" id="label-to">Hasta: </label>
-          <input style="display: none;" name="inputConditon" type="date" id="inputEnd">
-
-
-            <div class="card overflow-auto" style="height:200px; width: 400px; display: none;" id="card-include-exclude">
-              <div style="vertical-align: middle;" class="form-check" id="optionContainer">
-
-              </div>            
+          <br/>  
+          <h4>2. Seleccione como quiere filtrar la variable</h4>
+            <div class="form-check" id="includeDiv" style="visibility: hidden;">
+              <input class="form-check-input" type="radio" name="columnCondition" id="include" value="include">
+              <label class="form-check-label" for="columnCondition">
+                Incluir
+              </label>
+            </div>
+            <div class="form-check" id="excludeDiv" style="visibility: hidden;">
+              <input class="form-check-input" type="radio" name="columnCondition" id="exclude" value="exclude">
+              <label class="form-check-label" for="columnCondition">
+                Excluir
+              </label>
+            </div>
+            <div class="form-check" id="higherDiv" style="visibility: hidden;">
+              <input class="form-check-input" type="radio" name="columnCondition" id="higher" value="higher">
+              <label class="form-check-label" for="columnCondition">
+                Mayor que
+              </label>
+            </div>
+            <div class="form-check" id="lowerDiv" style="visibility: hidden;">
+              <input class="form-check-input" type="radio" name="columnCondition" id="lower" value="lower">
+              <label class="form-check-label" for="columnCondition">
+                Menor que
+              </label>
+            </div>
+            <div class="form-check" id="betweenDiv" style="visibility: hidden;">
+              <input class="form-check-input" type="radio" name="columnCondition" id="between" value="between">
+              <label class="form-check-label" for="columnCondition">
+                Dentro del rango
+              </label>
+            </div>
+            <br/>
             
-            </div>  
+          <h4>3. Ingrese/seleccione el valor</h4>
+
+
+          <div class="mb-3">
+            <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputCondition" class="form-control">
+          </div>          
+          
+          <div class="mb-3">
+            <label for="inputEnd" class="form-label" style="display: none;" id="label-from">Desde: </label>
+            <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputStart" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label for="inputEnd" class="form-label" style="display: none;" id="label-to">Hasta: </label>
+            <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputEnd" class="form-control">
+          </div>
+
+          <div class="card overflow-auto" style="height:200px; width: 400px; display: none;" id="card-include-exclude">
+            <div style="vertical-align: middle;" class="form-check" id="optionContainer">
+
+            </div>            
+          
+          </div>  
           
         </div>
         <div class="modal-footer">
@@ -257,7 +300,14 @@
   //when the page loads it puts the input radios without a marked option
   $( document ).ready(function() {
 
-    observer.observe(targetNode, config);  
+    observerX.observe(targetNodeX, config);  
+    observerY.observe(targetNodeY, config);
+
+    $('[name=columns-dataset]').each(function(index) {
+
+      observer.observe(document.getElementById($(this).attr('id')),config);
+
+    });
 
 
     $("input[type=radio][name=chart]").prop('checked', false);
@@ -265,14 +315,9 @@
     $("input[type=radio][name=columnCondition]").prop('checked', false);
     console.log( "ready!" );
 
-    $("#order-columns > .list-group-item").each(function(index){
-      
-      //alert(JSON.stringify($(this).children(0).attr('columnType')))
-      if ($(this).children(0).attr('columnType') == 'object') { 
-        alert('22')
-        
-      }
-    });
+    //$("#order-columns > .list-group-item").each(function(index){
+    //  
+    //});
 
 
 
@@ -287,6 +332,8 @@
   
   //this is triggered when the option of the radio chart is changed
   $('input:radio[name="chart"]').change(function(){
+
+    hideIFrame()
     
     if($(this).val() == 'bar' || $(this).val() == 'line' || $(this).val() == 'pie'  ){
 
@@ -450,6 +497,8 @@
     //iframe.contentWindow.location.reload(true);
     document.getElementById('iframe').src = document.getElementById('iframe').src;
     
+    $( "#iframe" ).css("opacity", 100);
+
     //window.frames['some_frame_id'].location.href.reload()
   }
 
@@ -478,9 +527,16 @@
     if ($(this).attr('columnType') == 'date' || $(this).attr('columnType')== 'int' ) { 
 
 
-      $("#label-higher").css("display", "contents"); 
+      /*$("#label-higher").css("display", "contents"); 
       $("#label-lower").css("display", "contents"); 
-      $("#label-between").css("display", "contents"); 
+      $("#label-between").css("display", "contents");*/
+
+      $("#betweenDiv").css("visibility", "visible");
+      $("#higherDiv").css("visibility", "visible"); 
+      $("#lowerDiv").css("visibility", "visible"); 
+     
+
+
 
       //set the type of the input (date or number)
       if ($(this).attr('columnType') == 'date') {
@@ -500,14 +556,23 @@
     }
 
     else{
-      $("#label-higher").css("display", "none"); 
+      $("#betweenDiv").css("visibility", "hidden");
+      $("#higherDiv").css("visibility", "hidden"); 
+      $("#lowerDiv").css("visibility", "hidden"); 
+
+      /*$("#label-higher").css("display", "none"); 
       $("#label-lower").css("display", "none"); 
-      $("#label-between").css("display", "none"); 
+      $("#label-between").css("display", "none"); */
     }
 
     //show the options "incluir" and "excluir" in the "accion" radio
-    $("#label-include").css("display", "contents"); 
-    $("#label-exclude").css("display", "contents");
+    
+
+    $("#includeDiv").css("visibility", "visible");
+    $("#excludeDiv").css("visibility", "visible"); 
+    
+    /*$("#label-include").css("display", "contents");
+    $("#label-exclude").css("display", "contents");*/
     
   });
 
@@ -536,7 +601,7 @@
 
           //load the HTML in the "valor" box
           for (var i =  0; i < data.result.length; i++) {
-            $( "#optionContainer" ).append("<input class=\"form-check-input\" type=\"checkbox\" value=\"" + data.result[i][0] + "\">" + "<label class=\"form-check-label\" for=\"flexCheckDefault\">"  + data.result[i][0] + "</label><br/>");  
+            $( "#optionContainer" ).append("<input class=\"form-check-input form-card\"  type=\"checkbox\" value=\"" + data.result[i][0] + "\">" + "<label class=\"form-check-label\" for=\"flexCheckDefault\">"  + data.result[i][0] + "</label><br/>");  
           }
         });
       return false;
@@ -591,6 +656,8 @@
   //method triggered when the button "agregar" inside the modal "agregar condicion" is pushed
   function generateCondition(){
 
+    hideIFrame()
+
     //array where will be the conditions when the selected option is "incluir" or "excluir" 
     var conditions = [];
 
@@ -601,7 +668,9 @@
     var column = $('input:radio[name="columnModal"]:checked').val().toString();
 
     //loop through the checked options in the 'valor' box
-    $('.form-check-input:checked').each(function() {
+    $('.form-card:checked').each(function() {
+
+      
       
       //clear the condition string
       condition = '';
@@ -631,12 +700,12 @@
     if (conditions.length == 0) {
      
       //if the input used in the 'mayor que' and 'menor que' options is visible it means that one of them has been selected 
-      if ($('#inputCondition').css("display") == 'inline-block') { 
+      if ($('#inputCondition').css("display") == 'block') { 
 
         ////add the 'columna' to the condition
         condition = condition + column;
 
-        if ($('input:radio[name="columnCondition"]:checked').val() == 'higher') {
+        if ($('input:radio[name="columnCondition"]:checked').val() == "higher") {
         
           //add ' >= ' to the string condition
           condition = condition + ' >= ';
@@ -704,29 +773,36 @@
   //remove the condition
   function deleteCondition(condition){
     $( "#"+condition ).remove();
+    hideIFrame()
   }
+
+  //remove the condition
+  function hideIFrame(){
+    $( "#iframe" ).css("opacity", 0);
+  }  
 
   //OBSERVER
   // Select the node that will be observed for mutations
-  const targetNode = document.getElementById('order-axi-x');
+  const targetNodeX = document.getElementById('order-axi-x');
+  const targetNodeY = document.getElementById('order-axi-y');
 
   // Options for the observer (which mutations to observe)
   const config = { attributes: true, childList: false, subtree: true };
 
   // Callback function to execute when mutations are observed
-  const callback = function(mutationsList, observer) {
+  const callbackX = function(mutationsList, observer) {
 
       for(const mutation of mutationsList) {
           if (mutation.type === 'childList') {
-              console.log('A child node has been added or removed.');
               
           }
           else if (mutation.type === 'attributes') {
-              console.log('The ' + mutation.attributeName + ' attribute was modified.');
               if (mutation.attributeName == 'draggable') {
+
                 
                 //this move last element dropped in the 'eje x' box if there is already one inside of it to the 'columnas' box
                 $("#order-axi-x > .list-group-item").each(function(index){
+                  hideIFrame()
                   if(index > 0 && ! $(this).prop('draggable')){
                     var column = $(this).clone();
                     var parentBox = $(this).attr('parentBox');
@@ -739,12 +815,77 @@
       }
   };
 
+  // Callback function to execute when mutations are observed
+  const callbackY = function(mutationsList, observer) {
+
+      for(const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+              
+          }
+          else if (mutation.type === 'attributes') {
+              if (mutation.attributeName == 'draggable') {
+                
+                //this move last element dropped in the 'eje y' box if there is already one inside of it to the 'columnas' box
+                $("#order-axi-y > .list-group-item").each(function(index){
+                  hideIFrame()
+                  if(index > 0 && ! $(this).prop('draggable')){
+                    var column = $(this).clone();
+                    var parentBox = $(this).attr('parentBox');
+                    $('#'+parentBox).append(column);
+                    $(this).remove();
+                  }
+                });
+              }
+          }
+      }
+  };
+
+  // Callback function to execute when mutations are observed
+  const callback = function(mutationsList, observer) {
+
+      for(const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+              //console.log('A child node has been added or removed.');
+              
+          }
+          else if (mutation.type === 'attributes') {
+              //console.log('The ' + mutation.attributeName + ' attribute was modified.');
+              if (mutation.attributeName == 'draggable') {
+                var id = (mutation.target).id;
+
+                if(!((mutation.target).draggable)){
+
+
+                    var column = document.getElementById(id);
+                    var columnClone = column.cloneNode(true);
+                    column.remove();
+                    var parentBox = (mutation.target).getAttribute('parentBox');
+                    document.getElementById(parentBox).appendChild(columnClone);
+                    column.remove();
+                }
+                
+              }
+          }
+      }
+  };
+
+
   // Create an observer instance linked to the callback function
+  const observerX = new MutationObserver(callbackX);
+  const observerY = new MutationObserver(callbackY);
   const observer = new MutationObserver(callback);
+
+
+  $('[name="columnOfDataSet"]').change(function() {
+
+    alert('seba');
+
+  });
 
 </script>
 
 <script src="{{url_for('static', filename='/scripts/Sortable.js') }}"></script>
+
 <script>
 
   $('[name="columns-dataset"]').each(function(index) {

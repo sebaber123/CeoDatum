@@ -12,3 +12,7 @@
  Flask-Session==0.4.0
  flask-paginate==0.5.0
  tweepy==4.4.0
+<<<<<<< HEAD
+=======
+ xyzservices==2021.11.0
+>>>>>>> 4a8dfbcaf38d19f8f8d82b24045ddf470c60ff03
