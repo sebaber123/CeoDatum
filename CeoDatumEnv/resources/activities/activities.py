@@ -10,8 +10,21 @@ def activities():
 	else:
 		return render_template('/')
 
-def new_activity():
+def new_activity(course_id):
 	if session['role']=='professor':
-		return render_template('activities/new_activity.html')
+		graficos = Activity.get_graph_names()
+		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos)
 	else:
 		return redirect(url_for('home'))
+
+def create_activity():
+	if request.method=="POST":
+		titulo = request.form['title']
+		fecha_comienzo = request.form['startDate']
+		fecha_fin = request.form['endDate']
+		descripcion = request.form['description']
+		curso = request.form['course']
+		graphs = request.form.getlist('graph')
+		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs)
+		return redirect(url_for('courses'))
+	return redirect(url_for('home'))

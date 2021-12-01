@@ -6,14 +6,14 @@
 {% block content %}
 	<div class="container">
 		<h2>Nueva actividad</h2>
-		<form>
+		<form method="POST" action="/activities/create_activity">
 			<div class="form-group">
 		    	<label class="titulo-form" for="inputTitle">Titulo</label>
-		    	<input type="text" class="form-control" name="inputTitle" id="inputTitle" placeholder="Ingrese un título">
+		    	<input type="text" class="form-control" name="title" id="inputTitle" placeholder="Ingrese un título">
 		  	</div>
 		  	<div class="md-form">
 		  		<label class="titulo-form" for="inputDescription">Descripción</label>
-		    	<textarea class="md-textarea form-control" id="inputDescription" name="inputDescription" rows="3"></textarea>
+		    	<textarea class="md-textarea form-control" name="description" id="inputDescription" rows="3"></textarea>
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputDescription">Dataset</label>
@@ -24,21 +24,20 @@
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="d-block titulo-form">Gráficos permitidos</label>
-		  		<input type="checkbox" class="form-check-input" id="checkboxGraph1">
-    			<label class="form-check-label" for="checkboxGraph1">Gráfico de barras</label>
-    			<input type="checkbox" class="form-check-input" id="checkboxGraph1">
-    			<label class="form-check-label" for="checkboxGraph2">Gráfico de torta</label>
-    			<input type="checkbox" class="form-check-input" id="checkboxGraph1">
-    			<label class="form-check-label" for="checkboxGraph3">Gráfico de dispersión</label>
+		  		{% for graph in graphs %}
+		  		<input type="checkbox" class="form-check-input" id="checkboxGraph{{ graph.id }}" value="{{ graph.id }}" name="graph">
+    			<label class="form-check-label" for="checkboxGraph{{ graph.id }}">{{ graph.spanish_name }}</label>
+		  		{% endfor %}
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputBeginDate">Fecha de inicio</label>
-		  		<input type="date" class="form-control" name="inputBeginDate" id="inputBeginDate">
+		  		<input type="date" class="form-control" name="startDate" id="inputBeginDate">
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputEndDate">Fecha de fin</label>
-		  		<input type="date" class="form-control" name="inputEndDate" id="inputEndDate">
+		  		<input type="date" class="form-control" name="endDate" id="inputEndDate">
 		  	</div>
+		  	<input type="hidden" name="course" value="{{course_id}}">
 		  	<button type="submit" class="btn btn-primary btn-lg mt-1" >Crear</button>
 		</form>
 	</div>

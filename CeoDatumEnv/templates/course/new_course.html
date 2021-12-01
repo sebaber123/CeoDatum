@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block header %}
+{% endblock %}
+{% block title %}Actividades{% endblock %}
+{% block content %}
+	<div class="container">
+		<h2>Nuevo curso</h2>
+		<form method="POST" action="/create_course">
+			<div class="form-group">
+		    	<label class="titulo-form" for="inputTitle">Nombre</label>
+		    	<input type="text" class="form-control" name="name" id="inputTitle" placeholder="Ingrese un título">
+		  	</div>
+		  	<div class="form-group">
+		  		<label class="titulo-form" for="inputBeginDate">Fecha de inicio</label>
+		  		<input type="date" class="form-control" name="startDate" id="inputBeginDate">
+		  	</div>
+		  	<div class="form-group">
+		  		<label class="titulo-form" for="inputEndDate">Fecha de fin</label>
+		  		<input type="date" class="form-control" name="endDate" id="inputEndDate">
+		  	</div>
+		  	<button type="submit" class="btn btn-primary btn-lg mt-1" >Crear</button>
+		</form>
+	</div>
+{% endblock %}

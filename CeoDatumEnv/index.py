@@ -66,9 +66,9 @@ app.add_url_rule('/dragAndDrop/uploadFile', 'uploadFile', home.uploadFile, metho
 app.add_url_rule('/dragAndDrop/configurateUploadCSV', 'configurateUploadCSV', home.configurateUploadCSV, methods=['POST'])
 app.add_url_rule('/dragAndDrop/configurateUploadJSON', 'configurateUploadJSON', home.configurateUploadJSON, methods=['POST'])
 
-
 app.add_url_rule('/activities', 'activities', activities.activities, methods=['GET'])
-app.add_url_rule('/activities/new_activity', 'new_activity', activities.new_activity)
+app.add_url_rule('/activities/new_activity/<course_id>', 'new_activity', activities.new_activity)
+app.add_url_rule('/activities/create_activity', 'create_activity', activities.create_activity, methods=['POST'])
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
@@ -76,13 +76,17 @@ app.add_url_rule('/configuration', 'configuration', configuration.configuration,
 app.add_url_rule('/update_establishment_file', 'update_establishment_file', configuration.upload_establishment_file, methods=['POST'])
 app.add_url_rule('/cambiar_rol/<user_id>/<role_id>', 'cambiar_rol', configuration.cambiar_rol, methods=['GET'])
 
-<<<<<<< HEAD
 from resources.educational_establishments import extracting_data
 app.add_url_rule('/get_establishments', 'get_establishments', extracting_data.extract_data, methods=['GET'])
 app.add_url_rule('/showRegister/<province>', 'get_cities_by_province', extracting_data.get_cities_by_province, methods=['GET'])
 app.add_url_rule('/showRegister/ciudad/<city>', 'get_establishment_by_city', extracting_data.get_establishments_by_city, methods=['GET'])
-=======
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
+
+from resources.courses import course
+app.add_url_rule('/courses', 'courses', course.get_courses, methods=['GET'])
+app.add_url_rule('/courses/<course_id>', 'course<course_id>', course.view_course, methods=['GET'])
+app.add_url_rule('/new_course', 'new_courses', course.new_course, methods=['GET'])
+app.add_url_rule('/create_course', 'create_course', course.create_course, methods=['POST'])
 
 #TWITTER
 app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
@@ -92,4 +96,3 @@ app.add_url_rule('/twitter', 'twitter_search', socialGraph.twitter_search, metho
 app.add_url_rule('/inspectRows2', 'inspect_rows2', visualization.inspect_rows2, methods=['GET'])
 app.add_url_rule('/inspectRows/<databaseId>&<objectString>', 'inspect_rows', visualization.inspect_rows, methods=['GET'], defaults={'condition':None})
 app.add_url_rule('/inspectRows/<databaseId>&<objectString>&<condition>', 'inspect_rows', visualization.inspect_rows, methods=['GET'])
->>>>>>> d1bc5cf1a91c626e8b137f2e4357ac2216f29994

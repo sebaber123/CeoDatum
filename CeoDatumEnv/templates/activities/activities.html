@@ -42,10 +42,6 @@
 		</table>
 	</div>
 	{% endif %}
-
-	{% if session['role'] == "professor" %}
-	<a class="btn btn-danger" href="{{url_for('new_activity')}}">Nueva actividad</a>
-	{% endif %}
 </div>
 
 {% endblock %}
