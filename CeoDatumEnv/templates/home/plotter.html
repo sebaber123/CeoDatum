@@ -700,12 +700,12 @@
     if (conditions.length == 0) {
      
       //if the input used in the 'mayor que' and 'menor que' options is visible it means that one of them has been selected 
-      if ($('#inputCondition').css("display") == 'inline-block') { 
+      if ($('#inputCondition').css("display") == 'block') { 
 
         ////add the 'columna' to the condition
         condition = condition + column;
 
-        if ($('input:radio[name="columnCondition"]:checked').val() == 'higher') {
+        if ($('input:radio[name="columnCondition"]:checked').val() == "higher") {
         
           //add ' >= ' to the string condition
           condition = condition + ' >= ';

@@ -1,6 +1,4 @@
-import geopandas as gpd
 from requests import Request
-from owslib.wfs import WebFeatureService
 from models.establishment import Establishment
 import os
 from pyspark.sql import SQLContext, Row, SparkSession
@@ -14,7 +12,7 @@ from flask import jsonify
 
 
 UPLOAD_FOLDER = 'static/establecimientos_educativos/'
-filename = 'establecimientos_educativos.csv'
+filename = 'establecimiento_educ.csv'
 
 
 def extract_data():

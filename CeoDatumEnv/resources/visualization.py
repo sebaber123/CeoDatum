@@ -10,8 +10,11 @@ from bokeh.resources import INLINE
 from bokeh.embed import components
 from models.visualization import Visualization
 from math import pi
+import numpy as np
 from bokeh.transform import cumsum, jitter
 from bokeh.palettes import Category20, cividis, Set3, Set1, Category10
+import xyzservices.providers as xyz
+from bokeh.tile_providers import CARTODBPOSITRON, get_provider
 
 
 #return the plotter page
@@ -135,7 +138,7 @@ def queryConstruction(database, rowName, column, condition):
     pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
 
     groupByString = 't'+str(pos)+'.'+valueColumn
-    selectString = groupByString + ',  COUNT(DISTINCT t'+str(pos)+'.id) as count'
+    selectString = groupByString + ',  COUNT( t'+str(pos)+'.id) as count'
 
     return {'groupByString':groupByString, 'selectString':selectString, 'fromOfQueryString':fromOfQueryString, 'pos':pos, 'valueColumn':valueColumn, 'whereString':conditionQueryString, 'dictPositionsInQuery':dictPositionsInQuery, 'columnToGroupBy':columnToGroupBy}
 
@@ -1044,6 +1047,105 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
 
     return p
 
+def map_chart(database, latitude, longitude, condition):
+
+    queryConstructionResult = queryConstruction(database, latitude, longitude, condition)
+
+    objectRowStringCallBack = latitude[:-(len(latitude.split('***')[len(latitude.split('***'))-1])+3)]
+
+    valueColumn = 'undefined'
+
+    columnToGroupBy = ''
+
+    y_axis_name = 'cantidad'
+
+    if longitude != 'undefined':
+
+        columnsToAddToDict = longitude.split(sep='***')
+        columnsToAddToDict.append('object')
+
+        valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
+        posColumn = positionInQuery(columnsToAddToDict, queryConstructionResult['dictPositionsInQuery'])
+        columnToGroupBy = ', t'+str(posColumn)+'.'+valueColumn
+
+        y_axis_name = valueColumn
+
+
+    graph = map_plot(    queryConstructionResult['valueColumn'], 
+                        y_axis_name, 
+                        database, 
+                        database, 
+                        queryConstructionResult['valueColumn'], 
+                        queryConstructionResult['selectString'] + columnToGroupBy, 
+                        queryConstructionResult['fromOfQueryString'], 
+                        queryConstructionResult['groupByString'] + columnToGroupBy, 
+                        queryConstructionResult['whereString'],
+                        valueColumn,
+                        objectRowStringCallBack,
+                        condition,
+                        latitude,
+                        longitude )
+    
+
+    #method that return the script and div that is needed to create the graph in the page 
+    script, div = components(graph)
+ 
+    return render_template(
+        'home/graph.html',
+        plot_script=script,
+        plot_div=div,
+        js_resources=INLINE.render_js(),
+        css_resources=INLINE.render_css(),
+    ).encode(encoding='UTF-8')
+
+
+
+
+def map_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, column_y, objectStringCallBack, conditionCallBack, columnXCallBack, columnYCallBack):
+
+    data = Visualization.get_data_with_parameters(data_db_name, selectString, fromString, groupByString, whereString)
+
+    #database = Visualization.get_database_id(data_db_name)
+    #databaseId = database['id']
+    
+    k = 6378137
+
+    #get the x axi value
+    latitude_array = [np.log(np.tan((90 + float(row[column_x])) * np.pi/360.0)) * k for row in data]
+    longitude_array = [float(row[column_y])*(k * pi/180.0) for row in data]
+
+    #create a dictionary that  with the 'x_array' and 'y_array' arrays
+    dictionary=dict(  lat=latitude_array, lon=longitude_array)
+    
+    #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
+    source = ColumnDataSource(data=dictionary)
+
+
+    tile_provider = get_provider(CARTODBPOSITRON)
+
+    k = 6378137
+    #df["x"] = df[lon] * (k * np.pi/180.0)
+    #df["y"] = np.log(np.tan((90 + df[lat]) * np.pi/360.0)) * k
+
+    # range bounds supplied in web mercator coordinates
+    p = figure(x_range=(-18000000, 18000000), y_range=(-9000000, 9000000), plot_height=750, plot_width=1000,
+               x_axis_type="mercator", y_axis_type="mercator")
+    p.add_tile(tile_provider)
+
+    #source = ColumnDataSource(
+    #data=dict(lat=[ np.log(np.tan((90 + 30.29) * np.pi/360.0)) * k, np.log(np.tan((90 + 30.20) * np.pi/360.0)) * k  , np.log(np.tan((90 + 30.29) * np.pi/360.0)) * k ],
+    #          lon=[-97.70*(k * pi/180.0), -97.74*(k * pi/180.0), -97.78*(k * pi/180.0)])
+    #)
+
+    p.circle(x="lon", y="lat", size=10, fill_color="blue", fill_alpha=0.4, source=source)
+
+
+    
+
+    return p
+
+
+
 #return the values of a table
 def ajaxGetColumnData(database, column):
 
@@ -1084,11 +1186,6 @@ def ajaxGetColumnData(database, column):
 
     return jsonify(result = ajaxData)
 
-def inspect_rows2():
-
-
-
-    return render_template('home/inspectRows.html')
 
 def recursion_query(databaseStructure, dictPositionsInQuery, pos, objectString, select, positionOfTheQuery, posOfQueryReturn):
 
