@@ -9,7 +9,7 @@
           width: 100px;
           height: 100px;
     }
-
+    
     .row{
       --bs-gutter-x: 0;
     }
@@ -19,8 +19,6 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-
-    
 
   </style>
 </head>
@@ -53,6 +51,9 @@
       </label>
       <label>
         <input type="radio" id="scatter_chart" name="chart" value="scatter" /><img src="{{url_for('static', filename='scatter_chart.png') }}">
+      </label>
+      <label>
+        <input type="radio" id="map_chart" name="chart" value="map" /><img src="{{url_for('static', filename='map_chart.png') }}">
       </label>
        <button onclick="GenerateChart()">Generar grafico</button> 
     </td>
@@ -134,7 +135,7 @@
     </td>
     <td style="width:25px;"></td>
     <td>
-        <h3>Eje X</h3>
+        <h3 id="x_axi_title">Eje X</h3>
         <div  id="order-axi-x" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
         </div>
         <div id="divDispersionX" style="visibility: hidden;">
@@ -144,7 +145,7 @@
         
         <div style="height:190px ">
           <div style= "" id="container-order-y">
-            <h3>Eje Y</h3>
+            <h3 id="y_axi_title">Eje Y</h3>
             <div  id="order-axi-y" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
             </div>
           </div>
@@ -239,6 +240,12 @@
                 Excluir
               </label>
             </div>
+            <div class="form-check" id="likeDiv" style="visibility: hidden;">
+              <input class="form-check-input" type="radio" name="columnCondition" id="like" value="like">
+              <label class="form-check-label" for="columnCondition">
+                Similar a la palabra
+              </label>
+            </div>
             <div class="form-check" id="higherDiv" style="visibility: hidden;">
               <input class="form-check-input" type="radio" name="columnCondition" id="higher" value="higher">
               <label class="form-check-label" for="columnCondition">
@@ -257,7 +264,7 @@
                 Dentro del rango
               </label>
             </div>
-            <br/>
+            
             
           <h4>3. Ingrese/seleccione el valor</h4>
 
@@ -335,6 +342,9 @@
 
     hideIFrame()
     
+    $('#x_axi_title').text('Eje x');
+    $('#y_axi_title').text('Eje y');
+
     if($(this).val() == 'bar' || $(this).val() == 'line' || $(this).val() == 'pie'  ){
 
       //hide the "Eje y" Box 
@@ -345,6 +355,13 @@
 
       //show the "Eje y" Box
       $("#container-order-y").css("display", "contents"); 
+
+      if ($(this).val() == 'map') {
+        
+        $('#x_axi_title').text('Latitud');
+        $('#y_axi_title').text('Longitud');
+
+      }
 
     }
 
@@ -448,7 +465,7 @@
             }
 
             else{
-              if (selection = 'scatter') {
+              if (selection == 'scatter') {
                 //add the start of the url and the database parameter
                 src = "/scatterChart/{{database.name}}&";
 
@@ -461,6 +478,18 @@
                 src = src + $('#dispersionX').val().toString() + "&";
 
                 src = src + $('#dispersionY').val().toString();
+              }
+              else{
+                if (selection == 'map') {
+                  //add the start of the url and the database parameter
+                  src = "/mapChart/{{database.name}}&";
+
+                  //add the axi x parameter
+                  src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+                  
+                  //add the axi y parameter
+                  src = src + $('#order-axi-y').children(0).children(0).prop('value');
+                }
               }
             }
           }
@@ -481,7 +510,7 @@
         $('[name=condition]').each(function(index) {
 
           //add the condition and the separator "$$$"
-          stringConditions = stringConditions + $(this).children(0)[1].value + '%%%';
+          stringConditions = stringConditions + $(this).children(0)[2].value + '%%%';
         });
 
         //delete the las separator "$$$"
@@ -524,7 +553,7 @@
 
 
     //check if the column selected type is date or number to show the options "mayor que", "menor que" and "dentro del rango" in the "accion" radio
-    if ($(this).attr('columnType') == 'date' || $(this).attr('columnType')== 'int' ) { 
+    if ($(this).attr('columnType') == 'date' || $(this).attr('columnType')== 'int') { 
 
 
       /*$("#label-higher").css("display", "contents"); 
@@ -533,7 +562,9 @@
 
       $("#betweenDiv").css("visibility", "visible");
       $("#higherDiv").css("visibility", "visible"); 
-      $("#lowerDiv").css("visibility", "visible"); 
+      $("#lowerDiv").css("visibility", "visible");
+
+      $("#likeDiv").css("visibility", "hidden");  
      
 
 
@@ -547,18 +578,33 @@
 
       } else{
 
-        $("#inputCondition").attr('type', 'number');
-        $("#inputStart").attr('type', 'number');
-        $("#inputEnd").attr('type', 'number');        
+        if ($(this).attr('columnType') == 'int') {
 
+          $("#inputCondition").attr('type', 'number');
+          $("#inputStart").attr('type', 'number');
+          $("#inputEnd").attr('type', 'number');        
+
+        }
+        else{
+          if ($(this).attr('columnType') == 'varchar(255)') {
+
+            $("#inputCondition").attr('type', 'text');
+          } 
+        }
       }
-
     }
 
     else{
       $("#betweenDiv").css("visibility", "hidden");
       $("#higherDiv").css("visibility", "hidden"); 
       $("#lowerDiv").css("visibility", "hidden"); 
+
+      if ($(this).attr('columnType') == 'varchar(255)') {
+
+        $("#inputCondition").attr('type', 'text');
+      }
+
+      $("#likeDiv").css("visibility", "visible"); 
 
       /*$("#label-higher").css("display", "none"); 
       $("#label-lower").css("display", "none"); 
@@ -618,7 +664,7 @@
       $( "#optionContainer" ).empty();
 
       //check if the option selected is "mayor que" or "menor que", if true:
-      if ($(this).val() == 'higher' || $(this).val() == 'lower') {
+      if ($(this).val() == 'higher' || $(this).val() == 'lower' || $(this).val() == 'like') {
 
         //show the number/date input and the labels of the input
         $("#inputCondition").css("display", ""); 
@@ -705,20 +751,34 @@
         ////add the 'columna' to the condition
         condition = condition + column;
 
-        if ($('input:radio[name="columnCondition"]:checked').val() == "higher") {
-        
-          //add ' >= ' to the string condition
-          condition = condition + ' >= ';
-        
-        }else{
-        
-            //add ' <= ' to the string condition
-            condition = condition + ' <= ';
+        if ($('input:radio[name="columnCondition"]:checked').val() == "like") {
+
+          condition = condition + " like \'%" +$('#inputCondition').val() + "%\'";
+
+          conditionToShow = column.split('***').pop() + " parecido a : \'" +$('#inputCondition').val() + "\'";
+
         }
 
-        //add the value of the input to the string
-        condition = condition + "\'" +$('#inputCondition').val() + "\'"; 
+        else{  
+                
+
+          if ($('input:radio[name="columnCondition"]:checked').val() == "higher") {
+          
+            //add ' >= ' to the string condition
+            condition = condition + ' >= ';
+          
+          }else{
+          
+              //add ' <= ' to the string condition
+              condition = condition + ' <= ';
+          }
         
+
+          //add the value of the input to the string
+          condition = condition + "\'" +$('#inputCondition').val() + "\'"; 
+        
+        }
+
         //push the condition to the array
         conditions.push(condition);
         
@@ -731,7 +791,7 @@
         var colValue = column.split('***');
         colValue = colValue[(colValue.length)-1];
 
-        conditionToShow = condition + colValue + " >= "+ "\'" +$('#inputStart').val() + "\' and " + colValue + " <= \'" +$('#inputEnd').val() + "\'";  
+        conditionToShow = condition + colValue + " >= "+ "\'" +$('#inputStart').val() + "\' y " + colValue + " <= \'" +$('#inputEnd').val() + "\'";  
 
         //add the 'columna' and the '>=' to the condition
         condition = condition + column + " >= ";
@@ -750,19 +810,19 @@
     //append the html of the conditions to the 
     for (condition of conditions){
       var divId = 'cond'+cant.toString();
-      if ($('input:radio[name="columnCondition"]:checked').val() == 'between') {
+      if ($('input:radio[name="columnCondition"]:checked').val() == 'between' || $('input:radio[name="columnCondition"]:checked').val() == 'like') {
         $( "#order-conditions" ).append(
-            "<div class=\"list-group-item\" id=\""+divId+"\" name=\"condition\">"+
-              conditionToShow+
-              " <button onclick=\"deleteCondition(\'"+divId+"\')\" style=\"float:right;\"><img style=\"width: 20px; height: 20px;\" src=\"{{url_for('static', filename='trash.svg') }}\"/></button>"+
+            "<div style=\"min-height:45px\" class=\"list-group-item\" id=\""+divId+"\" name=\"condition\">"+
+              "<span style=\"width: 180px; display: block;\">"+conditionToShow+"</span>"+
+              " <button class=\" btn btn-danger \" onclick=\"deleteCondition(\'"+divId+"\')\" style=\"height 35px; width:40px; top: 50%;position: absolute;right: .5em;transform:translateY(-50%);\"><img style=\"margin-left: -2px;vertical-align: middle; width: 20px; height: 20px;\" src=\"{{url_for('static', filename='trash.svg') }}\"/></button>"+
               " <input type=\"hidden\" id=\""+condition+"\" type=\"text\" name=\""+condition+"\" value=\""+condition+"\">"+
             "</div>");  
       } 
       else {
         $( "#order-conditions" ).append(
             "<div class=\"list-group-item\" id=\""+divId+"\" name=\"condition\">"+
-              condition.split('***').pop()+
-              " <button onclick=\"deleteCondition(\'"+divId+"\')\" style=\"float:right;\"><img style=\"width: 20px; height: 20px;\" src=\"{{url_for('static', filename='trash.svg') }}\"/></button>"+
+              "<span style=\"width: 180px; display: block;\">"+condition.split('***').pop()+"</span>"+
+              " <button class=\" btn btn-danger \" onclick=\"deleteCondition(\'"+divId+"\')\" style=\"height 35px; width:40px; top: 50%;position: absolute;right: .5em;transform:translateY(-50%);\"><img style=\"margin-left: -2px;vertical-align: middle; width: 20px; height: 20px;\" src=\"{{url_for('static', filename='trash.svg') }}\"/></button>"+
               " <input type=\"hidden\" id=\""+condition+"\" type=\"text\" name=\""+condition+"\" value=\""+condition+"\">"+
             "</div>"); 
       }

@@ -23,6 +23,7 @@ dictionaryTypes = { 'int' : 'integer',
 
 def dragAndDrop():
 	if session['username']:
+
 		return render_template('home/dragAndDrop.html')
 	else:
 		return redirect(url_for('loginForm'))
@@ -32,48 +33,61 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def uploadFile():
-	if request.method == 'POST':
-		
-		file = request.files['file']
 
-		filename = secure_filename(file.filename)
-		
-		if file and allowed_file(filename):
+	if session['username']:
 
-			filename = secure_filename(filename)
-			file.save(os.path.join(UPLOAD_FOLDER, filename))
+		if request.method == 'POST':
+			
+			file = request.files['file']
 
-			fileType = filename.rsplit('.', 1)[1]
+			filename = secure_filename(file.filename)
+			
+			if file and allowed_file(filename):
 
-			if fileType == 'csv':
+				filename = secure_filename(filename)
+				file.save(os.path.join(UPLOAD_FOLDER, filename))
 
-				spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
-				sqlContext = SQLContext(spark)
+				fileType = filename.rsplit('.', 1)[1]
 
-				firstRow = sqlContext.read.format("csv").option("encoding", "UTF-8").load(os.path.join(UPLOAD_FOLDER,filename)).first()
+				if fileType == 'csv':
 
-				return render_template('home/uploadConfiguration.html', firstRow = firstRow, filename=filename)
+					spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
+					sqlContext = SQLContext(spark)
 
-			else:
+					firstRow = sqlContext.read.format("csv").option("encoding", "UTF-8").load(os.path.join(UPLOAD_FOLDER,filename)).first()
 
-				if fileType == 'json':
+					return render_template('home/uploadConfiguration.html', firstRow = firstRow, filename=filename)
 
-					return render_template('home/uploadConfigurationJSON.html', filename=filename)
+				else:
+
+					if fileType == 'json':
+
+						return render_template('home/uploadConfigurationJSON.html', filename=filename)
+
+		else:
+
+			return '4'
 
 	else:
 
-		return '4'
+		flash('Debe estar logueado para usar esta funcion.')
+
+		return render_template('home/dragAndDrop.html')		
 
 
 def configurateUploadJSON ():
+
+	sessionId= session['user_id']
 
 	fileName = request.form['filename']
 
 	database = request.form['database']
 
+	share = request.form['share']
+
 	Home.create_database(database)
 
-	databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database)
+	databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database, str(sessionId), share)
 	
 	spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
 	sqlContext = SQLContext(spark)
@@ -375,15 +389,17 @@ def JSONRecursion(database, data, firstRow, sqlContext, spark, idTable, pos, pos
 def configurateUploadCSV():
 	if request.method == 'POST':
 
-		
+		sessionId= session['user_id']
 
 		filename = request.form['filename']
 
 		database = request.form['database']
 
+		share = request.form['share']
+
 		Home.create_database(database)
 
-		databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database)
+		databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database, str(sessionId), share)
 
 		spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
 		sqlContext = SQLContext(spark)
@@ -392,6 +408,9 @@ def configurateUploadCSV():
 
 		w = Window.orderBy('id2')
 		data = data.withColumn("id2", F.monotonically_increasing_id()).withColumn("id", F.row_number().over(w))    
+
+		if request.form['headers'] == 'si':
+			data = data.filter(data['id'] != 1)
 
 		data.registerTempTable('factTable')
 

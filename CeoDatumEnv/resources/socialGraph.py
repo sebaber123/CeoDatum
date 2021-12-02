@@ -21,6 +21,7 @@ def twitter_search():
 
 preposiciones = ['a', 'ante', 'bajo', 'cabe', 'con', 'contra', 'de', 'desde', 'durante', 'en', 'entre', 'hacia', 'hasta', 'mediante', 'para', 'por', 'según', 'sin', 'so', 'sobre', 'tras', 'versus', 'vía']
 articulos = ['el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas']
+specialCharacters = "'#!?"
 
 def api_twitter_search(stringToSearch, topQuantity, articles, prep):
 
@@ -52,7 +53,11 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep):
 
 	for tweet in tweepy.Cursor(api.search_tweets, q= (stringToSearch + ' -filter:retweets'), lang='es', tweet_mode='extended').items(10):
 			
-		tweetTextAux = tweet.full_text.replace("\n", "").lower().split()
+		tweetTextAux = tweet.full_text.replace("\n", "").lower()
+		for x in range(len(specialCharacters)):
+			tweetTextAux = tweetTextAux.replace(specialCharacters[x],"")
+
+		tweetTextAux = tweetTextAux.split()	
 
 		auxCounter = Counter(tweetTextAux)
 
@@ -62,7 +67,6 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep):
 			if word not in counterByWord:
 				counterByWord[word] = Counter()
 			counterByWord[word].update(auxCounter)
-			
 
 	"""for string in string_list:
 
