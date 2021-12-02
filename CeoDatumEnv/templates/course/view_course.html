@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block header %}
+{% endblock%}
+{% block title %}Datasets{% endblock %}
+{% block content %}
+	{{curso.name}}
+	<a class="btn btn-danger" href="/activities/new_activity/{{curso.id}}">Nueva actividad</a>
+{% endblock %}

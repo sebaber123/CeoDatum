@@ -14,3 +14,27 @@ class Activity(object):
 		cursor.execute(query, (user_id,))
 
 		return cursor.fetchall()
+
+	@classmethod
+	def create_activity(cls, start_date, end_date, title, description, course_id, graphs):
+		con = get_db()
+		query = "INSERT INTO public.activity(start_date, end_date, title, description, course_id) VALUES(%s,%s,%s,%s,%s) RETURNING id;"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (start_date, end_date, title, description, course_id))
+		a = cursor.fetchone()[0]
+		query = "INSERT INTO public.activity_available_graph VALUES(%s, %s)"
+		var = []
+		for graph in graphs:
+			var.append((a,graph))
+		cursor.executemany(query, var)
+		con.commit()
+		
+		return 
+
+	@classmethod 
+	def get_graph_names(cls):
+		query = "SELECT id, spanish_name FROM graph"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		return cursor.fetchall()

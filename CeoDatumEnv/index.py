@@ -70,9 +70,9 @@ app.add_url_rule('/dragAndDrop/uploadFile', 'uploadFile', home.uploadFile, metho
 app.add_url_rule('/dragAndDrop/configurateUploadCSV', 'configurateUploadCSV', home.configurateUploadCSV, methods=['POST'])
 app.add_url_rule('/dragAndDrop/configurateUploadJSON', 'configurateUploadJSON', home.configurateUploadJSON, methods=['POST'])
 
-
 app.add_url_rule('/activities', 'activities', activities.activities, methods=['GET'])
-app.add_url_rule('/activities/new_activity', 'new_activity', activities.new_activity)
+app.add_url_rule('/activities/new_activity/<course_id>', 'new_activity', activities.new_activity)
+app.add_url_rule('/activities/create_activity', 'create_activity', activities.create_activity, methods=['POST'])
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
@@ -88,6 +88,12 @@ app.add_url_rule('/showRegister/ciudad/<city>', 'get_establishment_by_city', ext
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
+from resources.courses import course
+app.add_url_rule('/courses', 'courses', course.get_courses, methods=['GET'])
+app.add_url_rule('/courses/<course_id>', 'course<course_id>', course.view_course, methods=['GET'])
+app.add_url_rule('/new_course', 'new_courses', course.new_course, methods=['GET'])
+app.add_url_rule('/create_course', 'create_course', course.create_course, methods=['POST'])
+
 #TWITTER
 app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
 app.add_url_rule('/twitter', 'twitter_search', socialGraph.twitter_search, methods=['GET'])
@@ -99,8 +105,5 @@ app.add_url_rule('/inspectRows/<databaseId>&<objectString>&<condition>', 'inspec
 #DATASETS
 app.add_url_rule('/datasets/indexPublics', 'datasets_index_publics', datasets.indexPublics, methods=['GET'], defaults={'page':1})
 app.add_url_rule('/datasets/indexPublics/<int:page>', 'datasets_index_publics', datasets.indexPublics, methods=['GET'])
-
-
 app.add_url_rule('/datasets/show/<int:Bid>', 'datasets_show', datasets.show, methods=['GET'])
 app.add_url_rule('/datasets/show/', 'dataset_edit_share', datasets.editShare, methods=['POST'])
-
