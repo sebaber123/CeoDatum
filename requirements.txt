@@ -12,5 +12,3 @@
  Flask-Session==0.4.0
  flask-paginate==0.5.0
  tweepy==4.4.0
- xyzservices==2021.11.0
- bokeh-wordcloud2==0.9.1

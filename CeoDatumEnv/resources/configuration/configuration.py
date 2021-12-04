@@ -11,7 +11,7 @@ def configuration():
 	if session['username']:
 		configuration_data = Configuration.get_file_data()
 		users = User.get_all_users()
-		aaaaaa
+
 		return render_template('configuration/configuration.html', data=configuration_data, users=users)
 	else:
 		return redirect(url_for('home'))

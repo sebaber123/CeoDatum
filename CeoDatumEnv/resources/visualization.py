@@ -109,15 +109,22 @@ def queryConstruction(database, rowName, column, condition):
     if condition != None:
         for cond in condition.split(sep='%%%'):
             
-            #get the name of the column (first part of the condition)
-            columnCondition = cond.split(sep='=')[0]
+            if cond.find('like \'%') == -1:
+
+                #get the name of the column (first part of the condition)
+                columnCondition = cond.split(sep='=')[0]
+                
+                columnCondition = columnCondition[:-1].strip()
             
-            columnCondition = columnCondition[:-1].strip()
+            else:       
+
+                columnCondition = cond.split(sep='like \'%')[0].strip()
+
+                
 
             columnsToAddToDict = columnCondition.split(sep='***')
             columnsToAddToDict.append('object')
 
-            
             aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, topPos)   
 
             dictPositionsInQuery = aux[0]
@@ -168,34 +175,38 @@ def conditionsToString(database, condition, dictPositionsInQuery):
             columnCondition = ''
 
             #check if the condition is not negative
-            if cond.find('!=') == -1:                                    
+            if cond.find('!=') == -1:       
+
+                if cond.find('like \'%') == -1:                                                    
                 
-                #get the name of the column (first part of the condition)
-                columnCondition = cond.split(sep='=')[0].strip()
-                
-                #check if the condition is 'mayor que' or 'menor que'
-                if columnCondition[-1] == '>' or columnCondition[-1] == '<':
+                    #get the name of the column (first part of the condition)
+                    columnCondition = cond.split(sep='=')[0].strip()
                     
-                    #if the condition is 'mayor que' or 'menor que' delete the white space and the '<' or '>'
-                    columnCondition = columnCondition[:-2]
+                    #check if the condition is 'mayor que' or 'menor que'
+                    if columnCondition[-1] == '>' or columnCondition[-1] == '<':
+                        
+                        #if the condition is 'mayor que' or 'menor que' delete the white space and the '<' or '>'
+                        columnCondition = columnCondition[:-2]    
+
+                else:
+                    
+                    columnCondition = cond.split(sep='like \'%')[0].strip()       
+
 
                 columnsToAddToDict = columnCondition.split(sep='***')
-                columnsToAddToDict.append('object')
 
-                valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
+                valueColumn = 'id'
+
+                if columnCondition != database:
+
+                    columnsToAddToDict.append('object')
+
+                    valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
+
+                
                 pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
 
-                """#if the condition is between add the tX to the seccond condition
-                if (cond.find('>=') != -1 and cond.find('<=') != -1) :
-
-                    #get the column
-                    secondCond = cond.find(columnCondition + ' <=')        
-                    
-                    #put the tX in the second condition
-                    cond = cond[:secondCond] + 't' + str(pos) + '.' + cond[secondCond:] """
-
                 condition = cond.replace(columnCondition, ' t'+str(pos)+'.'+valueColumn+' ')
-
 
                 #If the 'valueColumn' not in 'QueryConditionPositive' it means that, have to create the array of that column
                 if valueColumn not in queryConditionPositive:
@@ -1102,19 +1113,24 @@ def map_chart(database, latitude, longitude, condition):
 
 def map_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, column_y, objectStringCallBack, conditionCallBack, columnXCallBack, columnYCallBack):
 
-    data = Visualization.get_data_with_parameters(data_db_name, selectString, fromString, groupByString, whereString)
+    data = Visualization.get_data_with_parameters(data_db_name, 't0.id, '+selectString, fromString, 't0.id, '+groupByString, whereString)
 
-    #database = Visualization.get_database_id(data_db_name)
-    #databaseId = database['id']
+    database = Visualization.get_database_id(data_db_name)
+    databaseId = database['id']
     
     k = 6378137
 
     #get the x axi value
     latitude_array = [np.log(np.tan((90 + float(row[column_x])) * np.pi/360.0)) * k for row in data]
     longitude_array = [float(row[column_y])*(k * pi/180.0) for row in data]
+    ids = [(row['id']) for row in data]
+
+    #latitude_array = []
+    #longitude_array = []
+
 
     #create a dictionary that  with the 'x_array' and 'y_array' arrays
-    dictionary=dict(  lat=latitude_array, lon=longitude_array)
+    dictionary=dict(  lat=latitude_array, lon=longitude_array, id=ids)
     
     #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
     source = ColumnDataSource(data=dictionary)
@@ -1127,8 +1143,8 @@ def map_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
     #df["y"] = np.log(np.tan((90 + df[lat]) * np.pi/360.0)) * k
 
     # range bounds supplied in web mercator coordinates
-    p = figure(x_range=(-18000000, 18000000), y_range=(-9000000, 9000000), plot_height=750, plot_width=1000,
-               x_axis_type="mercator", y_axis_type="mercator")
+    p = figure(x_range=(-20000000, 20000000), y_range=(-6500000, 9000000), plot_height=675, plot_width=900,
+               x_axis_type="mercator", y_axis_type="mercator", tools="tap, pan, wheel_zoom, save")
     p.add_tile(tile_provider)
 
     #source = ColumnDataSource(
@@ -1139,7 +1155,10 @@ def map_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
     p.circle(x="lon", y="lat", size=10, fill_color="blue", fill_alpha=0.4, source=source)
 
 
-    
+    url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+data_db_name+' =\'@id\''
+
+    taptool = p.select(type=TapTool)
+    taptool.callback = OpenURL(url=url) 
 
     return p
 
@@ -1327,7 +1346,10 @@ def inspect_rows(databaseId, objectString, condition):
             columnCondition = columnCondition[:-1].strip()
 
             columnsToAddToDict = columnCondition.split(sep='***')
-            columnsToAddToDict.append('object')
+            
+            if columnCondition != database['name']:
+                
+                columnsToAddToDict.append('object')
             
             aux = addPosInQuery(columnsToAddToDict, dictPositionsInQuery, pos)   
 
@@ -1348,6 +1370,8 @@ def inspect_rows(databaseId, objectString, condition):
     else:
 
         selectString = 't'+str(positionInQuery(objectString.split(sep='***'), dictPositionsInQuery))+'.id_'+objectString.split(sep='***')[len(objectString.split(sep='***'))-1]+', ' + select[:-1]
+
+    fromOfQueryString = fromOfQueryString.replace("INNER JOIN","LEFT OUTER JOIN")
 
     dataQuery = Visualization.get_data_with_parameters_for_inspection(database['name'], selectString, fromOfQueryString, conditionQueryString)
 
@@ -1388,7 +1412,7 @@ def inspect_rows(databaseId, objectString, condition):
 
                 else:
 
-                    rowPosition = rowPosition + 1                 
+                    rowPosition = rowPosition + 1                                 
                      
     
     return render_template('home/inspectRows.html', data=data, database=database['name'], objectString=objectStringLast) 

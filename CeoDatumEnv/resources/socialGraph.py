@@ -45,6 +45,7 @@ conjunciones = ['y', 'que', 'e', 'ni', 'o', 'ya sea', 'pero', 'mas', 'sino', 'si
 adverbios = ['ahora', 'antes', 'despues', 'ayer', 'hoy', 'mañana', 'temprano', 'todavia', 'ya', 'pronto', 'tarde', 'aqui', 'aca', 'alli', 'ahi', 'alla', 'cerca', 'lejos', 'dentro', 'fuera', 'alrededor', 'encima', 'detras', 'delante', 'despacio', 'deprisa', 'bien', 'mal', 'mucho', 'poco', 'muy', 'casi', 'todo', 'nada', 'algo', 'medio', 'demasiado', 'bastante', 'mas', 'menos', 'ademas', 'incluso', 'tambien', 'si', 'no', 'tampoco', 'jamas', 'nunca', 'acaso', 'quiza', 'quizas', 'tal vez', 'a lo mejor']
 specialCharacters = "'#!?,@.;"
 
+
 def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, adv):
 
 	wordsToExclude = []
@@ -84,6 +85,7 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 	
 	for tweet in tweepy.Cursor(api.search_tweets, q= (stringToSearch + ' -filter:retweets'), lang='es', tweet_mode='extended').items(200):
 
+
 		tweetTextAux = tweet.full_text.replace("\n", "").lower()
 
 		for x in range(len(specialCharacters)):
@@ -101,7 +103,6 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 			if word not in counterByWord:
 				counterByWord[word] = Counter()
 			counterByWord[word].update(auxCounter)
-			
 
 	"""for string in string_list:
 

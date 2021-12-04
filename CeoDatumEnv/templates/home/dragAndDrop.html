@@ -4,6 +4,22 @@
   <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/dragAndDrop.css') }}">
 {% endblock %}
 {% block content %}
+	{% block messages %}
+    <div class="container-fluid">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <strong>{{ message }}</strong>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+  {% endblock messages %}
 	<div class="container d-flex" style="height: 90%">
 	    <div class="row align-self-center" style="width: 100%">
 	     <div class="col">
@@ -12,9 +28,15 @@
 			</div>
 			<div class="col">	
 				<form action="{{url_for('uploadFile')}}" method=post enctype=multipart/form-data style="height: 100%">
-		        	<div class="card" style="height: 50%; width: 100%;">
-		            	<input type=file class="m-3" name=file id="file">
+		        	<div class="card" style="height: 50px; width: 100%;">
+	            	
+	       				
+	       				<div class="mb-3">
+								  <input  class="form-control form-control-lg" type="file" name=file id="file"  >
+								</div>
+
 		       		</div>
+		       		
 		        	<br>
 		        	<input class="btn btn-primary" style="width:100%" type=submit value="Subir">
 		    	</form>

@@ -40,12 +40,12 @@ class Home(object):
 		return None	
 
 	@classmethod
-	def add_new_database_to_ceoDatum(cls, databaseName):
+	def add_new_database_to_ceoDatum(cls, databaseName, ownerId, share):
 		
 
 		con = get_db()
 
-		query = ("INSERT INTO public.\"Database\" (name) VALUES (\'"+databaseName+"\' )")
+		query = ("INSERT INTO public.\"Database\" (name, database_owner_id, share) VALUES (\'"+databaseName+"\', \'"+ownerId+"\', \'"+share+"\' )")
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 

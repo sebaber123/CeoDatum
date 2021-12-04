@@ -87,6 +87,7 @@ def login():
             session['name'] = result['name']
             session['email'] = result['email']
             session['id'] = result['id']
+            session['user_id'] = result[1]
             session['role'] = result['rolename']
             return index()
         else:

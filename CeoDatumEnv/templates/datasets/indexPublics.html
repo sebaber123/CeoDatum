@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Datasets{% endblock %}
+{% block content %}
+<div class="container">
+	<div name="global_datasets" class="container-fluid">
+		<h1>Datasets Publicos</h1>
+	</div>
+	<table class="table table-bordered table-striped">
+		<thead>
+    		<tr>
+				<th>Nombre del dataset</th>
+				<th>Subido por</th>
+				<th>Ver</th>
+
+    		</tr>
+  		</thead>
+  		<tbody>
+
+  			{% for dataset in datasets %}
+  				<tr>		      
+					<td>{{dataset.dataset_name}}</td>
+					<td>{{dataset.name}} {{dataset.surname}}</td>
+					<td>
+						<button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='/datasets/show/{{dataset.id}}'">		Inspeccionar
+						</button>
+						<button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='/plotter/{{dataset.id}}'">		Graficar
+						</button>
+					</td>
+			    </tr>
+  			{% endfor %}
+		  </tbody>
+  		
+
+
+	</table>
+</div>
+
+{% endblock %}

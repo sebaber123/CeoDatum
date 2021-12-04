@@ -1,18 +1,44 @@
 {% extends "layout.html" %}
 {% block content %}
+	<div class="container" style="height: 94%;">
+	  <div style="height: 100%;" class="row align-items-start">
+	    <div class="col">
+	      
+	    </div>
+	    <div style="background-color: #468FAF; text-align:center; margin: auto; height: 100%;" class="col-7">
+	      	
+	      	<br/>
+	      	<h4>por favor ingrese los datos solicitados</h4>
 
-	<h2>fila de archivo de ejemplo</h2>
+	      	<br/>
+	      	<form action="{{url_for('configurateUploadJSON')}}" method=post>
 
-	<p>por favor ingrese el tipo de dato de la columna y el nombre que tendra dicha columna (lo primero que se muestra es de ejemplo tomado desde el archivo)</p>
+				<input type="hidden" name="filename" value="{{filename}}">
+				<h5 >ingrese el nombre de la base de datos: </h5>
+				<input class="form-control" style=" display:inline-block; width:300px; align-self: center; " type="text" name="database">
+				<br/>
+				<br/>
+				
+				<h5>Estado del dataset:</h5>
+				<select style="display: inline; width: 300px;" id="share" name="share" class="form-select">
+				  <option selected value="publico">Publico</option>
+				  <option value="protegido">Protegido</option>
+				  <option value="privado">Privado</option>
+				</select>
+				<br/>
+				<br/>
 
-	<form action="{{url_for('configurateUploadJSON')}}" method=post>
 
-		<input type="hidden" name="filename" value="{{filename}}">
-		<p style="width: 250px">ingrese el nombre de la base de datos: </p>
-		<input type="text" name="database">
-		<br/>
+				<input type=submit style="width:200px" class="btn btn-light" value=Finalizar>
+			</form> 
 
-		<input type=submit value=Finalizar>
-	</form> 
+	      		
+
+	    </div>
+	    <div class="col">
+	      
+	    </div>
+	  </div>
+	</div>  
 
 {% endblock %}    
