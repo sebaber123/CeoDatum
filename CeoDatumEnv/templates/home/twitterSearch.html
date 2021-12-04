@@ -66,21 +66,22 @@
 <div class="d-flex justify-content-center">
   <div class="card justify-content-center" style="width: 60rem;">
     <div class="d-flex justify-content-center" style="margin-top: 10px;">
-      <iframe id="iframe" name="iframe" src="" height="620" width="800"></iframe>  
+      <div class="d-none" id="carga" style="background: url(../static/images/charge.gif) center center no-repeat">
+        <iframe id="iframe" name="iframe" src="" height="620" width="800"></iframe>  
+      </div>
     </div>
 </div>
 
 <script>
   function GenerateChart() {
-    
     //iframe
     var iframe = $('#iframe')[0];
     
     //src iframe string
     var src = "/twitterSearch/";
-
+    $('#carga').removeClass('d-none');
     //alert($('#searchString').val());
-
+    document.getElementById('iframe').src = ""
     src = src + $('#searchString').val();
 
     src = src + '&' + $('#quantityOutput').val();
@@ -125,8 +126,7 @@
 
     //reload the iframe
     //iframe.contentWindow.location.reload(true);
-    document.getElementById('iframe').src = document.getElementById('iframe').src;
-    
+    document.getElementById('iframe').src = document.getElementById('iframe').src;    
     //window.frames['some_frame_id'].location.href.reload()
   }
 

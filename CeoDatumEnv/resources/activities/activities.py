@@ -1,12 +1,13 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash
 from db import get_db
 from models.activity import Activity
+from datetime import date
 
 
 def activities():
 	if session['name']:
-		activities = Activity.getActivities(session['id'])
-		return render_template('activities/activities.html', activities=activities)
+		activities = Activity.getActivitiesOfCourses(session['id'])
+		return render_template('activities/activities.html', activities=activities, today=date.today())
 	else:
 		return render_template('/')
 

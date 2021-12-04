@@ -12,15 +12,17 @@
 		      <th scope="col">Curso</th>
 		      <th scope="col">Fecha de comienzo</th>
 		      <th scope="col">Fecha de cierre</th>
-		    </tr>
+		   	  <th scope="col">Estado</th>	
 		  </thead>
 		  <tbody>
 		  	{% for activity in activities %}
 		  	<tr>
-		  		<td>{{activity.name}}</td>
-		  		<td></td>
-		  		<td>{{activity.start_date}}</td>
-		  		<td>{{activity.end_date}}</td>
+		  		<td>{{activity.title}}</td>
+		  		<td>{{activity.course_name}}</td>
+		  		<td>{{activity.start_date.strftime('%d-%m-%y')}}</td>
+		  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
+		  		<td>{% if activity.end_date < today %} Atrasado por {{(today - activity.end_date).days }} dias {% else %} Sin entregar {% endif %}
+		  		</td>
 		  	</tr>
 		  	{% endfor %}
 		  </tbody>

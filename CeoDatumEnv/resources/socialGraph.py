@@ -17,7 +17,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 #Importing Dataset
-import base64
+import base64, re
 from io import BytesIO
 
 def word_cloud(text):
@@ -38,17 +38,17 @@ def twitter_search():
 	return render_template('home/twitterSearch.html')
 
 
-preposiciones = ['a', 'ante', 'bajo', 'cabe', 'con', 'contra', 'de', 'desde', 'durante', 'en', 'entre', 'hacia', 'hasta', 'mediante', 'para', 'por', 'según', 'sin', 'so', 'sobre', 'tras', 'versus', 'vía']
+preposiciones = ['a', 'al', 'ante', 'bajo', 'cabe', 'con', 'contra', 'de', 'del', 'desde', 'durante', 'en', 'entre', 'hacia', 'hasta', 'mediante', 'para', 'por', 'según', 'sin', 'so', 'sobre', 'tras', 'versus', 'vía']
 articulos = ['el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas']
-pronombres = ['yo', 'me', 'mi', 'conmigo', 'tu', 'te', 'ti', 'contigo', 'usted', 'vos', 'él', 'lo', 'le', 'se', 'sí', 'consigo', 'ella', 'la', 'ello', 'lo', 'nosotros', 'nos', 'nosotras', 'vosotros', 'vosotras', 'os', 'ustedes', 'ellos', 'ellas', 'los', 'las', 'les', 'consigo', 'su']
-conjunciones = ['y', 'que', 'e', 'ni', 'o', 'ya sea', 'pero', 'mas', 'sino', 'sin embargo', 'luego', 'pues', 'con que', 'asi que', 'porque', 'puesto que',  'ya que', 'pues si', 'con tal que', 'siempre que', 'al menos que', 'como', 'por', 'que']
-adverbios = ['ahora', 'antes', 'despues', 'ayer', 'hoy', 'mañana', 'temprano', 'todavia', 'ya', 'pronto', 'tarde', 'aqui', 'aca', 'alli', 'ahi', 'alla', 'cerca', 'lejos', 'dentro', 'fuera', 'alrededor', 'encima', 'detras', 'delante', 'despacio', 'deprisa', 'bien', 'mal', 'mucho', 'poco', 'muy', 'casi', 'todo', 'nada', 'algo', 'medio', 'demasiado', 'bastante', 'mas', 'menos', 'ademas', 'incluso', 'tambien', 'si', 'no', 'tampoco', 'jamas', 'nunca', 'acaso', 'quiza', 'quizas', 'tal vez', 'a lo mejor']
-specialCharacters = "'#!?,@.;"
+pronombres = ['yo', 'me', 'mi', 'conmigo', 'tu', 'te', 'ti', 'contigo', 'usted', 'vos', 'él', 'lo', 'le', 'se', 'sí', 'consigo', 'ella', 'la', 'ello', 'lo', 'nosotros', 'nos', 'nosotras', 'vosotros', 'vosotras', 'os', 'ustedes', 'ellos', 'ellas', 'los', 'las', 'les', 'consigo', 'su', 'eso',' esa', 'esas', 'esos', 'esta', 'este','esto','estas','estos','aquel','aquella','aquellos','aquellas']
+conjunciones = ['y', 'que', 'qué', 'q', 'e', 'ni', 'o', 'ya sea', 'pero', 'mas', 'sino', 'sin embargo', 'luego', 'pues', 'con que', 'asi que', 'porque', 'puesto que',  'ya que', 'pues si', 'con tal que', 'siempre que', 'al menos que', 'como', 'por', 'que']
+adverbios = ['ahora', 'antes', 'despues', 'ayer', 'hoy', 'mañana', 'mas','más','temprano', 'todavia', 'ya', 'pronto', 'tarde', 'aqui', 'aca', 'alli', 'ahi', 'alla', 'cerca', 'lejos', 'dentro', 'fuera', 'alrededor', 'encima', 'detras', 'delante', 'despacio', 'deprisa', 'bien', 'mal', 'mucho', 'poco', 'muy', 'casi', 'todo', 'nada', 'algo', 'medio', 'demasiado', 'bastante', 'mas', 'menos', 'ademas', 'incluso', 'tambien', 'si', 'no', 'tampoco', 'jamas', 'nunca', 'acaso', 'quiza', 'quizas', 'tal vez', 'a lo mejor']
+specialCharacters = "\'#!?,.;-|"
 
 
 def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, adv):
 
-	wordsToExclude = []
+	wordsToExclude = ['https']
 
 	if articles == 1:
 		wordsToExclude = wordsToExclude + articulos
@@ -83,7 +83,7 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 
 	text = ""
 	
-	for tweet in tweepy.Cursor(api.search_tweets, q= (stringToSearch + ' -filter:retweets'), lang='es', tweet_mode='extended').items(200):
+	for tweet in tweepy.Cursor(api.search_tweets, q= (stringToSearch + ' -filter:retweets'), lang='es', tweet_mode='extended').items(100):
 
 
 		tweetTextAux = tweet.full_text.replace("\n", "").lower()
@@ -122,8 +122,10 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 	for x in wordsToPop:
 		counter.pop(x, None)
 
-
-
+	querywords = text.split()
+	resultwords  = [word for word in querywords if word.lower() not in wordsToExclude]
+	text = ' '.join(resultwords)
+	text = re.sub(r'http\S+', '', text)
 	
 	mostCommons = counter.most_common(topQuantity)
 	relations = []
