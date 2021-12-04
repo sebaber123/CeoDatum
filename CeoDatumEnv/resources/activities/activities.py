@@ -28,3 +28,9 @@ def create_activity():
 		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs)
 		return redirect(url_for('courses'))
 	return redirect(url_for('home'))
+
+def view_activity(id):
+	if session['id']:
+		actividad = Activity.get_activity_by_id(id)
+		return render_template('activities/activity_view.html', activity=actividad)
+

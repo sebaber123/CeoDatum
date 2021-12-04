@@ -13,7 +13,6 @@ from math import pi
 import numpy as np
 from bokeh.transform import cumsum, jitter
 from bokeh.palettes import Category20, cividis, Set3, Set1, Category10
-import xyzservices.providers as xyz
 from bokeh.tile_providers import CARTODBPOSITRON, get_provider
 
 

@@ -39,6 +39,24 @@
         <label class="form-check-label" for="articulos">Excluir articulos</label>
       </div>
     </div>
+    <div class="d-flex justify-content-center">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="pronombres">
+        <label class="form-check-label" for="pronombres">Excluir pronombres</label>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="conjunciones">
+        <label class="form-check-label" for="conjunciones">Excluir conjunciones</label>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="adverbios">
+        <label class="form-check-label" for="adverbios">Excluir adverbios</label>
+      </div>
+    </div>
 
     <div class="d-flex justify-content-center" style="margin-Bottom:10px;">
       <button type="button" class="btn btn-primary" style="width:200px" onclick="GenerateChart()">Buscar</button>
@@ -47,12 +65,9 @@
 </div>
 <div class="d-flex justify-content-center">
   <div class="card justify-content-center" style="width: 60rem;">
-
     <div class="d-flex justify-content-center" style="margin-top: 10px;">
       <iframe id="iframe" name="iframe" src="" height="620" width="800"></iframe>  
     </div>
-
-    
 </div>
 
 <script>
@@ -78,6 +93,27 @@
     }
 
     if ($('#articulos').is(':checked')) {
+      src = src + '&' + '1';
+    }  
+    else{
+      src = src + '&' + '0';
+    }
+
+    if ($('#pronombres').is(':checked')) {
+      src = src + '&' + '1';
+    }  
+    else{
+      src = src + '&' + '0';
+    }
+
+    if ($('#conjunciones').is(':checked')) {
+      src = src + '&' + '1';
+    }  
+    else{
+      src = src + '&' + '0';
+    }
+
+    if ($('#adverbios').is(':checked')) {
       src = src + '&' + '1';
     }  
     else{

@@ -32,3 +32,24 @@ class Course(object):
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (id_course,))
 		return cursor.fetchone()
+
+	@classmethod
+	def invite_user_to_course(cls,username,course_id):
+		con = get_db()
+		query = "INSERT INTO public.user_course VALUES(%s, %s)"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (username,course_id))
+		con.commit()
+		query = "SELECT * FROM public.user WHERE id=%s"
+		cursor.execute(query, (username,))
+
+		return cursor.fetchone()
+
+	@classmethod
+	def is_user_on_course(cls,username,course_id):
+		query = "SELECT * FROM public.user_course WHERE user_id=%s and course_id=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (username,course_id))
+		if cursor.fetchone():
+			return True
+		return False

@@ -12,6 +12,25 @@ from bokeh.io import show, output_file
 from bokeh.plotting import figure
 from bokeh.models import GraphRenderer, StaticLayoutProvider, Oval, Circle, MultiLine
 from bokeh.palettes import Spectral8
+#Importing Libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+#Importing Dataset
+import base64
+from io import BytesIO
+
+def word_cloud(text):
+	# Creating word_cloud with text as argument in .generate() method
+	wordcloud = WordCloud(collocations = False, background_color = 'white',width=1600, height=800).generate(text)
+	# Display the generated Word Cloud
+	wordcloud = wordcloud.to_image()
+	buffered = BytesIO()
+	wordcloud.save(buffered, format = "JPEG")
+	img_byte = buffered.getvalue() # bytes
+	img_base64 = base64.b64encode(img_byte).decode('ascii')
+ #Base64 - encoded bytes * not str
+	return img_base64
 
 
 def twitter_search():
@@ -21,8 +40,12 @@ def twitter_search():
 
 preposiciones = ['a', 'ante', 'bajo', 'cabe', 'con', 'contra', 'de', 'desde', 'durante', 'en', 'entre', 'hacia', 'hasta', 'mediante', 'para', 'por', 'según', 'sin', 'so', 'sobre', 'tras', 'versus', 'vía']
 articulos = ['el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas']
+pronombres = ['yo', 'me', 'mi', 'conmigo', 'tu', 'te', 'ti', 'contigo', 'usted', 'vos', 'él', 'lo', 'le', 'se', 'sí', 'consigo', 'ella', 'la', 'ello', 'lo', 'nosotros', 'nos', 'nosotras', 'vosotros', 'vosotras', 'os', 'ustedes', 'ellos', 'ellas', 'los', 'las', 'les', 'consigo', 'su']
+conjunciones = ['y', 'que', 'e', 'ni', 'o', 'ya sea', 'pero', 'mas', 'sino', 'sin embargo', 'luego', 'pues', 'con que', 'asi que', 'porque', 'puesto que',  'ya que', 'pues si', 'con tal que', 'siempre que', 'al menos que', 'como', 'por', 'que']
+adverbios = ['ahora', 'antes', 'despues', 'ayer', 'hoy', 'mañana', 'temprano', 'todavia', 'ya', 'pronto', 'tarde', 'aqui', 'aca', 'alli', 'ahi', 'alla', 'cerca', 'lejos', 'dentro', 'fuera', 'alrededor', 'encima', 'detras', 'delante', 'despacio', 'deprisa', 'bien', 'mal', 'mucho', 'poco', 'muy', 'casi', 'todo', 'nada', 'algo', 'medio', 'demasiado', 'bastante', 'mas', 'menos', 'ademas', 'incluso', 'tambien', 'si', 'no', 'tampoco', 'jamas', 'nunca', 'acaso', 'quiza', 'quizas', 'tal vez', 'a lo mejor']
+specialCharacters = "'#!?,@.;"
 
-def api_twitter_search(stringToSearch, topQuantity, articles, prep):
+def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, adv):
 
 	wordsToExclude = []
 
@@ -31,6 +54,15 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep):
 
 	if prep == 1:
 		wordsToExclude = wordsToExclude + preposiciones
+
+	if pron == 1:
+		wordsToExclude = wordsToExclude + pronombres
+
+	if conj == 1:
+		wordsToExclude = wordsToExclude + conjunciones
+
+	if adv == 1:
+		wordsToExclude = wordsToExclude + adverbios
 
 	consumer_key="YXA1EA48NTgTWFKeL4ENYdmVl"
 	consumer_secret="OpiF2c0NmhqAT7wX6rJZVGs777hHQv3KI3UkyNwBHElC4H2PDi"
@@ -48,16 +80,23 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep):
 	counter = Counter()
 	counterByWord = {}
 
-	#string_list = ['la casa es grande', 'boca es muy grande', 'boca es mi pasion', 'boca juega 4-4-2', 'boca juega mal pero es mi pasion']
+	text = ""
+	
+	for tweet in tweepy.Cursor(api.search_tweets, q= (stringToSearch + ' -filter:retweets'), lang='es', tweet_mode='extended').items(200):
 
-	for tweet in tweepy.Cursor(api.search_tweets, q= (stringToSearch + ' -filter:retweets'), lang='es', tweet_mode='extended').items(10):
-			
-		tweetTextAux = tweet.full_text.replace("\n", "").lower().split()
+		tweetTextAux = tweet.full_text.replace("\n", "").lower()
+
+		for x in range(len(specialCharacters)):
+			tweetTextAux = tweetTextAux.replace(specialCharacters[x],"")
+
+		text += tweet.full_text
+
+		tweetTextAux = tweetTextAux.split()
 
 		auxCounter = Counter(tweetTextAux)
 
 		counter.update(auxCounter)
-
+		
 		for word in tweetTextAux:
 			if word not in counterByWord:
 				counterByWord[word] = Counter()
@@ -189,9 +228,11 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep):
 
 	script, div = components(plot)
 
+	image = word_cloud(text)
 
 	return render_template(
-		'home/graph.html',
+		'home/twitterGraphAndCloud.html',
+		image = image,
 		plot_script=script,
 		plot_div=div,
 		js_resources=INLINE.render_js(),

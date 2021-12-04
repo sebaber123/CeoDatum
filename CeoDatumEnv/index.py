@@ -20,7 +20,7 @@ app.run(debug=True)
 #    list_users = cursor.fetchall()
 #    return json.dumps(list_users)
 
-from resources import user, visualization, home, socialGraph
+from resources import user, visualization, home, socialGraph, worldcloud
 from resources.activities import activities
 from resources.datasets import datasets
 from resources.configuration import configuration
@@ -73,6 +73,7 @@ app.add_url_rule('/dragAndDrop/configurateUploadJSON', 'configurateUploadJSON', 
 app.add_url_rule('/activities', 'activities', activities.activities, methods=['GET'])
 app.add_url_rule('/activities/new_activity/<course_id>', 'new_activity', activities.new_activity)
 app.add_url_rule('/activities/create_activity', 'create_activity', activities.create_activity, methods=['POST'])
+app.add_url_rule('/activities/view_activity/<id>', 'view_activity', activities.view_activity)
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
@@ -91,14 +92,19 @@ app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 from resources.courses import course
 app.add_url_rule('/courses', 'courses', course.get_courses, methods=['GET'])
 app.add_url_rule('/courses/<course_id>', 'course<course_id>', course.view_course, methods=['GET'])
+#Usuario existe
+app.add_url_rule('/courses/userExist/<username>', 'userExist', user.user_exist)
+app.add_url_rule('/courses/inviteUserToCourse/<username>&<course_id>', 'inviteUser', course.invite_user_to_course)
+app.add_url_rule('/courses/isStudentOnCourse/<username>&<course_id>', 'isUserOnCourse', course.is_user_on_course)
 app.add_url_rule('/new_course', 'new_courses', course.new_course, methods=['GET'])
 app.add_url_rule('/create_course', 'create_course', course.create_course, methods=['POST'])
 
 #TWITTER
-app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
+app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>&<int:pron>&<int:conj>&<int:adv>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
 app.add_url_rule('/twitter', 'twitter_search', socialGraph.twitter_search, methods=['GET'])
 
 #INSPECT
 app.add_url_rule('/inspectRows/<databaseId>&<objectString>', 'inspect_rows', visualization.inspect_rows, methods=['GET'], defaults={'condition':None})
 app.add_url_rule('/inspectRows/<databaseId>&<objectString>&<condition>', 'inspect_rows', visualization.inspect_rows, methods=['GET'])
 app.add_url_rule('/inspectRows/<databaseId>&<objectString>&<condition>', 'inspect_rows', visualization.inspect_rows, methods=['GET'])
+

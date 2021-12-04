@@ -38,3 +38,19 @@ class Activity(object):
 		cursor.execute(query)
 
 		return cursor.fetchall()
+
+	@classmethod
+	def get_activities_of_course(cls, course_id):
+		query = "SELECT * FROM activity WHERE course_id=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (course_id,))
+
+		return cursor.fetchall()
+
+	@classmethod
+	def get_activity_by_id(cls, activity_id):
+		query = "SELECT * FROM activity WHERE id=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (activity_id,))
+
+		return cursor.fetchone()

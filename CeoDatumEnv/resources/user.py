@@ -1,4 +1,4 @@
-from flask import redirect, render_template, request, url_for, session, abort, flash
+from flask import redirect, render_template, request, url_for, session, abort, flash, jsonify
 from db import get_db
 from resources.visualization import bar_plot, line_plot
 from models.user import User
@@ -94,6 +94,15 @@ def login():
     elif request.form['submit'] == 'register':
         return register_form()
 
+def user_exist(username):
+    if session['role']=="professor":
+        result = User.user_or_email_exist(username)
+        if result:
+            return jsonify(result = result['id'])
+        return jsonify(result = -1)
+    return redirect(url_for('home'))
+
+
 def logout():
     session.clear()
     return redirect(url_for("loginForm"))
@@ -116,6 +125,5 @@ def register():
         password = generate_password_hash(password)
         User.register(username, password, province, city, institute, email, name, surname, birthday)
     return render_template('user/login_form.html', registerSuccess="Registro exitoso!")
-
 
 
