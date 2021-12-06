@@ -1,5 +1,6 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash, jsonify
 from models.home import Home
+from models.user import User
 import os
 #from werkzeug import secure_filename
 from werkzeug.utils import secure_filename
@@ -88,6 +89,12 @@ def configurateUploadJSON ():
 	Home.create_database(database)
 
 	databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database, str(sessionId), share)
+
+	if share == 'protegido':
+
+		establismentId = (User.get_user_by_id(sessionId))['establishment_id']
+
+		Home.add_dataset_stablishment(databaseInCeoDatum['id'], establismentId)
 	
 	spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
 	sqlContext = SQLContext(spark)

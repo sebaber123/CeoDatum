@@ -40,3 +40,18 @@ class Dataset(object):
 		con.commit()
 
 		return None		
+
+	@classmethod
+	def get_datasets_to_add_to_course(cls, user_id, establishment_id, course_id):
+
+		query = ("SELECT d.id, d.name as dataset_name FROM public.\"Database\" as d " + 
+				"WHERE d.share = 'publico' OR "+
+				"(d.share = 'protegido' AND d.id IN (SELECT id_dataset from public.\"Dataset_establishment\" where id_establishment = "+str(establishment_id)+"   ) ) "+ 
+				"OR d.database_owner_id = "+str(user_id)+" AND "+
+				"d.id NOT IN (select id_dataset from public.\"Dataset_course\" where id_course = "+str(course_id)+" ) ")
+
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		return cursor.fetchall()	
+
