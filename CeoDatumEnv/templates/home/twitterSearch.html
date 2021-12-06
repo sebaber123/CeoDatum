@@ -25,42 +25,64 @@
         <input type="range" class="form-control form-range" min="5" max="25" id="quantity" value="10"  aria-describedby="basic-addon1" style="width:500px; height: 38px;" oninput="$('#quantityOutput').value = this.value"/>
       </div>
     </div>
-
-    <div class="d-flex justify-content-center">
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="preposiciones">
-        <label class="form-check-label" for="preposiciones">Excluir preposiciones</label>
+  <div class="container">
+    <h4 class="form-check-label justify-content-center" align="center">Excluir:</h4>
+    <div class="row">
+      <div class="col-sm">
+      </div>
+      <div class="col-sm">
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="preposiciones">
+            <label class="form-check-label" for="preposiciones">Preposiciones</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="articulos">
+            <label class="form-check-label" for="articulos">Articulos</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="pronombres">
+            <label class="form-check-label" for="pronombres">Pronombres</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="conjunciones">
+            <label class="form-check-label" for="conjunciones">Conjunciones</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="adverbios">
+            <label class="form-check-label" for="adverbios">Adverbios</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="conjugaciones">
+            <label class="form-check-label" for="conjugaciones">Conjugaciones de ser, estar, haber y tener</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="links">
+            <label class="form-check-label" for="links">Links</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm">
       </div>
     </div>
-
-    <div class="d-flex justify-content-center">
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="articulos">
-        <label class="form-check-label" for="articulos">Excluir articulos</label>
-      </div>
-    </div>
-    <div class="d-flex justify-content-center">
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="pronombres">
-        <label class="form-check-label" for="pronombres">Excluir pronombres</label>
-      </div>
-    </div>
-    <div class="d-flex justify-content-center">
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="conjunciones">
-        <label class="form-check-label" for="conjunciones">Excluir conjunciones</label>
-      </div>
-    </div>
-    <div class="d-flex justify-content-center">
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="adverbios">
-        <label class="form-check-label" for="adverbios">Excluir adverbios</label>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-center" style="margin-Bottom:10px;">
-      <button type="button" class="btn btn-primary" style="width:200px" onclick="GenerateChart()">Buscar</button>
-    </div>
+  </div>
+  <div class="d-flex justify-content-center" style="margin-Bottom:10px;">
+    <button type="button" class="btn btn-primary" style="width:200px" onclick="GenerateChart()">Buscar</button>
+  </div>
   </div>
 </div>
 <div class="d-flex justify-content-center">
@@ -115,6 +137,20 @@
     }
 
     if ($('#adverbios').is(':checked')) {
+      src = src + '&' + '1';
+    }  
+    else{
+      src = src + '&' + '0';
+    }
+
+    if ($('#conjugaciones').is(':checked')) {
+      src = src + '&' + '1';
+    }  
+    else{
+      src = src + '&' + '0';
+    }
+
+    if ($('#links').is(':checked')) {
       src = src + '&' + '1';
     }  
     else{

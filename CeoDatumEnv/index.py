@@ -100,7 +100,7 @@ app.add_url_rule('/new_course', 'new_courses', course.new_course, methods=['GET'
 app.add_url_rule('/create_course', 'create_course', course.create_course, methods=['POST'])
 
 #TWITTER
-app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>&<int:pron>&<int:conj>&<int:adv>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
+app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>&<int:pron>&<int:conj>&<int:adv>&<int:verbos>&<int:links>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
 app.add_url_rule('/twitter', 'twitter_search', socialGraph.twitter_search, methods=['GET'])
 
 #INSPECT

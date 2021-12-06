@@ -40,15 +40,18 @@ def twitter_search():
 
 preposiciones = ['a', 'al', 'ante', 'bajo', 'cabe', 'con', 'contra', 'de', 'del', 'desde', 'durante', 'en', 'entre', 'hacia', 'hasta', 'mediante', 'para', 'por', 'según', 'sin', 'so', 'sobre', 'tras', 'versus', 'vía']
 articulos = ['el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas']
-pronombres = ['yo', 'me', 'mi', 'conmigo', 'tu', 'te', 'ti', 'contigo', 'usted', 'vos', 'él', 'lo', 'le', 'se', 'sí', 'consigo', 'ella', 'la', 'ello', 'lo', 'nosotros', 'nos', 'nosotras', 'vosotros', 'vosotras', 'os', 'ustedes', 'ellos', 'ellas', 'los', 'las', 'les', 'consigo', 'su', 'eso',' esa', 'esas', 'esos', 'esta', 'este','esto','estas','estos','aquel','aquella','aquellos','aquellas']
-conjunciones = ['y', 'que', 'qué', 'q', 'e', 'ni', 'o', 'ya sea', 'pero', 'mas', 'sino', 'sin embargo', 'luego', 'pues', 'con que', 'asi que', 'porque', 'puesto que',  'ya que', 'pues si', 'con tal que', 'siempre que', 'al menos que', 'como', 'por', 'que']
-adverbios = ['ahora', 'antes', 'despues', 'ayer', 'hoy', 'mañana', 'mas','más','temprano', 'todavia', 'ya', 'pronto', 'tarde', 'aqui', 'aca', 'alli', 'ahi', 'alla', 'cerca', 'lejos', 'dentro', 'fuera', 'alrededor', 'encima', 'detras', 'delante', 'despacio', 'deprisa', 'bien', 'mal', 'mucho', 'poco', 'muy', 'casi', 'todo', 'nada', 'algo', 'medio', 'demasiado', 'bastante', 'mas', 'menos', 'ademas', 'incluso', 'tambien', 'si', 'no', 'tampoco', 'jamas', 'nunca', 'acaso', 'quiza', 'quizas', 'tal vez', 'a lo mejor']
+pronombres = ['yo', 'me', 'mi', 'conmigo', 'tu', 'te', 'ti', 'contigo', 'usted', 'vos', 'él', 'lo', 'le', 'se', 'sí', 'consigo', 'ella', 'la', 'ello', 'lo', 'nosotros', 'nos', 'nosotras', 'vosotros', 'vosotras', 'os', 'ustedes', 'ellos', 'ellas', 'los', 'las', 'les', 'consigo', 'su', 'eso','esa', 'esas', 'esos', 'esta', 'este','esto','estas','estos','aquel','aquella','aquellos','aquellas']
+conjunciones = ['y', 'que', 'qué', 'q', 'e', 'ni', 'o', 'ya sea', 'pero', 'mas', 'sino', 'sin embargo', 'luego', 'pues', 'con que', 'asi', 'porque', 'puesto que',  'ya que', 'pues si', 'con tal que', 'siempre que', 'al menos que', 'como', 'por', 'que']
+adverbios = ['asi', 'así', 'ahora', 'antes', 'despues', 'ayer', 'hoy', 'mañana', 'mas','más','temprano', 'todavia', 'ya', 'pronto', 'tarde', 'aqui', 'aca', 'alli', 'ahi', 'alla', 'cerca', 'lejos', 'dentro', 'fuera', 'alrededor', 'encima', 'detras', 'delante', 'despacio', 'deprisa', 'bien', 'mal', 'mucho', 'poco', 'muy', 'casi', 'todo', 'nada', 'algo', 'medio', 'demasiado', 'bastante', 'mas', 'menos', 'ademas', 'incluso', 'tambien', 'si', 'no', 'tampoco', 'jamas', 'nunca', 'acaso', 'quiza', 'quizas', 'tal vez', 'a lo mejor']
 specialCharacters = "\'#!?,.;-|"
+verbo_ser = ['ser', 'soy', 'eres', 'sos', 'es', 'somos', 'son', 'sois', 'sido', 'era', 'eras', 'eramos', 'eramos', 'erais', 'eran', 'fui', 'fuiste', 'fue', 'fuimos', 'fuisteis', 'fueron', 'sere', 'seré', 'sere', 'seras','serás','serán', 'seran', 'seremos','seréis', 'sería', 'seria','serías', 'serias','sería', 'seriamos', 'serían','serian']
+verbo_estar = ['estar','estoy', 'estás', 'estas', 'esta', 'está', 'estan', 'están', 'estamos', 'estaís', 'estais', 'estado', 'estaba', 'estabas', 'estaba', 'estábamos', 'estabais', 'estaban', 'estuve', 'estuviste', 'estuvo', 'estuvimos', 'estuvisteis', 'estuvieron', 'estaré', 'estare', 'estarás', 'estaras', 'estará', 'estara']
+verbo_haber = ['haber','he', 'has', 'ha', 'hemos', 'han', 'habeis', 'habéis', 'han', 'habido', 'había', 'habia', 'habias', 'habías', 'habian', 'habían', 'habiamos', 'habíamos', 'habiais', 'habíais', 'hube', 'hubiste', 'hubo', 'hubimos', 'hubisteis', 'hubieron', 'habré', 'habre', 'habrás', 'habrá', 'habra', 'habremos', 'habréis', 'habrán', 'habran', 'habría', 'habria','habrias','habrías', 'habría', 'habria', 'habríamos', 'habriamos', 'habríais', 'habriais', 'habrían', 'habrian']
+verbo_tener = ['tener','tengo', 'tienes', 'tiene', 'tenes', 'tenemos', 'tenéis', 'teneis', 'tienen', 'tenia', 'tenía', 'tenías', 'tenias', 'teniamos', 'teniais', 'tenian', 'tenían', 'tuve', 'tuviste', 'tuvo', 'tuvimos', 'tuvieron', 'tuviste', 'tuvisteis', 'tendré', 'tendre', 'tendrás', 'tendras', 'tendrá', 'tendra', 'tendremos', 'tendreis', 'tendrán', 'tuvido']
 
+def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, adv, verbos, links):
 
-def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, adv):
-
-	wordsToExclude = ['https']
+	wordsToExclude = []
 
 	if articles == 1:
 		wordsToExclude = wordsToExclude + articulos
@@ -64,6 +67,11 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 
 	if adv == 1:
 		wordsToExclude = wordsToExclude + adverbios
+
+	if verbos == 1:
+		wordsToExclude = wordsToExclude + verbo_estar + verbo_tener + verbo_haber + verbo_ser
+
+
 
 	consumer_key="YXA1EA48NTgTWFKeL4ENYdmVl"
 	consumer_secret="OpiF2c0NmhqAT7wX6rJZVGs777hHQv3KI3UkyNwBHElC4H2PDi"
@@ -87,6 +95,9 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 
 
 		tweetTextAux = tweet.full_text.replace("\n", "").lower()
+
+		if links == 1:
+			tweetTextAux = re.sub(r'http\S+', '', tweetTextAux)
 
 		for x in range(len(specialCharacters)):
 			tweetTextAux = tweetTextAux.replace(specialCharacters[x],"")
@@ -125,7 +136,9 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 	querywords = text.split()
 	resultwords  = [word for word in querywords if word.lower() not in wordsToExclude]
 	text = ' '.join(resultwords)
-	text = re.sub(r'http\S+', '', text)
+	
+	if links == 1:
+		text = re.sub(r'http\S+', '', text)
 	
 	mostCommons = counter.most_common(topQuantity)
 	relations = []
