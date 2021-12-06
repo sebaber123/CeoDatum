@@ -1,8 +1,124 @@
 {% extends "layout.html" %}
 {% block header %}
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 {% endblock%}
 {% block title %}Datasets{% endblock %}
 {% block content %}
-	{{curso.name}}
-	<a class="btn btn-danger" href="/activities/new_activity/{{curso.id}}">Nueva actividad</a>
+	<div class="container">
+		<h1 align="center">{{curso.name}}</h1>
+		<hr>
+		<h2 id="alumnosTitle">Alumnos inscriptos</h2>
+		<div id="alumnosList">
+			<table class="table">
+				<thead>
+					<th>Nombre</th>
+					<th>Email</th>
+					<th>Usuario</th>
+				</thead>
+			  <tbody id="alumnsTableBody">
+			  	{% for alumno in alumnos %}
+			    <tr>
+			      <td>{{alumno.surname}}, {{alumno.name}}</td>
+			      <td>{{alumno.email}}</td>
+			      <td>{{alumno.username}}</td>
+			    </tr>
+			    {% endfor %}
+			  </tbody>
+			</table>
+			<label class="text-danger"  id="invitationError"></label>
+			<form id="invitationForm" class="w-50 float-right">
+			  <div class="form-group row">
+			  	<label>Añadir usuarios al curso:</label>  	
+			    <div class="col-sm-10">
+			      <label for="usernameInput" class="d-none">Email</label>
+              	  <input type="text" name="username" id="usernameInput" class="form-control" placeholder="Ingrese aquí">
+			    </div>
+			    <input type="submit" class="col-sm-2 btn btn-info" value="Invitar">
+			  </div>
+			</form>
+		</div>
+		<hr class="mt-1">
+		<h2 id="activitiesTitle">Actividades</h2>
+		<div id="activitiesSection">
+			<table class="table table-hover">
+				<thead>
+					<th>Titulo</th>
+					<th>Descripción</th>
+					<th>Estado</th>
+				</thead>
+				<tbody>
+					{% for activity in activities %}
+					<tr onclick="getActivity({{activity.id}});">
+						<td>{{activity.title}}</td>
+						<td>{{activity.description}}</td>
+						<td>
+							{% if activity.end_date > fecha_actual %}
+							<p class="font-italic">Finaliza el {{activity.end_date}}</p>
+							{% else %}
+							<span class="font-italic">Finalizado el {{activity.end_date}}</span>
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<div class="d-grid gap-2">
+				<a class="btn btn-info" href="/activities/new_activity/{{curso.id}}">Nueva actividad</a>
+			</div>
+		</div>
+	</div>
+	<script>
+
+
+		$(document).on('load',funcion());
+
+		function funcion(){
+			$('#alumnosList').slideUp();
+		    $('#alumnosTitle').click( function(){
+		        $('#alumnosList').slideToggle();
+		    });
+		    $('#activitiesSection').slideUp();
+		    $('#activitiesTitle').click( function(){
+		        $('#activitiesSection').slideToggle();
+		    });
+		}
+
+		
+
+		$('#invitationForm').on('submit', function(e){
+		 	let usuario = $('#usernameInput').val();
+		 	$('#invitationError').empty();
+		 	let usuario_existe
+			if (usuario == "") {
+				$('#invitationError').append("Debe ingresar un usuario");
+			} else{
+				$.getJSON($SCRIPT_ROOT + "userExist/" + usuario,{}, function(data) {
+					usuario_existe = data.result;
+					if (usuario_existe == -1){
+						$('#invitationError').append("El usuario o email no existe");
+					}else{
+						$.getJSON($SCRIPT_ROOT + "isStudentOnCourse/" + usuario_existe + "&" + {{curso.id}},{}, function(data) {
+							if (data.result){
+								$('#invitationError').append("El usuario ya se encuentra en el curso");
+							}
+							else{
+								$.getJSON($SCRIPT_ROOT + "inviteUserToCourse/" + usuario_existe + "&" + {{curso.id}},{}, function(data) {
+									usuario = data.result;
+									$('#alumnsTableBody').append("<tr><td>" + usuario[4] + ", " +  usuario[0] + "</td><td>"+ usuario[3] + "</td><td>"+ usuario[9] +"</td></tr>")	
+									$('#invitationError').removeClass('text-danger');
+									$('#invitationError').addClass('text-success');
+									$('#invitationError').append("Invitación enviada.");	
+								});
+							}
+						});
+					}
+				});
+			}
+			return false;
+		});
+
+		function getActivity(id){
+			window.location.href = '/activities/view_activity/' + id;
+		}
+	</script>
 {% endblock %}

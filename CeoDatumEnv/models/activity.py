@@ -8,11 +8,10 @@ class Activity(object):
 	db = None
 
 	@classmethod
-	def getActivities(cls, user_id):
-		query = "SELECT *  FROM public.activity INNER JOIN user_activity ON user_activity.id_activity=activity.id WHERE user_activity.id_user=%s"
+	def getActivitiesOfCourses(cls, user_id):
+		query = "SELECT activity.id, activity.start_date, activity.end_date, activity.title, activity.description, course.name as course_name FROM public.activity INNER JOIN user_activity ON user_activity.id_activity=activity.id INNER JOIN course ON course.id = activity.course_id WHERE user_activity.id_user=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (user_id,))
-
 		return cursor.fetchall()
 
 	@classmethod
@@ -38,3 +37,19 @@ class Activity(object):
 		cursor.execute(query)
 
 		return cursor.fetchall()
+
+	@classmethod
+	def get_activities_of_course(cls, course_id):
+		query = "SELECT * FROM activity WHERE course_id=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (course_id,))
+
+		return cursor.fetchall()
+
+	@classmethod
+	def get_activity_by_id(cls, activity_id):
+		query = "SELECT * FROM activity WHERE id=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (activity_id,))
+
+		return cursor.fetchone()

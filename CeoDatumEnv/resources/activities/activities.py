@@ -1,12 +1,13 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash
 from db import get_db
 from models.activity import Activity
+from datetime import date
 
 
 def activities():
 	if session['name']:
-		activities = Activity.getActivities(session['id'])
-		return render_template('activities/activities.html', activities=activities)
+		activities = Activity.getActivitiesOfCourses(session['id'])
+		return render_template('activities/activities.html', activities=activities, today=date.today())
 	else:
 		return render_template('/')
 
@@ -28,3 +29,9 @@ def create_activity():
 		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs)
 		return redirect(url_for('courses'))
 	return redirect(url_for('home'))
+
+def view_activity(id):
+	if session['id']:
+		actividad = Activity.get_activity_by_id(id)
+		return render_template('activities/activity_view.html', activity=actividad)
+
