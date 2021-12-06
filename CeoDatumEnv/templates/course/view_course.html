@@ -5,7 +5,7 @@
 {% block title %}Datasets{% endblock %}
 {% block content %}
 	<div class="container">
-		<h1 align="center">{{curso.name}}</h1>
+		<h1 align="center">{{course.name}}</h1>
 		<hr>
 		<h2 id="alumnosTitle">Alumnos inscriptos</h2>
 		<div id="alumnosList">
@@ -63,7 +63,68 @@
 				</tbody>
 			</table>
 			<div class="d-grid gap-2">
-				<a class="btn btn-info" href="/activities/new_activity/{{curso.id}}">Nueva actividad</a>
+				<a class="btn btn-info" href="/activities/new_activity/{{course.id}}">Nueva actividad</a>
+			</div>
+		</div>
+		<hr class="mt-1">
+		<h2 id="datasetsTitle">Datasets</h2>
+		<div id="datasetsSection">
+			<table class="table table-hover">
+				<thead>
+					<th>Nombre del dataset</th>
+					<th>Subido por</th>
+					<th>Acciones</th>				
+				</thead>
+				<tbody>
+					{% for dataset in datasets %}
+	  				<tr>		      
+							<td>{{dataset.dataset_name}}</td>
+							<td>{{dataset.name}} {{dataset.surname}}</td>
+							<td>
+								<button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='/datasets/show/{{dataset.id}}'">
+									Inspeccionar
+								</button>
+								<button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='/plotter/{{dataset.id}}'">
+									Graficar
+								</button>
+							</td>
+				    </tr>
+	  			{% endfor %}				
+  			</tbody>
+			</table>
+			<div class="d-grid gap-2">
+				<button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Agregar dataset</button>
+		    <!-- Modal -->
+		    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		      <div class="modal-dialog">
+		        <div class="modal-content">
+
+		          <form action="{{url_for('course_add_dataset')}}" id="formCondition" method=post>
+		            <div class="modal-header">
+		              <h5 class="modal-title" id="staticBackdropLabel">Elija el dataset a agregar</h5>
+		              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		            </div>
+		            <div class="modal-body">
+
+		              <h5>Dataset a agregar:</h5>
+		              <select style="display: inline; width: 300px;" id="dataset" name="dataset" class="form-select">
+		              	{% for dataset in datasetsToAdd %}
+		                <option value="{{dataset.id}}">{{dataset.dataset_name}}</option>
+		                {% endfor%}
+		              </select>
+		              <br/>
+		              <input type="hidden" name="courseId" id="courseId" value="{{course.id}}"></input>
+		              <br/>  
+		              
+		            </div>  
+		            <div class="modal-footer">
+		              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+		              <input type="submit" class="btn btn-primary" name="submit" value="Agregar">
+		            </div>
+		          </form>
+		        </div>
+		      </div>
+		    </div>
 			</div>
 		</div>
 	</div>
@@ -81,6 +142,10 @@
 		    $('#activitiesTitle').click( function(){
 		        $('#activitiesSection').slideToggle();
 		    });
+		    $('#datasetsSection').slideUp();
+		    $('#datasetsTitle').click( function(){
+		        $('#datasetsSection').slideToggle();
+		    });
 		}
 
 		
@@ -97,12 +162,12 @@
 					if (usuario_existe == -1){
 						$('#invitationError').append("El usuario o email no existe");
 					}else{
-						$.getJSON($SCRIPT_ROOT + "isStudentOnCourse/" + usuario_existe + "&" + {{curso.id}},{}, function(data) {
+						$.getJSON($SCRIPT_ROOT + "isStudentOnCourse/" + usuario_existe + "&" + {{course.id}},{}, function(data) {
 							if (data.result){
 								$('#invitationError').append("El usuario ya se encuentra en el curso");
 							}
 							else{
-								$.getJSON($SCRIPT_ROOT + "inviteUserToCourse/" + usuario_existe + "&" + {{curso.id}},{}, function(data) {
+								$.getJSON($SCRIPT_ROOT + "inviteUserToCourse/" + usuario_existe + "&" + {{course.id}},{}, function(data) {
 									usuario = data.result;
 									$('#alumnsTableBody').append("<tr><td>" + usuario[4] + ", " +  usuario[0] + "</td><td>"+ usuario[3] + "</td><td>"+ usuario[9] +"</td></tr>")	
 									$('#invitationError').removeClass('text-danger');

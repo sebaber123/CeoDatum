@@ -191,4 +191,20 @@ class Home(object):
 		con.commit()	
 
 		return table
+
+
+
+	@classmethod
+	def add_dataset_stablishment(cls, datasetId, establishmentId):
+		
+		con = get_db()
+
+		query = ("INSERT INTO public.\"Dataset_establishment\" (id_dataset, id_establishment) VALUES (\'"+str(datasetId)+"\', \'"+str(establishmentId)+"\')")
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		con.commit()
+
+		return None
+	
 	

@@ -16,12 +16,12 @@ class Course(object):
 		return cursor.fetchall()
 
 	@classmethod	
-	def create_course(cls, name, start_date, end_date, owner_id):
+	def create_course(cls, name, start_date, end_date, owner_id, establishment_id):
 
 		con = get_db()
-		query = "INSERT INTO public.course(name, start_date, end_date, id_owner) VALUES(%s, %s, %s, %s)"
+		query = "INSERT INTO public.course(name, start_date, end_date, id_owner, id_establishment) VALUES(%s, %s, %s, %s, %s)"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (name, start_date, end_date, owner_id))
+		cursor.execute(query, (name, start_date, end_date, owner_id, str(establishment_id)))
 		con.commit()
 
 		return True
@@ -53,3 +53,27 @@ class Course(object):
 		if cursor.fetchone():
 			return True
 		return False
+
+	@classmethod
+	def add_dataset(cls, dataset_id, course_id):	
+
+		con = get_db()
+		query = "INSERT INTO public.\"Dataset_course\"(id_dataset, id_course) VALUES(%s, %s)"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(dataset_id), str(course_id)))
+		con.commit()
+
+		return None
+
+	@classmethod
+	def get_dataset_by_courseId(cls, course_id):
+
+		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d "+ 
+				"INNER JOIN public.\"user\" as u on d.database_owner_id = u.id " + 
+				"INNER JOIN public.\"Dataset_course\" as dc on dc.id_dataset = d.id "+
+				"WHERE dc.id_course = "+str(course_id)  )
+
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		return cursor.fetchall()	

@@ -1,6 +1,7 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash
 from db import get_db
 from models.activity import Activity
+from models.course import Course
 from datetime import date
 
 
@@ -14,7 +15,10 @@ def activities():
 def new_activity(course_id):
 	if session['role']=='professor':
 		graficos = Activity.get_graph_names()
-		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos)
+
+		datasets = datasets = Course.get_dataset_by_courseId(course_id)
+
+		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos, datasets=datasets)
 	else:
 		return redirect(url_for('home'))
 

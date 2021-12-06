@@ -98,6 +98,8 @@ app.add_url_rule('/courses/inviteUserToCourse/<username>&<course_id>', 'inviteUs
 app.add_url_rule('/courses/isStudentOnCourse/<username>&<course_id>', 'isUserOnCourse', course.is_user_on_course)
 app.add_url_rule('/new_course', 'new_courses', course.new_course, methods=['GET'])
 app.add_url_rule('/create_course', 'create_course', course.create_course, methods=['POST'])
+app.add_url_rule('/courseAddDataset', 'course_add_dataset', course.course_add_dataset, methods=['POST'])
+
 
 #TWITTER
 app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>&<int:pron>&<int:conj>&<int:adv>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
