@@ -1,6 +1,8 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash
 from models.dataset import Dataset
 from models.visualization import Visualization
+from models.user import User
+
 
 pagination = 15
 
@@ -11,13 +13,27 @@ def indexPublics(page):
 
 	datasets = Dataset.get_dataset_public(page, pagination)
 	
-	return render_template('datasets/indexPublics.html', datasets=datasets)	
+	return render_template('datasets/index.html', datasets=datasets, nombre='publicos', name='publics')	
+
+def indexProtecteds(page):
+
+	establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
+
+	datasets = Dataset.get_dataset_protected(session['id'], establishmentId, page, pagination)
+	
+	return render_template('datasets/index.html', datasets=datasets, nombre='protegidos', name='protecteds')	
+
+def indexPrivates(page):
+
+	datasets = Dataset.get_dataset_privates(session['id'], page, pagination)
+	
+	return render_template('datasets/index.html', datasets=datasets, nombre='privados', name='privates')			
 
 def show(Bid):	
 
 	if checkSessionCanAccess(Bid):
 
-		sessionId= session['user_id']
+		sessionId= session['id']
 
 		#get the columns of the database
 		columns = Visualization.get_db_data(Bid)
@@ -72,16 +88,10 @@ def generateStructureRecursion(databaseName, columnName, columnNameOfObject):
     return dictionaryObject  
 
 def checkSessionCanAccess(Bid):
+
+	establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
 	
-	dataset = Dataset.get_dataset(Bid)
-
-	if dataset['share'] == 'publico':
-
-		return True
-
-	else:
-
-		return False	
+	return Dataset.check_can_access_to_dataset(Bid, session['id'], establishmentId)
 
 def editShare():
 

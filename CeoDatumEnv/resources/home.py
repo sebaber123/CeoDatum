@@ -78,7 +78,7 @@ def uploadFile():
 
 def configurateUploadJSON ():
 
-	sessionId= session['user_id']
+	sessionId= session['id']
 
 	fileName = request.form['filename']
 
@@ -396,7 +396,7 @@ def JSONRecursion(database, data, firstRow, sqlContext, spark, idTable, pos, pos
 def configurateUploadCSV():
 	if request.method == 'POST':
 
-		sessionId= session['user_id']
+		sessionId= session['id']
 
 		filename = request.form['filename']
 

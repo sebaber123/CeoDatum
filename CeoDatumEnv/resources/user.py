@@ -88,7 +88,8 @@ def login():
             session['email'] = result['email']
             session['id'] = result[1]
             session['role'] = result['rolename']
-            return index()
+            return index()    
+
         else:
             return render_template('user/login_form.html', error="Usuario y/o contraseña incorrectos")
     elif request.form['submit'] == 'register':

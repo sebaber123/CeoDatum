@@ -113,5 +113,12 @@ app.add_url_rule('/inspectRows/<databaseId>&<objectString>&<condition>', 'inspec
 #DATASETS
 app.add_url_rule('/datasets/indexPublics', 'datasets_index_publics', datasets.indexPublics, methods=['GET'], defaults={'page':1})
 app.add_url_rule('/datasets/indexPublics/<int:page>', 'datasets_index_publics', datasets.indexPublics, methods=['GET'])
+
+app.add_url_rule('/datasets/indexProtecteds', 'datasets_index_protecteds', datasets.indexProtecteds, methods=['GET'], defaults={'page':1})
+app.add_url_rule('/datasets/indexProtecteds/<int:page>', 'datasets_index_protecteds', datasets.indexProtecteds, methods=['GET'])
+
+app.add_url_rule('/datasets/indexPrivates', 'datasets_index_privates', datasets.indexPrivates, methods=['GET'], defaults={'page':1})
+app.add_url_rule('/datasets/indexPrivates/<int:page>', 'datasets_index_privates', datasets.indexPrivates, methods=['GET'])
+
 app.add_url_rule('/datasets/show/<int:Bid>', 'datasets_show', datasets.show, methods=['GET'])
 app.add_url_rule('/datasets/show/', 'dataset_edit_share', datasets.editShare, methods=['POST'])

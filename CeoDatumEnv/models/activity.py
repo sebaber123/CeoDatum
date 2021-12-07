@@ -32,7 +32,7 @@ class Activity(object):
 
 	@classmethod 
 	def get_graph_names(cls):
-		query = "SELECT id, spanish_name FROM public.\"graph\""
+		query = "SELECT id, spanish_name FROM public.\"Graph\""
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
