@@ -138,9 +138,20 @@
         <h3 id="x_axi_title">Eje X</h3>
         <div  id="order-axi-x" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
         </div>
-        <div id="divDispersionX" style="visibility: hidden;">
-          <label style="margin-right: 10px;" for="dispersionX">Dispersion en eje X: </label><output id="dispersionYOutput">0.5</output>
-          <input  id="dispersionX" name="dispersionX" type='range' min='0' max='1' step='.05' value='0.5' oninput="this.previousElementSibling.value = this.value"/>  
+        <div id="modificatorX" style="visibility: hidden;">
+
+          <div id="acumulativeX" style="display: none; margin-top: 10px;">
+            <input class="form-check-input" type="checkbox" value="" id="acumulativeXCheckBox" name="acumulativeXCheckBox" checked>
+              <label class="form-check-label" for="acumulativeXCheckBox">
+                Acumulativo
+              </label>
+            
+          </div>
+
+          <div id="divDispersionX" style="visibility: hidden;">
+            <label style="margin-right: 10px;" for="dispersionX">Dispersion en eje X: </label><output id="dispersionYOutput">0.5</output>
+            <input  id="dispersionX" name="dispersionX" type='range' min='0' max='1' step='.05' value='0.5' oninput="this.previousElementSibling.value = this.value"/>  
+          </div>
         </div>
         
         <div style="height:190px ">
@@ -349,7 +360,6 @@
 
       //hide the "Eje y" Box 
       $("#container-order-y").css("display", "none"); 
-      $("#divDispersionX").css("visibility", "visible")
 
     } else {
 
@@ -368,9 +378,24 @@
     if ($(this).val() == 'scatter'){
       $("#divDispersionX").css("visibility", "visible");
       $("#divDispersionY").css("visibility", "visible");
-    }else{
-      $("#divDispersionX").css("visibility", "hidden");
-      $("#divDispersionY").css("visibility", "hidden");
+      $("#modificatorX").css("visibility", "visible");
+      $("#acumulativeX").css("display", "none");
+    }
+    else{
+      if ($(this).val() == 'line'){
+        $("#divDispersionY").css("visibility", "hidden");
+        $("#divDispersionX").css("visibility", "hidden");
+        $("#modificatorX").css("visibility", "visible");
+        $("#acumulativeX").css("display", "contents");
+      }
+      else{
+
+        $("#divDispersionY").css("visibility", "hidden");
+        $("#divDispersionX").css("visibility", "hidden");
+        $("#modificatorX").css("visibility", "hidden");
+        $("#acumulativeX").css("display", "none");
+      }
+     
     }
 
 
@@ -422,6 +447,15 @@
 
         //add the axi x parameter
         src = src + $('#order-axi-x').children(0).children(0).prop('value');
+
+        if ($('#acumulativeXCheckBox').is(':checked')) {
+          src = src + '&' + '1';
+        }  
+        else{
+          src = src + '&' + '0';
+        }
+
+
       }
       else{
 
