@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block header %}
   <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/activities.css') }}">
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 {% endblock %}
 {% block title %}Actividades{% endblock %}
 {% block content %}
@@ -9,18 +10,25 @@
 		<form method="POST" action="/activities/create_activity">
 			<div class="form-group">
 		    	<label class="titulo-form" for="inputTitle">Titulo</label>
-		    	<input type="text" class="form-control" name="title" id="inputTitle" placeholder="Ingrese un título">
+		    	<span class="contador_caracteres" id="contador_caracteres_titulo">Máximo 64 caracteres</span>
+		    	<input type="text" class="form-control" maxlength="64" name="title" id="inputTitle" placeholder="Ingrese un título">
+		  	</div>
+		  	<div class="md-form">
+		  		<label class="titulo-form" for="inputObjective">Objetivo</label>
+		  		<span class="contador_caracteres" id="contador_caracteres_objetivo">Máximo 256 caracteres</span>
+		    	<textarea class="md-textarea form-control" maxlength="256" name="objective" id="inputObjective" rows="3"></textarea>
 		  	</div>
 		  	<div class="md-form">
 		  		<label class="titulo-form" for="inputDescription">Descripción</label>
-		    	<textarea class="md-textarea form-control" name="description" id="inputDescription" rows="3"></textarea>
+		  		<span class="contador_caracteres" id="contador_caracteres_descripcion">Máximo 256 caracteres</span>
+		    	<textarea class="md-textarea form-control" maxlength="256" name="description" id="inputDescription" rows="3"></textarea>
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputDescription">Dataset</label>
 		  		<select class="form-select">
 		  			{% for dataset in datasets %}
 		 					<option value="{{dataset.id}}">{{dataset.dataset_name}}</option>		
-		 				{% endfor %}
+		 			{% endfor %}
 		  		</select>
 		  	</div>
 		  	<div class="form-group">
@@ -38,8 +46,83 @@
 		  		<label class="titulo-form" for="inputEndDate">Fecha de fin</label>
 		  		<input type="date" class="form-control" name="endDate" id="inputEndDate">
 		  	</div>
+		  	<div class="form-group">
+		  		<input type='hidden' value='0' name='checkboxExpiredDate'>
+		  		<input class="form-check-input" type="checkbox" name="checkboxExpiredDate" id="checkboxExpiredDate" value="1">
+		  		<label for="checkboxExpiredData">Permitir entrega fuera de término</label>
+		  	</div>
+		  	 <div class="form-group">
+		  	 	<input type='hidden' value='0' name='checkboxNoCalification'>
+		  		<input class="form-check-input" type="checkbox" name="checkboxNoCalification" id="checkboxNoCalification" value="1">
+		  		<label for="checkboxNoCalification">Actividad sin calificación</label>
+		  	</div>
 		  	<input type="hidden" name="course" value="{{course_id}}">
 		  	<button type="submit" class="btn btn-primary btn-lg mt-1" >Crear</button>
 		</form>
 	</div>
+	<script>
+		let caracteres_descripcion=256
+		let caracteres_objetivo=256
+		let caracteres_titulo=64
+
+		$('#inputTitle').on('input', function() {
+	      let total_caracteres = this.value.length;
+	      $('#contador_caracteres_titulo').empty();
+	      if (total_caracteres<=caracteres_titulo){
+	      	$('#contador_caracteres_titulo').removeClass('text-danger');
+	        let string = "Quedan " + (caracteres_titulo-this.value.length) + " caracteres."
+	        $('#contador_caracteres_titulo').append(string);
+	      }
+	      else{
+	      	$('#contador_caracteres_titulo').addClass('text-danger');
+	      	let mensaje = "Se excede por " +  (caracteres_titulo-this.value.length)*-1 + " caracteres."
+	        $('#contador_caracteres_titulo').append(mensaje);
+	      }
+	      if((this.value)==""){
+	        $('#contador_caracteres_titulo').empty();
+	        $('#contador_caracteres_titulo').append("Máximo 64 caracteres");
+	      }
+	      return false;
+	    });
+
+		$('#inputDescription').on('input', function() {
+	      let total_caracteres = this.value.length;
+	      $('#contador_caracteres_descripcion').empty();
+	      if (total_caracteres<=caracteres_descripcion){
+	      	$('#contador_caracteres_descripcion').removeClass('text-danger');
+	        let string = "Quedan " + (caracteres_descripcion-this.value.length) + " caracteres."
+	        $('#contador_caracteres_descripcion').append(string);
+	      }
+	      else{
+	      	$('#contador_caracteres_descripcion').addClass('text-danger');
+	      	let mensaje = "Se excede por " +  (caracteres_descripcion-this.value.length)*-1 + " caracteres."
+	        $('#contador_caracteres_descripcion').append(mensaje);
+	      }
+	      if((this.value)==""){
+	        $('#contador_caracteres_descripcion').empty();
+	        $('#contador_caracteres_descripcion').append("Máximo 256 caracteres");
+	      }
+	      return false;
+	    });
+
+		$('#inputObjective').on('input', function() {
+	      let total_caracteres = this.value.length;
+	      $('#contador_caracteres_objetivo').empty();
+	      if (total_caracteres<=caracteres_descripcion){
+	      	$('#contador_caracteres_objetivo').removeClass('text-danger');
+	        let string = "Quedan " + (caracteres_descripcion-this.value.length) + " caracteres."
+	        $('#contador_caracteres_objetivo').append(string);
+	      }
+	      else{
+	      	$('#contador_caracteres_objetivo').addClass('text-danger');
+	      	let mensaje = "Se excede por " +  (caracteres_descripcion-this.value.length)*-1 + " caracteres."
+	        $('#contador_caracteres_objetivo').append(mensaje);
+	      }
+	      if((this.value)==""){
+	        $('#contador_caracteres_objetivo').empty();
+	        $('#contador_caracteres_objetivo').append("Máximo 256 caracteres");
+	      }
+	      return false;
+	    });
+	</script>
 {% endblock %}

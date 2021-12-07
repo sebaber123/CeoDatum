@@ -2,3 +2,9 @@
 .titulo-form{
     font-weight: bold;
 }
+
+.contador_caracteres{
+    float: right;
+    font-weight: bold;
+    font-size: 80%;
+}

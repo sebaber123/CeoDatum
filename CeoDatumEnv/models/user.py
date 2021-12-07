@@ -65,10 +65,10 @@ class User(object):
 		return cursor.fetchone()
 
 	@classmethod
-	def get_user_by_id(cls, id):
+	def get_user_by_id(cls, id_user):
 		query = "SELECT * FROM public.user WHERE id=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (str(id)))
+		cursor.execute(query, (id_user,))
 
 		return cursor.fetchone()	
 

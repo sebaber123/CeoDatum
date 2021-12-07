@@ -30,7 +30,18 @@ def create_activity():
 		descripcion = request.form['description']
 		curso = request.form['course']
 		graphs = request.form.getlist('graph')
-		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs)
+		objective = request.form['objective']
+		has_calification = request.form['checkboxNoCalification']
+		enable_expired_date = request.form['checkboxExpiredDate']
+		if has_calification == 1:
+			has_calification=False
+		else:
+			has_calification=True
+		if enable_expired_date == 1:
+			enable_expired_date=True
+		else:
+			enable_expired_date = False
+		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date)
 		return redirect(url_for('courses'))
 	return redirect(url_for('home'))
 

@@ -8,7 +8,7 @@ from datetime import date
 
 def get_courses():
 	if session['role']=="professor":
-		cursos = Course.get_my_courses(session['user_id'])
+		cursos = Course.get_my_courses(session['id'])
 		return render_template('course/courses.html', cursos=cursos)
 	else:
 		return redirect(url_for('home'))
@@ -25,7 +25,7 @@ def create_course():
 		fecha_comienzo = request.form['startDate']
 		fecha_fin = request.form['endDate']
 
-		establismentId = (User.get_user_by_id(session['user_id']))['establishment_id']
+		establismentId = (User.get_user_by_id(session['id']))['establishment_id']
 
 		Course.create_course(nombre, fecha_comienzo, fecha_fin, session['user_id'], establismentId)
 		return redirect(url_for('courses'))
@@ -37,9 +37,9 @@ def view_course(course_id):
 		activities = Activity.get_activities_of_course(course_id)
 		students = User.get_user_from_course(course_id)
 
-		establismentId = (User.get_user_by_id(session['user_id']))['establishment_id']
+		establismentId = (User.get_user_by_id(session['id']))['establishment_id']
 
-		datasetsToAdd = Dataset.get_datasets_to_add_to_course(session['user_id'], establismentId, course_id)
+		datasetsToAdd = Dataset.get_datasets_to_add_to_course(session['id'], establismentId, course_id)
 
 		datasets = Course.get_dataset_by_courseId(course_id)
 
