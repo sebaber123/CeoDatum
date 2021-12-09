@@ -205,7 +205,7 @@ def detectType(xString):
 	if xString.isdigit():
 		return 'int'
 	else:
-		if xString.replace('.','',1).isdigit() or xString.replace(',','',1).isdigit() :
+		if xString.replace('.','',1).isdigit():
 			return 'NUMERIC (16, 10)'
 		else:
 
