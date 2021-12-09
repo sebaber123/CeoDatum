@@ -83,8 +83,6 @@ def uploadFile():
 
 def configurateUploadJSON ():
 
-
-
 	sessionId= session['id']
 
 	fileName = request.form['filename']
@@ -92,6 +90,8 @@ def configurateUploadJSON ():
 	database = request.form['database']
 
 	share = request.form['share']
+
+	aa
 
 	dateFormat =  request.form['dateFormat']
 
@@ -193,8 +193,6 @@ def configurateUploadJSON ():
 				flash('El campo '+ exceptionString.replace('wrong format of date in field ','')+ ' tiene otro formato de fecha' , 'danger')
 
 				return render_template('home/uploadConfigurationJSON.html', filename=fileName)
-
-			raise(e)
 			
 			flash('Lo sentimos, la carga del dataset ha fallado', 'danger')
 
@@ -402,7 +400,7 @@ def configurateUploadCSV():
 
 
 			if request.form['headers'] == 'si':
-				data = data.filter(data['id'] != 1)
+				data = data.filter(data['id_'+database] != 1)
 
 			data.registerTempTable('t0')
 
@@ -459,6 +457,8 @@ def configurateUploadCSV():
 					return render_template('home/uploadConfiguration.html', filename=fileName)
 				
 				flash('Lo sentimos, la carga del dataset ha fallado', 'danger')
+
+				raise(e)
 
 				return render_template('home/dragAndDrop.html')
 			
