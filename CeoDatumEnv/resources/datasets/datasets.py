@@ -4,30 +4,70 @@ from models.visualization import Visualization
 from models.user import User
 
 
-pagination = 15
+pagination = 5
 
 def datasets():
-	return render_template('datasets/datasets.html')
+	return render_template('datasets/datasets.html')	
+
+def getAvailablePages(actualPage, maxPage):
+
+	pagesArray = []
+
+	if maxPage > 4:
+
+		if actualPage < 4:
+			
+			pagesArray = [1,2,3,4,5]
+
+		else:
+
+			if maxPage >= actualPage+2:
+
+				pagesArray = [actualPage-2, actualPage-1, actualPage, actualPage + 1, actualPage + 2]
+
+			else:
+				
+				pagesArray = [maxPage - 4, maxPage - 3, maxPage - 2, maxPage - 1, maxPage]	
+	else:
+
+		for x in range(maxPage):
+
+			pagesArray.append(x+1)		
+
+	return pagesArray		
+
 
 def indexPublics(page):
 
 	datasets = Dataset.get_dataset_public(page, pagination)
+
+	maxPage = Dataset.max_page_publics(pagination)
+
+	availablePages = getAvailablePages(page, maxPage)
 	
-	return render_template('datasets/index.html', datasets=datasets, nombre='publicos', name='publics')	
+	return render_template('datasets/index.html', datasets=datasets, nombre='Públicos', name='publics', availablePages=availablePages, maxPage=maxPage, actualPage=page)	
 
 def indexProtecteds(page):
 
 	establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
 
 	datasets = Dataset.get_dataset_protected(session['id'], establishmentId, page, pagination)
+
+	maxPage = Dataset.max_page_protecteds(pagination, establishmentId, session['id'])
+
+	availablePages = getAvailablePages(page, maxPage)
 	
-	return render_template('datasets/index.html', datasets=datasets, nombre='protegidos', name='protecteds')	
+	return render_template('datasets/index.html', datasets=datasets, nombre='protegidos', name='protecteds', availablePages=availablePages, maxPage=maxPage, actualPage=page)	
 
 def indexPrivates(page):
 
 	datasets = Dataset.get_dataset_privates(session['id'], page, pagination)
+
+	maxPage = Dataset.max_page_privates(pagination, session['id'])
+
+	availablePages = getAvailablePages(page, maxPage)
 	
-	return render_template('datasets/index.html', datasets=datasets, nombre='privados', name='privates')			
+	return render_template('datasets/index.html', datasets=datasets, nombre='privados', name='privates', availablePages=availablePages, maxPage=maxPage, actualPage=page)			
 
 def show(Bid):	
 
@@ -39,7 +79,7 @@ def show(Bid):
 		columns = Visualization.get_db_data(Bid)
 
 		#get the database
-		database = Visualization.get_database(Bid)
+		database = Dataset.get_dataset_with_owner(Bid)
 
 		canEdit = sessionId == database['database_owner_id']
 

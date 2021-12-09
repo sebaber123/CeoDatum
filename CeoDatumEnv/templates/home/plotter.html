@@ -24,6 +24,8 @@
 </head>
 <body>
 
+<div id="alerts"></div>
+
 <table style="margin-top:10px;">
   <tr valign="top">
     <td style="width:10px"></td>
@@ -55,7 +57,7 @@
       <label>
         <input type="radio" id="map_chart" name="chart" value="map" /><img src="{{url_for('static', filename='map_chart.png') }}">
       </label>
-       <button onclick="GenerateChart()">Generar grafico</button> 
+       <button class="btn btn-light" onclick="GenerateChart()">Generar grafico</button> 
     </td>
   </tr>
   <tr style="height:20px"><td style="width:10px"></td></tr>
@@ -138,9 +140,20 @@
         <h3 id="x_axi_title">Eje X</h3>
         <div  id="order-axi-x" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
         </div>
-        <div id="divDispersionX" style="visibility: hidden;">
-          <label style="margin-right: 10px;" for="dispersionX">Dispersion en eje X: </label><output id="dispersionYOutput">0.5</output>
-          <input  id="dispersionX" name="dispersionX" type='range' min='0' max='1' step='.05' value='0.5' oninput="this.previousElementSibling.value = this.value"/>  
+        <div id="modificatorX" style="visibility: hidden;">
+
+          <div id="acumulativeX" style="display: none; margin-top: 10px;">
+            <input class="form-check-input" type="checkbox" value="" id="acumulativeXCheckBox" name="acumulativeXCheckBox" checked>
+              <label class="form-check-label" for="acumulativeXCheckBox">
+                Acumulativo
+              </label>
+            
+          </div>
+
+          <div id="divDispersionX" style="visibility: hidden;">
+            <label style="margin-right: 10px;" for="dispersionX">Dispersion en eje X: </label><output id="dispersionYOutput">0.5</output>
+            <input  id="dispersionX" name="dispersionX" type='range' min='0' max='1' step='.05' value='0.5' oninput="this.previousElementSibling.value = this.value"/>  
+          </div>
         </div>
         
         <div style="height:190px ">
@@ -349,7 +362,6 @@
 
       //hide the "Eje y" Box 
       $("#container-order-y").css("display", "none"); 
-      $("#divDispersionX").css("visibility", "visible")
 
     } else {
 
@@ -368,9 +380,24 @@
     if ($(this).val() == 'scatter'){
       $("#divDispersionX").css("visibility", "visible");
       $("#divDispersionY").css("visibility", "visible");
-    }else{
-      $("#divDispersionX").css("visibility", "hidden");
-      $("#divDispersionY").css("visibility", "hidden");
+      $("#modificatorX").css("visibility", "visible");
+      $("#acumulativeX").css("display", "none");
+    }
+    else{
+      if ($(this).val() == 'line'){
+        $("#divDispersionY").css("visibility", "hidden");
+        $("#divDispersionX").css("visibility", "hidden");
+        $("#modificatorX").css("visibility", "visible");
+        $("#acumulativeX").css("display", "contents");
+      }
+      else{
+
+        $("#divDispersionY").css("visibility", "hidden");
+        $("#divDispersionX").css("visibility", "hidden");
+        $("#modificatorX").css("visibility", "hidden");
+        $("#acumulativeX").css("display", "none");
+      }
+     
     }
 
 
@@ -400,135 +427,229 @@
     //src iframe string
     var src = "/"
 
-    //get the value of the selection of the chart radio
-    selection = $('input:radio[name="chart"]:checked').val().toString();
+    console.log($('#order-axi-x').children(0).children(0).attr('columnType') == 'date')
 
-    //bar chart
-    if(selection == 'bar'){
-      //add the start of the url and the database parameter
-      src = src + "graphBar/{{database.name}}&";
+    if (!$('input:radio[name="chart"]:checked').val()) {
+       
+      $('#alerts').prepend(
+        '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+          '<strong>Por favor seleccione un tipo de grafico primero</strong>'+
+          '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
+        '</div>'
+        )
+    }
 
-      //add the axi x parameter
-      src = src + $('#order-axi-x').children(0).children(0).prop('value');
+    else {
+      //get the value of the selection of the chart radio
+      selection = $('input:radio[name="chart"]:checked').val().toString();
 
-
-    } else {
-
-      //line chart
-      if (selection == 'line') {
-
-        //add the start of the url and the database parameter
-        src = "/graphLine/{{database.name}}&";
-
-        //add the axi x parameter
-        src = src + $('#order-axi-x').children(0).children(0).prop('value');
+      if ($('#order-axi-x').children(0).length == 0){
+        $('#alerts').prepend(
+        '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+          '<strong>Por favor elija una columna por la cual graficar</strong>'+
+          '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
+        '</div>'
+        )
       }
+
       else{
 
-        //data table
-        if (selection == 'data_table') {
 
+
+        //bar chart
+        if(selection == 'bar'){
           //add the start of the url and the database parameter
-          src = "/dataTable/{{database.name}}&";
+          src = src + "graphBar/{{database.name}}&";
 
           //add the axi x parameter
-          src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
-          
-          //add the axi y parameter
-          src = src + $('#order-axi-y').children(0).children(0).prop('value');
-        }
-        else{
+          src = src + $('#order-axi-x').children(0).children(0).prop('value');
 
-          //pie chart
-          if (selection == 'pie') {
+
+        } else {
+
+          //line chart
+          if (selection == 'line') {
+
+            if ($('#order-axi-x').children(0).children(0).attr('columnType') != 'date'){
+
+              $('#alerts').prepend(
+                '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+                  '<strong>la columna elegida debe ser de tipo fecha</strong>'+
+                  '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
+                '</div>'
+                )
+
+
+              return true
+
+            }
 
             //add the start of the url and the database parameter
-            src = "/pieChart/{{database.name}}&"
+            src = "/graphLine/{{database.name}}&";
 
             //add the axi x parameter
             src = src + $('#order-axi-x').children(0).children(0).prop('value');
-          }
 
+            if ($('#acumulativeXCheckBox').is(':checked')) {
+              src = src + '&' + '1';
+            }  
+            else{
+              src = src + '&' + '0';
+            }
+
+
+          }
           else{
-            
-            if (selection == 'dot'){
+
+            //data table
+            if (selection == 'data_table') {
 
               //add the start of the url and the database parameter
-              src = "/dotChart/{{database.name}}&";
+              src = "/dataTable/{{database.name}}&";
 
               //add the axi x parameter
               src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
               
               //add the axi y parameter
               src = src + $('#order-axi-y').children(0).children(0).prop('value');
-
             }
-
             else{
-              if (selection == 'scatter') {
+
+              //pie chart
+              if (selection == 'pie') {
+
                 //add the start of the url and the database parameter
-                src = "/scatterChart/{{database.name}}&";
+                src = "/pieChart/{{database.name}}&"
 
                 //add the axi x parameter
-                src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
-                
-                //add the axi y parameter
-                src = src + $('#order-axi-y').children(0).children(0).prop('value')+ "&";
-
-                src = src + $('#dispersionX').val().toString() + "&";
-
-                src = src + $('#dispersionY').val().toString();
+                src = src + $('#order-axi-x').children(0).children(0).prop('value');
               }
+
               else{
-                if (selection == 'map') {
+                
+                if (selection == 'dot'){
+
                   //add the start of the url and the database parameter
-                  src = "/mapChart/{{database.name}}&";
+                  src = "/dotChart/{{database.name}}&";
 
                   //add the axi x parameter
                   src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
                   
                   //add the axi y parameter
                   src = src + $('#order-axi-y').children(0).children(0).prop('value');
+
+                }
+
+                else{
+                  if (selection == 'scatter') {
+                    //add the start of the url and the database parameter
+                    src = "/scatterChart/{{database.name}}&";
+
+                    //add the axi x parameter
+                    src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+                    
+                    //add the axi y parameter
+                    src = src + $('#order-axi-y').children(0).children(0).prop('value')+ "&";
+
+                    src = src + $('#dispersionX').val().toString() + "&";
+
+                    src = src + $('#dispersionY').val().toString();
+                  }
+                  else{
+                    if (selection == 'map') {
+
+                      if ($('#order-axi-y').children(0).length == 0){
+                        $('#alerts').prepend(
+                        '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+                          '<strong>Por favor elija una columna para agregar en Longitud </strong>'+
+                          '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
+                        '</div>'
+                        )
+
+                        return true
+                      }
+
+                      if ($('#order-axi-x').children(0).children(0).attr('columnType') != 'NUMERIC (16, 10)'){
+
+                        $('#alerts').prepend(
+                          '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+                            '<strong>la columna elegida  como latitud debe ser de tipo numero con decimales</strong>'+
+                            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
+                          '</div>'
+                          )
+
+
+                        return true
+
+                      }
+
+                      if ($('#order-axi-y').children(0).children(0).attr('columnType') != 'NUMERIC (16, 10)'){
+
+                        $('#alerts').prepend(
+                          '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+                            '<strong>la columna elegida  como Longitud debe ser de tipo numero con decimales</strong>'+
+                            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
+                          '</div>'
+                          )
+
+
+                        return true
+
+                      }
+
+
+
+
+                      //add the start of the url and the database parameter
+                      src = "/mapChart/{{database.name}}&";
+
+                      //add the axi x parameter
+                      src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+                      
+                      //add the axi y parameter
+                      src = src + $('#order-axi-y').children(0).children(0).prop('value');
+                    }
+                  }
                 }
               }
             }
           }
         }
+
+        //add the conditions to the url
+        var conditions = $("#order-conditions");
+          
+          //check if there are any conditions
+          if (conditions.children(0).length > 0) {
+            
+            //String where the conditions the conditions are loaded
+            var stringConditions = '';
+            
+            //loop through the conditions
+            $('[name=condition]').each(function(index) {
+
+              //add the condition and the separator "$$$"
+              stringConditions = stringConditions + $(this).children(0)[2].value + '%%%';
+            });
+
+            //delete the las separator "$$$"
+            src = src + '&' + (stringConditions.slice(0, -3));
+
+            
+          }  
+
+        //set the url to the iframe
+        iframe.src = src
+
+        //reload the iframe
+        //iframe.contentWindow.location.reload(true);
+        document.getElementById('iframe').src = document.getElementById('iframe').src;
+        
+        $( "#iframe" ).css("opacity", 100);
+
+        //window.frames['some_frame_id'].location.href.reload()
       }
     }
-
-    //add the conditions to the url
-    var conditions = $("#order-conditions");
-      
-      //check if there are any conditions
-      if (conditions.children(0).length > 0) {
-        
-        //String where the conditions the conditions are loaded
-        var stringConditions = '';
-        
-        //loop through the conditions
-        $('[name=condition]').each(function(index) {
-
-          //add the condition and the separator "$$$"
-          stringConditions = stringConditions + $(this).children(0)[2].value + '%%%';
-        });
-
-        //delete the las separator "$$$"
-        src = src + '&' + (stringConditions.slice(0, -3));
-
-        
-      }  
-
-    //set the url to the iframe
-    iframe.src = src
-
-    //reload the iframe
-    //iframe.contentWindow.location.reload(true);
-    document.getElementById('iframe').src = document.getElementById('iframe').src;
-    
-    $( "#iframe" ).css("opacity", 100);
-
-    //window.frames['some_frame_id'].location.href.reload()
   }
 
 

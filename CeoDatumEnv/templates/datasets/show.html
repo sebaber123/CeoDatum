@@ -2,119 +2,140 @@
 {% block title %}Datasets{% endblock %}
 {% block content %}
 
-<div class="container">
-  <br/>
-  <h4 style="display:inline-block;">Puede ingresar a graficar en el siguiente boton</h4>
-  <button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='/plotter/{{database.id}}'">    
-    Graficar  
-  </button>
-  <br/>
-  <h4 style="display:inline-block;">estado del dataset: {{database.share}}</h4>
-  {% if canEdit %}
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Editar</button>
-    <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
+<div class="container" style="height: 94%;">
+    <div style="height: 100%;" class="row align-items-start">
+      <div class="col">
+        
+      </div>
+      <div style="background-color: #61A5C2; text-align:center; margin: auto;height: 100%;" class="col-9">
+        <br/>
+        <h5 style="display:inline-block;">Nombre del dataset: {{database.name}}</h5>
+        <hr>
+        <h5 style="display:inline-block;">Dueño: {{database.user_name}} {{database.surname}}</h5>
+        <hr>
+        <h5 style="display:inline-block;">Estado del dataset: {{database.share}}</h5>
+        <hr> 
+        <h5 style="display:inline-block;">Puede ingresar al graficador pusaldo en el siguiente boton</h5>
+        <br/>
+        <button type="button" class="btn btn-info btn-sm" style="width: 300px" onclick="window.location.href='/plotter/{{database.id}}'">    
+          Graficar  
+        </button>
+        <hr>
 
-          <form action="{{url_for('dataset_edit_share')}}" id="formCondition" method=post>
-            <div class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel">Editar estado del dataset</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+        {% if canEdit %}
+
+          <h5 style="display:inline-block;">Dado que eres el dueño del dataset puedes editar su estado</h5>
+          <br/>
+          <button type="button" class="btn btn-info btn-sm" style="width: 300px"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Editar</button>
+          <!-- Modal -->
+          <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+
+                <form action="{{url_for('dataset_edit_share')}}" id="formCondition" method=post>
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Editar estado del dataset</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+
+                    <h5>Nuevo estado del dataset:</h5>
+                    <select style="display: inline; width: 300px;" id="share" name="share" class="form-select">
+                      <option selected value="publico">Publico</option>
+                      <option value="protegido">Protegido</option>
+                      <option value="privado">Privado</option>
+                    </select>
+                    <br/>
+                    <input type="hidden" name="id" id="id" value="{{database.id}}"></input>
+                    <br/>  
+                    
+                  </div>  
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <input type="submit" class="btn btn-primary" name="submit" value="Editar">
+                  </div>
+                </form>
+              </div>
             </div>
-            <div class="modal-body">
+          </div>
+        {% endif %}
+        <hr>
 
-              <h5>Nuevo estado del dataset:</h5>
-              <select style="display: inline; width: 300px;" id="share" name="share" class="form-select">
-                <option selected value="publico">Publico</option>
-                <option value="protegido">Protegido</option>
-                <option value="privado">Privado</option>
-              </select>
-              <br/>
-              <input type="hidden" name="id" id="id" value="{{database.id}}"></input>
-              <br/>  
+        <h3>Columnas del dataset</h3>
+            {% set widthCard = 389 %}
+
+            {% set columnPath = database.name %}
+            
+            {% set ns = namespace(cardId=0) %}
+            <div   class="card " style="height:420px; width: 400px; margin-left: 285px; text-align:left;"> 
+              <div  name="" id="order-columns" class="card overflow-auto list-group"> 
+
+              {% macro columnsRecursion(databaseStructureRecursion, widthcardRecursion, cardId, parentId, columnPath) %}  
+
+
+
+                {% for key in databaseStructureRecursion %}
+                  {% if databaseStructureRecursion[key] is mapping %}
+                    </div>
+                    {% if widthcardRecursion % 2 == 0 %}
+                      <div class="card" style= "margin-top: -2px; background-color: #89C2D9; margin-left: 10px">
+                    {% else %}
+                      <div class="card" style= "margin-top: -2px; background-color: white; margin-left: 10px; margin-right: -1px;">
+                    {% endif %}  
+                      <h3 style= "margin-left: 10px ;">Objecto: {{key}}</h3>
+
+                      <div name="columns-dataset" id="box{{ns.cardId}}" class="card overflow-auto list-group" style= "margin-left: 10px ;width: {{widthcardRecursion}}px">
+                      {% set ns.cardId = ns.cardId + 1 %}
+                      {{columnsRecursion (databaseStructureRecursion[key], widthcardRecursion-11, ns.cardId, ns.cardId-1, columnPath+'***'+key) }}
+
+                    </div>
+                    
+                  {%else%}
+                    {% if widthcardRecursion % 2 == 0 %}
+                      <div id="div{{columnPath}}***{{key}}" class="list-group-item" parentBox="box{{parentId}}" style="background-color: #89C2D9;">{{key}}
+                    {% else %}
+                      <div id="div{{columnPath}}***{{key}}" class="list-group-item" parentBox="box{{parentId}}" style="background-color: white;">{{key}}
+                    {% endif %}  
+                    
+                      <input type="hidden" id="{{columnPath}}***{{key}}" type="text" name="{{key}}" columnType="{{databaseStructureRecursion[key]}}"  value="{{columnPath}}***{{key}}">
+                      
+
+                    </div>
+                  {% endif %}
+                {% endfor %}
+
+              {%- endmacro %}
+
+              {% for key in databaseStructure %}
+                {% if databaseStructure[key] is mapping %}
+                  
+                  </div>
+                  <h3 style= "margin-left: 10px ;">Objecto: {{key}}</h3>
+                  
+                  <div id="box{{ns.cardId}}" name="columns-dataset" class="card overflow-auto list-group" style= "margin-left: 10px ;width: {{widthCard}}px">
+                    {% set ns.cardId = ns.cardId + 1 %}
+                    {{columnsRecursion (databaseStructure[key], widthCard-11, ns.cardId, 0, columnPath+'***'+key) }}
+                    
+                {%else%}
+                  <div class="list-group-item" id="div{{columnPath}}***{{key}}" parentBox="order-columns">{{key}}
+                    <input type="hidden" id="{{columnPath}}***{{key}}" type="text" name="columnOfDataSet" columnType="{{databaseStructure[key]}}"  value="{{columnPath}}***{{key}}">
+                    
+
+                  </div>
+                {% endif %}
+              {% endfor %}
               
-            </div>  
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              <input type="submit" class="btn btn-primary" name="submit" value="Editar">
-            </div>
-          </form>
-        </div>
+
+
+            </div>    
+          </div>
+      </div>
+      <div class="col">
+        
       </div>
     </div>
-  {% endif %}
-  <br/>
-  <br/>
-
-  <h3>Columnas del dataset</h3>
-      {% set widthCard = 389 %}
-
-      {% set columnPath = database.name %}
-      
-      {% set ns = namespace(cardId=0) %}
-      <div   class="card " style="height:682.5px; width: 400px; "> 
-        <div  name="" id="order-columns" class="card overflow-auto list-group"> 
-
-        {% macro columnsRecursion(databaseStructureRecursion, widthcardRecursion, cardId, parentId, columnPath) %}  
-
-
-
-          {% for key in databaseStructureRecursion %}
-            {% if databaseStructureRecursion[key] is mapping %}
-              </div>
-              {% if widthcardRecursion % 2 == 0 %}
-                <div class="card" style= "margin-top: -2px; background-color: #89C2D9; margin-left: 10px">
-              {% else %}
-                <div class="card" style= "margin-top: -2px; background-color: white; margin-left: 10px; margin-right: -1px;">
-              {% endif %}  
-                <h3 style= "margin-left: 10px ;">Objecto: {{key}}</h3>
-
-                <div name="columns-dataset" id="box{{ns.cardId}}" class="card overflow-auto list-group" style= "margin-left: 10px ;width: {{widthcardRecursion}}px">
-                {% set ns.cardId = ns.cardId + 1 %}
-                {{columnsRecursion (databaseStructureRecursion[key], widthcardRecursion-11, ns.cardId, ns.cardId-1, columnPath+'***'+key) }}
-
-              </div>
-              
-            {%else%}
-              {% if widthcardRecursion % 2 == 0 %}
-                <div id="div{{columnPath}}***{{key}}" class="list-group-item" parentBox="box{{parentId}}" style="background-color: #89C2D9;">{{key}}
-              {% else %}
-                <div id="div{{columnPath}}***{{key}}" class="list-group-item" parentBox="box{{parentId}}" style="background-color: white;">{{key}}
-              {% endif %}  
-              
-                <input type="hidden" id="{{columnPath}}***{{key}}" type="text" name="{{key}}" columnType="{{databaseStructureRecursion[key]}}"  value="{{columnPath}}***{{key}}">
-                
-
-              </div>
-            {% endif %}
-          {% endfor %}
-
-        {%- endmacro %}
-
-        {% for key in databaseStructure %}
-          {% if databaseStructure[key] is mapping %}
-            
-            </div>
-            <h3 style= "margin-left: 10px ;">Objecto: {{key}}</h3>
-            
-            <div id="box{{ns.cardId}}" name="columns-dataset" class="card overflow-auto list-group" style= "margin-left: 10px ;width: {{widthCard}}px">
-              {% set ns.cardId = ns.cardId + 1 %}
-              {{columnsRecursion (databaseStructure[key], widthCard-11, ns.cardId, 0, columnPath+'***'+key) }}
-              
-          {%else%}
-            <div class="list-group-item" id="div{{columnPath}}***{{key}}" parentBox="order-columns">{{key}}
-              <input type="hidden" id="{{columnPath}}***{{key}}" type="text" name="columnOfDataSet" columnType="{{databaseStructure[key]}}"  value="{{columnPath}}***{{key}}">
-              
-
-            </div>
-          {% endif %}
-        {% endfor %}
-        
-
-
-      </div>    
-    </div>
+  </div>    
 </div>
 
 

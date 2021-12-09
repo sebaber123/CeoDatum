@@ -27,8 +27,8 @@ from resources.configuration import configuration
 
 app.add_url_rule('/', 'home', user.index)
 
-app.add_url_rule('/graphLine/<database>&<x_axie>', 'graph_line', visualization.graphLine, methods=['GET'], defaults={'condition':None})
-app.add_url_rule('/graphLine/<database>&<x_axie>&<condition>', 'graph_line', visualization.graphLine, methods=['GET'])
+app.add_url_rule('/graphLine/<database>&<x_axie>&<acumulativeX>', 'graph_line', visualization.graphLine, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/graphLine/<database>&<x_axie>&<acumulativeX>&<condition>', 'graph_line', visualization.graphLine, methods=['GET'])
 
 app.add_url_rule('/graphBar/<database>&<x_axie>', 'graph_bar', visualization.graphBar, methods=['GET'], defaults={'condition':None})
 app.add_url_rule('/graphBar/<database>&<x_axie>&<condition>', 'graph_bar', visualization.graphBar, methods=['GET'])

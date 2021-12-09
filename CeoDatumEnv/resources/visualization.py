@@ -197,6 +197,8 @@ def conditionsToString(database, condition, dictPositionsInQuery):
 
                 valueColumn = 'id'
 
+                
+
                 if columnCondition != database:
 
                     columnsToAddToDict.append('object')
@@ -427,7 +429,7 @@ def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
     return bar
 
 #return the graph line
-def graphLine(database, x_axie, condition):
+def graphLine(database, x_axie, acumulativeX,condition):
 
     queryConstructionResult = queryConstruction(database, x_axie, 'undefined', condition)
 
@@ -445,7 +447,8 @@ def graphLine(database, x_axie, condition):
                         queryConstructionResult['whereString'],
                         objectStringCallBack,
                         condition,
-                        x_axie )
+                        x_axie,
+                        acumulativeX )
     
     #method that return the script and div that is needed to create the graph in the page 
     script, div = components(line)
@@ -460,7 +463,7 @@ def graphLine(database, x_axie, condition):
     ).encode(encoding='UTF-8')
 
 #line plot with datetimes
-def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, objectStringCallBack, conditionCallBack, columnXCallBack):
+def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectString, fromString, groupByString, whereString, objectStringCallBack, conditionCallBack, columnXCallBack, acumulativeX):
     
     #get the data of the database
     #data = Visualization.get_data(data_db_name, table, column_x, condition, innerColumnsCondition)
@@ -489,9 +492,17 @@ def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStr
         countsTotal.append(count)
 
     
-    #create a dictionary that  with the 'x_array' and 'y_array' arrays
-    dictionary=dict(  x=x_array, y=countsTotal, x_values=x_array_values)
-    
+    if acumulativeX == '1':
+
+        #create a dictionary that  with the 'x_array' and 'y_array' arrays
+        dictionary=dict(  x=x_array, y=countsTotal, x_values=x_array_values)
+
+    else:
+        
+        #create a dictionary that  with the 'x_array' and 'y_array' arrays
+        dictionary=dict(  x=x_array, y=y_array, x_values=x_array_values)     
+
+
     #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
     source = ColumnDataSource(data=dictionary)
 
@@ -1121,8 +1132,8 @@ def map_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
     k = 6378137
 
     #get the x axi value
-    latitude_array = [np.log(np.tan((90 + float(row[column_x])) * np.pi/360.0)) * k for row in data]
-    longitude_array = [float(row[column_y])*(k * pi/180.0) for row in data]
+    latitude_array = [np.log(np.tan((90 + float(str(row[column_x]))) * np.pi/360.0)) * k for row in data]
+    longitude_array = [float(str(row[column_y]))*(k * pi/180.0) for row in data]
     ids = [(row['id']) for row in data]
 
     #latitude_array = []
@@ -1357,7 +1368,7 @@ def inspect_rows(databaseId, objectString, condition):
             pos = aux[1]
         
         #call the method to transform the conditions
-        conditionQueryString = conditionsToString(database, condition, dictPositionsInQuery)
+        conditionQueryString = conditionsToString(database['name'], condition, dictPositionsInQuery)
 
     fromOfQueryString = 'public.\"'+  database['name'] + '\" as t0 '
 

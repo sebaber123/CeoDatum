@@ -22,7 +22,7 @@
               Datasets
             </a>
             <ul class="dropdown-menu" style="width: 200px;" aria-labelledby="navbarDropdown">
-              <li><a class="nav-link " aria-current="page" href="{{url_for('datasets_index_publics')}}">Datasets Publicos</a></li>
+              <li><a class="nav-link " aria-current="page" href="{{url_for('datasets_index_publics')}}">Datasets Públicos</a></li>
 
               <li><a class="nav-link " aria-current="page" href="{{url_for('datasets_index_protecteds')}}">Datasets Protegidos</a></li>
 
@@ -64,6 +64,18 @@
       </div>
     </div>
   </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" style="margin: auto; width: 60%; " role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
       
     {% block content %}
     {% endblock %}
