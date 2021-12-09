@@ -1,4 +1,4 @@
-from flask import redirect, render_template, request, url_for, session, abort, flash, current_app as app
+from flask import redirect, render_template, request, url_for, session, abort, flash, jsonify, current_app as app
 from db import get_db
 from models.user import User
 from models.activity import Activity
@@ -11,8 +11,12 @@ def configuration():
 	if session['username']:
 		configuration_data = Configuration.get_file_data()
 		users = User.get_all_users()
+		dictionary = {}
+		for user in users:
+			roles = User.get_roles_of_user(user['id'])
+			dictionary[user['id']] = [role['role_id'] for role in roles]
 
-		return render_template('configuration/configuration.html', data=configuration_data, users=users)
+		return render_template('configuration/configuration.html', data=configuration_data, users=users, roles=dictionary)
 	else:
 		return redirect(url_for('home'))
 
@@ -57,4 +61,14 @@ def cambiar_rol(user_id, role_id):
 	if session['username'] and session['role']=="admin":
 		Configuration.change_role(user_id, role_id)
 	return False
+
+def add_role(role_id, user_id):
+	if session['rolename_1']:
+		Configuration.add_role(user_id, role_id)
+	return jsonify(True)
+
+def delete_role(role_id, user_id):
+	if session['rolename_1']:
+		Configuration.delete_role(user_id, role_id)
+	return jsonify(True)
 	

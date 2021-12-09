@@ -13,7 +13,7 @@ def activities():
 		return render_template('/')
 
 def new_activity(course_id):
-	if session['role']=='professor':
+	if session['rolename_2']:
 		graficos = Activity.get_graph_names()
 
 		datasets = datasets = Course.get_dataset_by_courseId(course_id)

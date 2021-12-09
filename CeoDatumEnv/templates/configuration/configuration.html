@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block header %}
   <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/configuration.css') }}">
+   <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 {% endblock%}
 {% block title %}Datasets{% endblock %}
 {% block content %}
@@ -18,7 +19,15 @@
 		  <button type="submit" class="btn btn-primary mt-1">Submit</button>
 		</form>
 		<hr>
-		<input type="text" id="myInput" onkeyup="filtrar();" placeholder="Buscar por nombre">
+		<div class="form-input">
+			<input class="form-control" type="text" id="myInput" onkeyup="filtrar();" placeholder="Buscar por nombre o email">
+			<input class="form-check-input" type="Checkbox" value="1" onclick="verAdmins();" id="verAdmins">
+			<label>Ver admins</label>
+			<input class="form-check-input" type="Checkbox" value="1" onclick="verProfesores();" id="verProfesores">
+			<label>Ver profesores</label>
+			<input class="form-check-input" type="Checkbox" value="1" onclick="verEstudiantes();" id="verEstudiantes">
+			<label>Ver estudiantes</label>
+		</div>
 		<table class="table" id="myTable">
 		  <thead>
 		  	<tr>
@@ -28,16 +37,17 @@
 		  	</tr>
 		  </thead>
 		  <tbody>
-		  	{% for user in users %}
-		    <tr>
+		  {% for user in users %}
+		    <tr class="user_rows">
 		      <td>{{user.name + " " + user.surname}}</td>
 		      <td>{{user.email}}</td>
 		      <td name="usuario{{user.id}}">
-		      	<select id="select{{user.id}}" onchange="cambiarRol({{user.id}});">
-		      		<option value="1" {% if (user.role_id == 1) %}selected{% endif %}>Admin</option>
-		      		<option value="2" {% if (user.role_id == 2) %}selected{% endif %}>Profesor</option>
-		      		<option value="3" {% if (user.role_id == 3) %}selected{% endif %}>Alumno</option>
-		      	</select>
+		      	<input class="form-check-input" type="checkbox" onclick="validate(1, {{user.id}});" {% if 1 in roles[user.id]  %} checked {% endif %} id="role1_{{user.id}}">
+		      	<label for="role1">Admin</label>
+		      	<input class="form-check-input" type="checkbox" onclick="validate(2, {{user.id}});" {% if 2 in roles[user.id] %} checked {% endif %} id="role2_{{user.id}}">
+		      	<label for="role1">Profesor</label>
+		      	<input class="form-check-input" type="checkbox" onclick="validate(3, {{user.id}});" {% if 3 in roles[user.id] %} checked {% endif %} id="role3_{{user.id}}">
+		      	<label for="role1">Estudiante</label>
 		      </td>
 		    </tr>
 		    {% endfor %}
@@ -70,7 +80,96 @@
 			      }
 			    }
 			  }
+
+			  for (i = 0; i < tr.length; i++) {
+			    td = tr[i].getElementsByTagName("td")[1];
+			    if (td) {
+			      txtValue = td.textContent || td.innerText;
+			      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+			        tr[i].style.display = "";
+			      } else {
+			        tr[i].style.display = "none";
+			      }
+			    }
+			  }
 			}
+
+			function validate(num, user_id){
+			  	cbox = $('#role'+ num + "_" + user_id);
+			  	if(cbox.is(":checked")){
+			  		$.getJSON($SCRIPT_ROOT + "addRoleToUser/" + num + "&" + user_id,{}, function(data) {});
+			  	}else{
+			  		$.ajax({
+					  url: $SCRIPT_ROOT + "deleteRoleToUser/" + num + "&" + user_id ,
+					  type: 'PUT',
+					  data: '',
+					  success: function(data) {
+					  }
+					});
+			  	}
+			 }
+
+			function getRole(){
+				$.getJSON($SCRIPT_ROOT + "addRoleToUser/" + num + "&" + user_id,{}, function(data) {});
+			}
+
+			/* function verAdmins(){
+			 	if($('#verAdmins').is(":checked")){
+			 		$('.user_rows').each(function(index){
+			 			var check = $(this).children(2).children(2)[0];
+			 			if (!check.checked){
+			 				$(this).addClass('d-none');
+			 			}
+			 		});
+			 	}else{
+			 		$('.user_rows').each(function(index){
+			 			var check = $(this).children(2).children(2)[0];
+			 			if (!check.checked){
+			 				$(this).removeClass('d-none');
+			 			}
+			 		});
+			 	}
+			 	return true;
+			 }
+
+			 function verProfesores(){
+			 	if($('#verProfesores').is(":checked")){
+			 		$('.user_rows').each(function(index){
+			 			var check = $(this).children(2).children(2)[2];
+			 			if (!check.checked){
+			 				$(this).addClass('d-none');
+			 			}
+			 		});
+			 	}else{
+			 		$('.user_rows').each(function(index){
+			 			var check = $(this).children(2).children(2)[2];
+			 			if (!check.checked){
+			 				$(this).removeClass('d-none');
+			 			}
+			 		});
+			 	}
+			 	return true;
+			 }
+
+			 function verEstudiantes(){
+			 	if($('#verEstudiantes').is(":checked")){
+			 		$('.user_rows').each(function(index){
+			 			var check = $(this).children(2).children(2)[4];
+			 			if (!check.checked){
+			 				$(this).addClass('d-none');
+			 			}
+			 		});
+			 	}else{
+			 		$('.user_rows').each(function(index){
+			 			var check = $(this).children(2).children(2)[4];
+			 			if (!check.checked){
+			 				$(this).removeClass('d-none');
+			 			}
+			 		});
+			 	}
+			 	return true;
+			 }*/
+
 		</script>
 	
 {% endblock %}

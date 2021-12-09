@@ -2,7 +2,7 @@
 {% block title %}Actividades{% endblock %}
 {% block content %}
 <div class="container">
-	{% if session['role']=="student" %}
+	{% if session['rolename_3'] %}
 	<div name="pending_activities" class="container-fluid">
 		<h1>Actividades pendientes</h1>
 		<table class="table table-primary table-hover">
