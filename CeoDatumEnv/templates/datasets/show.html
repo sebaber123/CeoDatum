@@ -7,21 +7,20 @@
       <div class="col">
         
       </div>
-      <div style="background-color: #468FAF; text-align:center; margin: auto;height: 100%;" class="col-7">
+      <div style="background-color: #61A5C2; text-align:center; margin: auto;height: 100%;" class="col-9">
         <br/>
         <h5 style="display:inline-block;">Nombre del dataset: {{database.name}}</h5>
-        <br/>
+        <hr>
         <h5 style="display:inline-block;">Dueño: {{database.user_name}} {{database.surname}}</h5>
-        <br/>
+        <hr>
         <h5 style="display:inline-block;">Estado del dataset: {{database.share}}</h5>
-        <br/> 
+        <hr> 
         <h5 style="display:inline-block;">Puede ingresar al graficador pusaldo en el siguiente boton</h5>
         <br/>
         <button type="button" class="btn btn-info btn-sm" style="width: 300px" onclick="window.location.href='/plotter/{{database.id}}'">    
           Graficar  
         </button>
-        <br/>
-        <br/>
+        <hr>
 
 
         {% if canEdit %}
@@ -61,8 +60,7 @@
             </div>
           </div>
         {% endif %}
-        <br/>
-        <br/>
+        <hr>
 
         <h3>Columnas del dataset</h3>
             {% set widthCard = 389 %}
@@ -70,7 +68,7 @@
             {% set columnPath = database.name %}
             
             {% set ns = namespace(cardId=0) %}
-            <div   class="card " style="height:500px; width: 400px; margin-left: 175px; text-align:left;"> 
+            <div   class="card " style="height:420px; width: 400px; margin-left: 285px; text-align:left;"> 
               <div  name="" id="order-columns" class="card overflow-auto list-group"> 
 
               {% macro columnsRecursion(databaseStructureRecursion, widthcardRecursion, cardId, parentId, columnPath) %}  

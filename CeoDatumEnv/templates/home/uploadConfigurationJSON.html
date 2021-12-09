@@ -5,7 +5,7 @@
 	    <div class="col">
 	      
 	    </div>
-	    <div style="background-color: #468FAF; text-align:center; margin: auto; height: 100%;" class="col-7">
+	    <div style="background-color: #61A5C2; text-align:center; margin: auto; height: 100%;" class="col-9">
 	      	
 	      	<br/>
 	      	<h4>por favor ingrese los datos solicitados</h4>
@@ -24,6 +24,32 @@
 				  <option selected value="publico">Publico</option>
 				  <option value="protegido">Protegido</option>
 				  <option value="privado">Privado</option>
+				</select>
+				<br/>
+				<br/>
+
+				<h5>Formato de campos de tipo fecha:</h5>
+				<select style="display: inline; width: 300px;" id="dateFormat" name="dateFormat" class="form-select">
+				  <option selected value="dd/MM/yyyy">dia/mes/año(4 numeros)</option>
+				  <option value="dd-MM-yyyy">dia-mes-año(4 numeros)</option>
+				  <option value="MM/dd/yyyy">mes/dia/año(4 numeros)</option>
+				  <option value="MM-dd-yyyy">mes-dia-año(4 numeros)</option>
+
+				  <option selected value="yyyy/dd/MM">año(4 numeros)/dia/mes</option>
+				  <option value="yyyy-dd-MM">año(4 numeros)-dia-mes</option>
+				  <option value="yyyy/MM/dd">año(4 numeros)/mes/dia</option>
+				  <option value="yyyy-MM-dd">año(4 numeros)-mes-dia</option>
+
+				  <option selected value="dd/MM/yy">dia/mes/año(2 numeros)</option>
+				  <option value="dd-MM-yy">dia-mes-año(2 numeros)</option>
+				  <option value="MM/dd/yy">mes/dia/año(2 numeros)</option>
+				  <option value="MM-dd-yy">mes-dia-año(2 numeros)</option>
+
+				  <option selected value="yy/dd/MM">año(2 numeros)/dia/mes</option>
+				  <option value="yy-dd-MM">año(2 numeros)-dia-mes</option>
+				  <option value="yy/MM/dd">año(2 numeros)/mes/dia</option>
+				  <option value="yy-MM-dd">año(2 numeros)-mes-dia</option>
+
 				</select>
 				<br/>
 				<br/>

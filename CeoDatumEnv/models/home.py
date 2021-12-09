@@ -27,6 +27,31 @@ class Home(object):
 		return None
 
 	@classmethod
+	def delete_dataset(cls, databaseName):
+	
+		con = get_db()
+
+		con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+
+
+		query = ("DROP DATABASE  \""+databaseName+ "\" ;")
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		con.commit()
+
+		con = get_db()
+
+		query = ("DELETE FROM public.\"Database\" WHERE name = \'"+databaseName+ "\' ;")
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		con.commit()
+
+
+		return None			
+
+	@classmethod
 	def create_table(cls, tableName , databaseName, dataType):
 		
 

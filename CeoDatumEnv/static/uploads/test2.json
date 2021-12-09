@@ -3,21 +3,17 @@
 		{	
 			"nombre": "sebastian",
 			"edad": "24",
-			"nacimiento": "27/09/1997",
-			"valorFloat": "51.5",
-		    	"vehiculo": [{
+		    	"vehiculo": {
 				"marca": {
 					"nombre" : "peugeot",
 					"creador" : "juan perez"
 					},
 				"anio": "2012"
-			}]
+			}
 		},
 		{	
 			"nombre": "martin",
 			"edad": "21",
-			"nacimiento": "14/07/2000",
-			"valorFloat": "51.5",
 		    	"vehiculo": [{
 				"marca": {
 					"nombre" : "amarok",
@@ -29,8 +25,6 @@
 		{	
 			"nombre": "ivan",
 			"edad": "53",
-			"nacimiento": "12/02/1969",
-			"valorFloat": "51.5",
 		    	"vehiculo": [{
 				"marca": {
 					"nombre" : "amarok",
@@ -50,8 +44,6 @@
 		{	
 			"nombre": "ariel",
 			"edad": "53",
-			"nacimiento": "30/06/1984",
-			"valorFloat": "51.5",
 		    	"vehiculo": [{
 				"marca": {
 					"nombre" : "fiat",
