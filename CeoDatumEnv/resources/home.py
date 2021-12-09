@@ -392,7 +392,6 @@ def configurateUploadCSV():
 
 				loop = loop + 1
 
-
 			w = Window.orderBy('id2')
 			data = data.withColumn("id2", F.monotonically_increasing_id()).withColumn("id_"+database, F.row_number().over(w))    
 
@@ -457,8 +456,6 @@ def configurateUploadCSV():
 					return render_template('home/uploadConfiguration.html', filename=fileName)
 				
 				flash('Lo sentimos, la carga del dataset ha fallado', 'danger')
-
-				raise(e)
 
 				return render_template('home/dragAndDrop.html')
 			
