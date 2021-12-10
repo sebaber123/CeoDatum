@@ -47,6 +47,28 @@
 		  		<input type="date" class="form-control" name="endDate" id="inputEndDate">
 		  	</div>
 		  	<div class="form-group">
+		  		<label class="titulo-form" for="inputEndDate">Crear actividad para:</label>
+		  		<select class="form-select" aria-label="Default select example" id="student_select">
+				  <option selected value="0">Todos los alumnos</option>
+				  <option value="1">Grupo reducido</option>
+				</select>
+		  	</div>
+		  	<div class="card d-none m-3" id="student_checkbox">
+		  	  <div class="card-header">
+			    Estudiantes incluidos:
+			  </div>
+			  <div class="card-body">
+			   	{% for student in students%}
+		  		<div class="form-check">
+				  <input class="form-check-input" type="checkbox" value="" id="student{{student.id}}">
+				  <label class="form-check-label" for="student{{student.id}}">
+				  {{student.surname}}, {{student.name}}
+				  </label>
+				</div>
+				{% endfor %}
+			  </div>
+			</div>
+		  	<div class="form-group mb-1">
 		  		<input type='hidden' value='0' name='checkboxExpiredDate'>
 		  		<input class="form-check-input" type="checkbox" name="checkboxExpiredDate" id="checkboxExpiredDate" value="1">
 		  		<label for="checkboxExpiredData">Permitir entrega fuera de término</label>
@@ -57,7 +79,9 @@
 		  		<label for="checkboxNoCalification">Actividad sin calificación</label>
 		  	</div>
 		  	<input type="hidden" name="course" value="{{course_id}}">
-		  	<button type="submit" class="btn btn-primary btn-lg mt-1" >Crear</button>
+		  	<div class="d-grid gap-2 mb-2">
+		  		<button type="submit" class="btn btn-info mt-1" >Crear actividad</button>
+			</div>
 		</form>
 	</div>
 	<script>
@@ -124,5 +148,15 @@
 	      }
 	      return false;
 	    });
+
+		$('#student_select').on('change', function(){
+			var opcion = $(this).val();
+			if (opcion == 1){
+				$('#student_checkbox').removeClass('d-none');
+			}else{
+				$('#student_checkbox').addClass('d-none');
+			}
+		});
+	    
 	</script>
 {% endblock %}

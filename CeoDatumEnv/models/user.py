@@ -9,27 +9,51 @@ class User(object):
 
 	@classmethod
 	def get_all_users(cls):
-		query = "SELECT * FROM public.user WHERE role_id != '1'"
+		query = "SELECT * FROM public.user"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
 		return cursor.fetchall()
 
 	@classmethod
+	def get_all_users_with_pagination(cls, pagination, actual_page, filtered):
+		query = "SELECT u.id, u.name, u.surname, u.email, u.username FROM public.user as u "
+		params = ()
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+
+		if filtered != 0:
+			query = query + "INNER JOIN user_role ON u.id = user_role.user_id WHERE user_role.role_id = %s "
+			params = params + (filtered,)
+		cursor.execute(query, (params))
+		
+		rowsCount = cursor.rowcount
+
+		maxPage = ((rowsCount-1)//pagination)+1
+		start_at = (actual_page-1)*pagination
+
+		query = query + "LIMIT %s OFFSET %s"
+		params = params + (pagination, start_at,)
+		cursor.execute(query, (params))
+		return [cursor.fetchall(), maxPage]
+
+	@classmethod
 	def login(cls, user, email):
-		query= "SELECT * FROM public.user as u INNER JOIN role ON role.id = u.role_id WHERE (username=%s OR email=%s)"
+		query= "SELECT * FROM public.user as u INNER JOIN user_role ON user_role.user_id = id INNER JOIN role ON role.id = user_role.role_id WHERE (username=%s OR email=%s)"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (user, email))
 
-		return cursor.fetchone()
+		return cursor.fetchall()
 
 	@classmethod
 	def register(cls, username, password, province, city, institute, email, name, surname, birthday):
 		con = get_db()
 
-		query="INSERT INTO public.user(username, password, province_id, city_id, establishment_id, email, name, surname, birthday) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+		query="INSERT INTO public.user(username, password, province_id, city_id, establishment_id, email, name, surname, birthday) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (username, password, province, city, institute, email, name, surname, birthday))
+		a = cursor.fetchone()[0]
+		query="INSERT INTO public.user_role VALUES(%s, '3')"
+		cursor.execute(query, (a,))
 		con.commit()
 
 		return True
@@ -57,6 +81,14 @@ class User(object):
 		return cursor.fetchall()
 
 	@classmethod
+	def get_roles_of_user(cls, user_id):
+		query = "SELECT role_id FROM public.user_role WHERE user_id = %s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (user_id,))
+
+		return cursor.fetchall()
+
+	@classmethod
 	def user_or_email_exist(cls, username):
 		query = "SELECT * FROM public.user WHERE email=%s or username=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
@@ -70,6 +102,4 @@ class User(object):
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (id_user,))
 
-		return cursor.fetchone()	
-
-
+		return cursor.fetchone()

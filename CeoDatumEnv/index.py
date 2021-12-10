@@ -78,9 +78,11 @@ app.add_url_rule('/activities/view_activity/<id>', 'view_activity', activities.v
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
 app.add_url_rule('/configuration', 'configuration', configuration.configuration, methods=['GET'])
+app.add_url_rule('/configuration_AJAX/<int:page>&<int:filtered>', 'configurationAJAX', configuration.configuration_AJAX)
 app.add_url_rule('/update_establishment_file', 'update_establishment_file', configuration.upload_establishment_file, methods=['POST'])
 app.add_url_rule('/cambiar_rol/<user_id>/<role_id>', 'cambiar_rol', configuration.cambiar_rol, methods=['GET'])
-
+app.add_url_rule('/addRoleToUser/<role_id>&<user_id>', 'addRole', configuration.add_role)
+app.add_url_rule('/deleteRoleToUser/<role_id>&<user_id>', 'deleteRole', configuration.delete_role, methods=['PUT'])
 
 from resources.educational_establishments import extracting_data
 app.add_url_rule('/get_establishments', 'get_establishments', extracting_data.extract_data, methods=['GET'])

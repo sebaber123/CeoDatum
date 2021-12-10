@@ -82,12 +82,14 @@ def login():
         name = request.form['name']
         password = request.form['password']
         result = User.login(name, name)
-        if result and check_password_hash(result['password'], password):
-            session['username'] = result['username']
-            session['name'] = result['name']
-            session['email'] = result['email']
-            session['id'] = result[1]
-            session['role'] = result['rolename']
+        if result and check_password_hash(result[0]['password'], password):
+            aux = result[0]
+            session['username'] = aux['username']
+            session['name'] = aux['name']
+            session['email'] = aux['email']
+            session['id'] = aux[1]
+            for res in result:
+                session['rolename_' + str(res['role_id'])] = res['rolename']
             return index()    
 
         else:
@@ -96,7 +98,7 @@ def login():
         return register_form()
 
 def user_exist(username):
-    if session['role']=="professor":
+    if session['rolename_2']:
         result = User.user_or_email_exist(username)
         if result:
             return jsonify(result = result['id'])

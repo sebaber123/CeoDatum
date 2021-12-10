@@ -35,3 +35,21 @@ class Configuration(object):
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 		con.commit()
+
+	@classmethod
+	def delete_role(cls, user_id, role_id):
+		con = get_db()
+		query = "DELETE FROM public.user_role WHERE user_id=%s and role_id=%s"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (user_id, role_id))
+		con.commit()
+		return None
+
+	@classmethod
+	def add_role(cls, user_id, role_id):
+		con = get_db()
+		query = "INSERT INTO public.user_role VALUES(%s,%s)"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (user_id, role_id))
+		con.commit()
+		return None

@@ -7,7 +7,7 @@ from models.user import User
 from datetime import date
 
 def get_courses():
-	if session['role']=="professor":
+	if session['rolename_2']:
 		cursos = Course.get_my_courses(session['id'])
 		return render_template('course/courses.html', cursos=cursos)
 	else:
@@ -32,7 +32,7 @@ def create_course():
 	return redirect(url_for('home'))
 
 def view_course(course_id):
-	if session['role']=="professor":
+	if session['rolename_2']:
 		course = Course.get_course(course_id)
 		activities = Activity.get_activities_of_course(course_id)
 		students = User.get_user_from_course(course_id)
@@ -47,12 +47,12 @@ def view_course(course_id):
 	return redirect(url_for('home'))
 
 def invite_user_to_course(username, course_id):
-	if session['role']=="professor":
+	if session['rolename_2']:
 		result = Course.invite_user_to_course(username,course_id)
 		return jsonify(result = result)
 
 def is_user_on_course(username, course_id):
-	if session['role']=="professor":
+	if session['rolename_2']:
 		result = Course.is_user_on_course(username,course_id)
 		return jsonify(result = result)
 
