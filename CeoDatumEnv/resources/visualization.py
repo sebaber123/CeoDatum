@@ -143,8 +143,9 @@ def queryConstruction(database, rowName, column, condition):
     valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
     pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
 
-    groupByString = 't'+str(pos)+'.'+valueColumn
+    groupByString = 't'+str(pos)+'.\"'+valueColumn+'\"'
     selectString = groupByString + ',  COUNT( t'+str(pos)+'.id) as count'
+    #selectString = 't'+str(pos)+'.\"'+valueColumn + '\",  COUNT( t'+str(pos)+'.id) as count'
 
     return {'groupByString':groupByString, 'selectString':selectString, 'fromOfQueryString':fromOfQueryString, 'pos':pos, 'valueColumn':valueColumn, 'whereString':conditionQueryString, 'dictPositionsInQuery':dictPositionsInQuery, 'columnToGroupBy':columnToGroupBy}
 
@@ -208,7 +209,7 @@ def conditionsToString(database, condition, dictPositionsInQuery):
                 
                 pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
 
-                condition = cond.replace(columnCondition, ' t'+str(pos)+'.'+valueColumn+' ')
+                condition = cond.replace(columnCondition, ' t'+str(pos)+'.\"'+valueColumn+'\" ')
 
                 #If the 'valueColumn' not in 'QueryConditionPositive' it means that, have to create the array of that column
                 if valueColumn not in queryConditionPositive:
@@ -234,7 +235,7 @@ def conditionsToString(database, condition, dictPositionsInQuery):
                 valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2]          
                 pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
 
-                condition = cond.replace(columnCondition, ' t'+str(pos)+'.'+valueColumn+' ')
+                condition = cond.replace(columnCondition, ' t'+str(pos)+'.\"'+valueColumn+'\" ')
 
 
                 #if the string of negative condition is not empty add " AND " to separate the conditions
@@ -549,7 +550,7 @@ def counts_query_for_data_table(database, column, condition, pos, parent):
 
     #generate the counts
     for x in columnData:
-        stringCounts = stringCounts + 'count(case t'+str(pos)+'.'+column+' when \''+str(x[1])+'\' then 1 else null end) as \"'+ str(x[1]) + '\", '
+        stringCounts = stringCounts + 'count(case t'+str(pos)+'.\"'+column+'\" when \''+str(x[1])+'\' then 1 else null end) as \"'+ str(x[1]) + '\", '
 
     #delete the last ', ' of the string
     stringCounts = stringCounts[:-2] 
@@ -780,7 +781,7 @@ def dot_chart(database, rowName, column, condition):
 
         valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
         posColumn = positionInQuery(columnsToAddToDict, queryConstructionResult['dictPositionsInQuery'])
-        columnToGroupBy = ', t'+str(posColumn)+'.'+valueColumn
+        columnToGroupBy = ', t'+str(posColumn)+'.\"'+valueColumn+'\"'
 
         y_axis_name = valueColumn
 
@@ -943,7 +944,7 @@ def scatter_chart(database, rowName, column, dispersionX, dispersionY, condition
 
         valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
         posColumn = positionInQuery(columnsToAddToDict, queryConstructionResult['dictPositionsInQuery'])
-        columnToGroupBy = ', t'+str(posColumn)+'.'+valueColumn
+        columnToGroupBy = ', t'+str(posColumn)+'.\"'+valueColumn+'\"'
 
 
     graph = scatter_plot(    queryConstructionResult['valueColumn'], 
@@ -1087,7 +1088,7 @@ def map_chart(database, latitude, longitude, condition):
 
         valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
         posColumn = positionInQuery(columnsToAddToDict, queryConstructionResult['dictPositionsInQuery'])
-        columnToGroupBy = ', t'+str(posColumn)+'.'+valueColumn
+        columnToGroupBy = ', t'+str(posColumn)+'.\"'+valueColumn+'\"'
 
         y_axis_name = valueColumn
 
@@ -1341,7 +1342,7 @@ def inspect_rows(databaseId, objectString, condition):
 
         else:
 
-            select = select + ' t'+ str(pos-1) +'.'+x+','
+            select = select + ' t'+ str(pos-1) +'.\"'+x+'\",'
             
             positionOfTheQuery[str(posOfQueryReturn)] = stringToAdd
             posOfQueryReturn = posOfQueryReturn + 1        
