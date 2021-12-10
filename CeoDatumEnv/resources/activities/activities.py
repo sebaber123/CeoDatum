@@ -2,6 +2,7 @@ from flask import redirect, render_template, request, url_for, session, abort, f
 from db import get_db
 from models.activity import Activity
 from models.course import Course
+from models.user import User
 from datetime import date
 
 
@@ -18,7 +19,9 @@ def new_activity(course_id):
 
 		datasets = datasets = Course.get_dataset_by_courseId(course_id)
 
-		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos, datasets=datasets)
+		students = User.get_user_from_course(course_id)
+
+		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos, datasets=datasets, students=students)
 	else:
 		return redirect(url_for('home'))
 

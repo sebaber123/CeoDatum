@@ -21,7 +21,7 @@ class Home(object):
 		query = ("CREATE DATABASE \""+databaseName+ "\" ;")
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
-
+		
 		con.commit()
 
 		return None
