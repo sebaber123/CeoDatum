@@ -409,11 +409,9 @@ def configurateUploadCSV():
 
 			firstRowFields = firstRow.__fields__
 
-			objectTable = Home.add_table_and_columns_to_ceoDatum_recursion(database, database, factTableInCeoDatum['id'])
+			idTable = factTableInCeoDatum['id']
 
-			idTable = objectTable['id']
-
-			JSONRecursion(database, data, firstRow, sqlContext, spark, objectTable['id'], 1, 0, database, dateFormat)	
+			JSONRecursion(database, data, firstRow, sqlContext, spark, factTableInCeoDatum['id'], 1, 0, database, dateFormat)	
 
 			#fact_table
 			Home.create_fact_table(database)	
