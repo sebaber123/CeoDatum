@@ -35,7 +35,7 @@
     <td style="width:25px;"></td>
     <td style="width:250px;"></td>
     <td style="width:100px;"></td>
-    <td >
+    <td class="rounded-3" style="background-color: #89C2D9; padding: 5px;">
       <label>
         <input type="radio" id="data_table" name="chart" value="data_table" /><img src="{{url_for('static', filename='Data_table.png') }}">
       </label>
@@ -57,7 +57,7 @@
       <label>
         <input type="radio" id="map_chart" name="chart" value="map" /><img src="{{url_for('static', filename='map_chart.png') }}">
       </label>
-       <button class="btn btn-light" onclick="GenerateChart()">Generar grafico</button> 
+       <button class="btn btn-primary" style="margin-left: 10px;" onclick="GenerateChart()">Generar grafico</button> 
     </td>
   </tr>
   <tr style="height:20px"><td style="width:10px"></td></tr>

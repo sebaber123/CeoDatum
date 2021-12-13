@@ -68,8 +68,8 @@
             {% set columnPath = database.name %}
             
             {% set ns = namespace(cardId=0) %}
-            <div   class="card " style="height:420px; width: 400px; margin-left: 285px; text-align:left;"> 
-              <div  name="" id="order-columns" class="card overflow-auto list-group"> 
+            <div   class="card " style="height:280px; width: 400px; margin-left: 285px; text-align:left; overflow-y: auto; overflow-x: hidden;"> 
+              <div  name="" id="order-columns" class="card list-group"> 
 
               {% macro columnsRecursion(databaseStructureRecursion, widthcardRecursion, cardId, parentId, columnPath) %}  
 
@@ -85,7 +85,7 @@
                     {% endif %}  
                       <h3 style= "margin-left: 10px ;">Objecto: {{key}}</h3>
 
-                      <div name="columns-dataset" id="box{{ns.cardId}}" class="card overflow-auto list-group" style= "margin-left: 10px ;width: {{widthcardRecursion}}px">
+                      <div name="columns-dataset" id="box{{ns.cardId}}" class="card list-group" style= "margin-left: 10px ;width: {{widthcardRecursion}}px">
                       {% set ns.cardId = ns.cardId + 1 %}
                       {{columnsRecursion (databaseStructureRecursion[key], widthcardRecursion-11, ns.cardId, ns.cardId-1, columnPath+'***'+key) }}
 
@@ -113,12 +113,12 @@
                   </div>
                   <h3 style= "margin-left: 10px ;">Objecto: {{key}}</h3>
                   
-                  <div id="box{{ns.cardId}}" name="columns-dataset" class="card overflow-auto list-group" style= "margin-left: 10px ;width: {{widthCard}}px">
+                  <div id="box{{ns.cardId}}" name="columns-dataset" class="card list-group" style= "margin-left: 10px ;width: {{widthCard}}px">
                     {% set ns.cardId = ns.cardId + 1 %}
                     {{columnsRecursion (databaseStructure[key], widthCard-11, ns.cardId, 0, columnPath+'***'+key) }}
                     
                 {%else%}
-                  <div class="list-group-item" id="div{{columnPath}}***{{key}}" parentBox="order-columns">{{key}}
+                  <div class="list-group-item" id="div{{columnPath}}***{{key}}" style="width:400px" parentBox="order-columns">{{key}}
                     <input type="hidden" id="{{columnPath}}***{{key}}" type="text" name="columnOfDataSet" columnType="{{databaseStructure[key]}}"  value="{{columnPath}}***{{key}}">
                     
 
