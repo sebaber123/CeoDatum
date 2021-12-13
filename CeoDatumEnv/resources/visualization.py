@@ -400,7 +400,7 @@ def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
     source = ColumnDataSource(data=dictionary)
 
     #generate the graph
-    bar = figure(x_range= dictionary['x'], title='bar plot', x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
+    bar = figure(x_range= dictionary['x'], x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
     bar.vbar(x='x', top='y', source=source, color='blue', width=0.5)
     bar.y_range.start=0
     
@@ -508,7 +508,7 @@ def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStr
     source = ColumnDataSource(data=dictionary)
 
     #generate the graph
-    p = figure(title="Title", x_axis_type="datetime", x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
+    p = figure( x_axis_type="datetime", x_axis_label=x_axis_name, y_axis_label=y_axis_name, plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
     p.line(x='x', y='y', source=source, line_width=2)
     p.circle(x='x', y='y', source=source, fill_color="white", size=8)
 
@@ -696,7 +696,7 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
 
         
     #generate the graph
-    p = figure(plot_height=675, plot_width=900, title="Pie Chart", x_range=(-0.5, 1.0), tools="tap, pan, wheel_zoom, save")
+    p = figure(plot_height=675, plot_width=900, x_range=(-0.5, 1.0), tools="tap, pan, wheel_zoom, save")
     p.wedge(x=0, y=1, radius=0.4,
         start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
         line_color="white", fill_color='color', legend_field=rowName, source=data)
@@ -851,7 +851,7 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, title="Title", plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
+        p = figure(x_range=xCategorical,  plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
         p.y_range.start=-1
         p.y_range.end= maxCount+3
 
@@ -896,7 +896,7 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
+        p = figure(x_range=xCategorical, y_range=yCategorical,  plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
         #p.circle(x='x', y='y', source=source, fill_color="blue", radius='radio')
         p.circle(x='x', y='y', source=source, fill_color="blue", size='size')
@@ -1007,7 +1007,7 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
      
         #p = figure(y_range=yCategorical, x_range=xCategorical, title="Title", plot_height=575, plot_width=900)
         
-        p = figure(x_range=xCategorical, y_range=['unico valor'], title="Title", plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
+        p = figure(x_range=xCategorical, y_range=['unico valor'], plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
         p.circle(x=jitter('x',width=float(dispersionX), range = p.x_range), y=jitter('y',width=float(dispersionY), range = p.y_range), source=source, fill_color="blue", size=30, alpha= 0.3)
 
@@ -1044,7 +1044,7 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
         #transform the dictionary to a 'ColumnDataSource' (needed by the graph)
         source = ColumnDataSource(data=dictionary)
         
-        p = figure(x_range=xCategorical, y_range=yCategorical, title="Title", plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
+        p = figure(x_range=xCategorical, y_range=yCategorical, plot_height=675, plot_width=900, tools="tap, pan, wheel_zoom, save")
 
         p.circle(x=jitter('x',width=float(dispersionX), range = p.x_range), y=jitter('y',width=float(dispersionY), range = p.y_range), source=source, fill_color="blue", size=30, alpha= 0.3)
 
@@ -1198,7 +1198,7 @@ def ajaxGetColumnData(database, column):
     valueColumn = columnsToAddToDict[len(columnsToAddToDict)-2] 
     pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
 
-    groupByString = 't'+str(pos)+'.'+valueColumn
+    groupByString = 't'+str(pos)+'.\"'+valueColumn+'\"'
     selectString = groupByString + ',  COUNT(t'+str(pos)+'.id) as count'
 
 

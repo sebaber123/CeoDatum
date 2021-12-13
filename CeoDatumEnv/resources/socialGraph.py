@@ -14,8 +14,8 @@ from bokeh.models import GraphRenderer, StaticLayoutProvider, Oval, Circle, Mult
 from bokeh.palettes import Spectral8
 #Importing Libraries
 import pandas as pd
-#import matplotlib.pyplot as plt
-#from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 #Importing Dataset
 import base64, re
 from io import BytesIO
@@ -114,15 +114,6 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 			if word not in counterByWord:
 				counterByWord[word] = Counter()
 			counterByWord[word].update(auxCounter)
-
-	"""for string in string_list:
-
-		counter.update(Counter(string.split()))
-		
-		for word in string.split():
-			if word not in counterByWord:
-				counterByWord[word] = Counter()
-			counterByWord[word].update(Counter(string.split()))"""
 
 	wordsToPop = []
 

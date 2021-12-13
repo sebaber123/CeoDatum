@@ -70,6 +70,11 @@ def uploadFile():
 
 						return render_template('home/uploadConfigurationJSON.html', filename=filename)
 
+					else: 
+						flash('Debe subir un archivo de tipo CSV o JSON', 'danger')
+
+						return render_template('home/dragAndDrop.html')
+
 		else:
 
 			return '4'
@@ -88,6 +93,8 @@ def configurateUploadJSON ():
 	fileName = request.form['filename']
 
 	database = request.form['database']
+
+	database = database.replace(' ','_').replace('.','')
 
 	share = request.form['share']
 
@@ -363,6 +370,8 @@ def configurateUploadCSV():
 
 		database = request.form['database']
 
+		database = database.replace(' ','_').replace('.','')
+
 		share = request.form['share']
 
 		dateFormat =  request.form['dateFormat']
@@ -388,7 +397,7 @@ def configurateUploadCSV():
 
 			while request.form.get('nameColumn'+ str(loop)):
 
-				data = data.withColumnRenamed('_c'+str(loop-1), request.form.get('nameColumn'+ str(loop)))
+				data = data.withColumnRenamed('_c'+str(loop-1), (request.form.get('nameColumn'+ str(loop))).replace(' ','_').replace('.','') )
 
 				loop = loop + 1
 
