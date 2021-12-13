@@ -15,19 +15,8 @@ from models.establishment import Establishment
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-def index():
-    #if not authenticated(session):
-    #    abort(401)
-
-    #validacion de permiso
-    #if not("estudiante_index" in (session.values())):
-    #    abort(401)
-
-    
-    User.db = get_db()
-    users = User.get_all_users()
-
-    return render_template('home/index.html', users=users)
+def index():    
+    return render_template('home/dragAndDrop.html')
 
 """def intentoLine():
     
@@ -88,8 +77,12 @@ def login():
             session['name'] = aux['name']
             session['email'] = aux['email']
             session['id'] = aux[1]
+            session['actualRole'] = result[0]['rolename']
+            lista_roles = []
             for res in result:
-                session['rolename_' + str(res['role_id'])] = res['rolename']
+                lista_roles.append(res['rolename'])
+            session['roles'] = lista_roles
+            a = session['roles']
             return index()    
 
         else:
@@ -129,4 +122,6 @@ def register():
         User.register(username, password, province, city, institute, email, name, surname, birthday)
     return render_template('user/login_form.html', registerSuccess="Registro exitoso!")
 
-
+def changeActualRole(rolename):
+    session['actualRole'] = rolename
+    return redirect(url_for('home'))

@@ -9,25 +9,37 @@
 		<h2>Nueva actividad</h2>
 		<form method="POST" action="/activities/create_activity">
 			<div class="form-group">
-		    	<label class="titulo-form" for="inputTitle">Titulo</label>
+		    	<label class="titulo-form" for="inputTitle">Titulo de actividad</label>
 		    	<span class="contador_caracteres" id="contador_caracteres_titulo">Máximo 64 caracteres</span>
 		    	<input type="text" class="form-control" maxlength="64" name="title" id="inputTitle" placeholder="Ingrese un título">
 		  	</div>
 		  	<div class="md-form">
+		  		<span class="titulo-form">Enunciado</span>
+		  		<div class="card d-block p-3">
+					  	<label class="titulo-form" for="inputStatementTitle">Título del enunciado</label>
+				  		<span class="contador_caracteres" id="contador_caracteres_enunciado_titulo">Máximo 64 caracteres</span>
+				    	<input type="text" class="form-control" maxlength="64" name="inputStatementTitle" id="inputStatementTitle">
+				    	<label class="titulo-form" for="inputStatement">Consigna</label>
+				  		<span class="contador_caracteres" id="contador_caracteres_consigna">Máximo 256 caracteres</span>
+				    	<textarea class="md-textarea form-control" maxlength="256" name="inputStatement" id="inputStatement" rows="2"></textarea>
+				</div>
+		  		
+		  	</div>
+		  	<div class="md-form">
 		  		<label class="titulo-form" for="inputObjective">Objetivo</label>
 		  		<span class="contador_caracteres" id="contador_caracteres_objetivo">Máximo 256 caracteres</span>
-		    	<textarea class="md-textarea form-control" maxlength="256" name="objective" id="inputObjective" rows="3"></textarea>
+		    	<textarea class="md-textarea form-control" maxlength="256" name="objective" id="inputObjective" rows="2"></textarea>
 		  	</div>
 		  	<div class="md-form">
 		  		<label class="titulo-form" for="inputDescription">Descripción</label>
 		  		<span class="contador_caracteres" id="contador_caracteres_descripcion">Máximo 256 caracteres</span>
-		    	<textarea class="md-textarea form-control" maxlength="256" name="description" id="inputDescription" rows="3"></textarea>
+		    	<textarea class="md-textarea form-control" maxlength="256" name="description" id="inputDescription" rows="2"></textarea>
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputDescription">Dataset</label>
 		  		<select class="form-select">
 		  			{% for dataset in datasets %}
-		 					<option value="{{dataset.id}}">{{dataset.dataset_name}}</option>		
+		 					<option value="{{dataset.id}}">{{dataset.dataset_name}}</option>
 		 			{% endfor %}
 		  		</select>
 		  	</div>
@@ -85,9 +97,11 @@
 		</form>
 	</div>
 	<script>
-		let caracteres_descripcion=256
-		let caracteres_objetivo=256
-		let caracteres_titulo=64
+		let caracteres_descripcion=256;
+		let caracteres_objetivo=256;
+		let caracteres_titulo=64;
+		let caracteres_consigna=256;
+		let caracteres_titulo_enunciado=64;
 
 		$('#inputTitle').on('input', function() {
 	      let total_caracteres = this.value.length;
@@ -145,6 +159,46 @@
 	      if((this.value)==""){
 	        $('#contador_caracteres_objetivo').empty();
 	        $('#contador_caracteres_objetivo').append("Máximo 256 caracteres");
+	      }
+	      return false;
+	    });
+
+	    $('#inputStatementTitle').on('input', function() {
+	      let total_caracteres = this.value.length;
+	      $('#contador_caracteres_enunciado_titulo').empty();
+	      if (total_caracteres<=caracteres_titulo_enunciado){
+	      	$('#contador_caracteres_enunciado_titulo').removeClass('text-danger');
+	        let string = "Quedan " + (caracteres_titulo_enunciado-this.value.length) + " caracteres."
+	        $('#contador_caracteres_enunciado_titulo').append(string);
+	      }
+	      else{
+	      	$('#contador_caracteres_enunciado_titulo').addClass('text-danger');
+	      	let mensaje = "Se excede por " +  (caracteres_titulo_enunciado-this.value.length)*-1 + " caracteres."
+	        $('#contador_caracteres_enunciado_titulo').append(mensaje);
+	      }
+	      if((this.value)==""){
+	        $('#contador_caracteres_enunciado_titulo').empty();
+	        $('#contador_caracteres_enunciado_titulo').append("Máximo 256 caracteres");
+	      }
+	      return false;
+	    });
+
+	    $('#inputStatement').on('input', function() {
+	      let total_caracteres = this.value.length;
+	      $('#contador_caracteres_consigna').empty();
+	      if (total_caracteres<=caracteres_consigna){
+	      	$('#contador_caracteres_consigna').removeClass('text-danger');
+	        let string = "Quedan " + (caracteres_consigna-this.value.length) + " caracteres."
+	        $('#contador_caracteres_consigna').append(string);
+	      }
+	      else{
+	      	$('#contador_caracteres_consigna').addClass('text-danger');
+	      	let mensaje = "Se excede por " +  (caracteres_consigna-this.value.length)*-1 + " caracteres."
+	        $('#contador_caracteres_consigna').append(mensaje);
+	      }
+	      if((this.value)==""){
+	        $('#contador_caracteres_consigna').empty();
+	        $('#contador_caracteres_consigna').append("Máximo 256 caracteres");
 	      }
 	      return false;
 	    });

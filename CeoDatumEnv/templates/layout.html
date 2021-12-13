@@ -38,23 +38,47 @@
               <li><a class="nav-link " aria-current="page" href="{{url_for('twitter_search')}}">Twitter (ocurrencias)</a></li>
             </ul>
           </li>
-           {% if session.rolename_3 %}
+           {% if session.actualRole == 'student' %}
           <li class="nav-item">
             <a class="nav-link " aria-current="page" href="{{url_for('activities')}}">Actividades</a>
           </li>
           {% endif %}          
           {% endif %}
-          {% if session.rolename_2 %}
+          {% if session.actualRole == 'professor' %}
             <li class="nav-item">
               <a class="nav-link " aria-current="page" href="{{url_for('courses')}}">Cursos</a>
             </li>
           {% endif %}
-          {% if session.rolename_1 %}
+          {% if session.actualRole == 'admin' %}
             <li class="nav-item">
               <a class="nav-link " aria-current="page" href="{{url_for('configuration')}}">Configuración</a>
             </li>
           {% endif %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Perfil
+            </a>
+            <ul class="dropdown-menu" style="width: 200px;" aria-labelledby="navbarDropdown">
+              <li><a class="nav-link " aria-current="page" href="{{url_for('twitter_search')}}">Ver perfil</a></li>
+              {% if session.roles|length > 1 %}
+              <li class="nav-link text-secondary">Ver página como:</li>
+              <li class="ml-2 nav-link text-secondary">
+                {% for roles in session.roles %}
+                <div class="form-check">
+                  <input class="form-check-input radiobuttons" type="radio" name="flexRadioDefault" id="radio{{roles}}" onclick="window.location='/changeActualRole/{{roles}}'" {% if session.actualRole == roles %} checked {% endif %}>
+                  <label class="form-check-label" for="radio{{roles}}">
+                    {% if roles=='student' %}Estudiante{% endif %}
+                    {% if roles=='professor' %}Profesor{% endif %}
+                    {% if roles=='admin' %}Profesor{% endif %}
+                  </label>
+                </div>
+                {% endfor %}
+              </li>
+              {% endif %}
+            </ul>
+          </li>
         </ul>
+
           {% if session.username %}
           <strong class="font-italic">Hola, {{ session.name }}</strong>
           <a class="nav-link text-dark" aria-current="page" href="{{url_for('logout')}}">Cerrar sesión</a>

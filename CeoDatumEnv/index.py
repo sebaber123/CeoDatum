@@ -25,7 +25,7 @@ from resources.activities import activities
 from resources.datasets import datasets
 from resources.configuration import configuration
 
-app.add_url_rule('/', 'home', user.index)
+app.add_url_rule('/', 'home', home.dragAndDrop)
 
 app.add_url_rule('/graphLine/<database>&<x_axie>&<acumulativeX>', 'graph_line', visualization.graphLine, methods=['GET'], defaults={'condition':None})
 app.add_url_rule('/graphLine/<database>&<x_axie>&<acumulativeX>&<condition>', 'graph_line', visualization.graphLine, methods=['GET'])
@@ -83,6 +83,7 @@ app.add_url_rule('/update_establishment_file', 'update_establishment_file', conf
 app.add_url_rule('/cambiar_rol/<user_id>/<role_id>', 'cambiar_rol', configuration.cambiar_rol, methods=['GET'])
 app.add_url_rule('/addRoleToUser/<role_id>&<user_id>', 'addRole', configuration.add_role)
 app.add_url_rule('/deleteRoleToUser/<role_id>&<user_id>', 'deleteRole', configuration.delete_role, methods=['PUT'])
+app.add_url_rule('/changeActualRole/<rolename>', 'changeActualRole', user.changeActualRole)
 
 from resources.educational_establishments import extracting_data
 app.add_url_rule('/get_establishments', 'get_establishments', extracting_data.extract_data, methods=['GET'])
