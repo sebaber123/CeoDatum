@@ -2,10 +2,9 @@
 {% block content %}
 <head>
   <meta charset="utf-8">
-  <title>change demo</title>
   <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
   <style>
-    img {
+    .imgBar {
           width: 100px;
           height: 100px;
     }
@@ -25,46 +24,117 @@
 <body>
 
 <div id="alerts"></div>
+<div class="modal" id="modalExplanation" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Como usar el graficador:</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="carouselExampleCaptions" class="carousel carousel-dark slide" data-bs-ride="carousel" >
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="3" aria-label="Slide 4"></button>
+          </div>
+          <div class="carousel-inner" style="height:100%">
+            <div class="carousel-item active" style="height:100%">
+              <img src="{{url_for('static', filename='carousel1.png') }}" class="d-block w-100" alt="...">
+              <div class="carousel-caption d-none d-md-block">
+                <h5>Primer paso</h5>
+                <p>Seleccione el tipo de grafico a realizar</p>
+              </div>
+            </div>
+            <div class="carousel-item" style="height:100%">
+              <img src="{{url_for('static', filename='carousel2.png') }}" class="d-block w-100" alt="..." style="height:100%">
+              <div class="carousel-caption d-none d-md-block">
+                <h5>Segundo paso</h5>
+                <p>Arrastre los elementos de las columnas del dataset a Eje x/Eje y y genere las condiciones</p>
+              </div>
+            </div>
+            <div class="carousel-item" style="height:100%">
+              <img src="{{url_for('static', filename='carousel3.png') }}" class="d-block w-100" alt="..." style="height:100%">
+              <div class="carousel-caption d-none d-md-block">
+                <h5>Tercer paso</h5>
+                <p>Presione el boton "Generar grafico"</p>
+              </div>
+            </div>
+            <div class="carousel-item" style="height:100%">
+              <img src="{{url_for('static', filename='carousel4.png') }}" class="d-block w-100" alt="..." style="height:100%">
+              <div class="carousel-caption d-none d-md-block">
+                <h5>Cuarto paso</h5>
+                <p>Observe el grafico generado</p>
+              </div>
+            </div>
+          </div>
+
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <table style="margin-top:10px;">
+  <thead>
+    <tr>
+      <th style="width:10px"></th>
+      <th style="width:290px"></th>
+      <th style="width:25px"></th>
+      <th style="width:250px"></th>
+      <th style="width:100px"></th>
+
+    </tr>
+  </thead>
   <tr valign="top">
     <td style="width:10px"></td>
-    <td style=" text-align: center; vertical-align: middle;">
+    <td colspan="3" class="rounded-3" style="background-color: #89C2D9; text-align: center; vertical-align: middle;">
+      <p style="text-align:left; margin-left:10px">Nombre del dataset:</p>
       <h1>{{database.name}}</h1>
     </td>
-    <td style="width:25px;"></td>
-    <td style="width:250px;"></td>
+
     <td style="width:100px;"></td>
     <td class="rounded-3" style="background-color: #89C2D9; padding: 5px;">
       <label>
-        <input type="radio" id="data_table" name="chart" value="data_table" /><img src="{{url_for('static', filename='Data_table.png') }}">
+        <input type="radio" id="data_table" name="chart" value="data_table" /><img class="imgBar" src="{{url_for('static', filename='Data_table.png') }}">
       </label>
       <label>
-        <input type="radio" id="bar_chart" name="chart" value="bar" /><img src="{{url_for('static', filename='bar_chart.png') }}">
+        <input type="radio" id="bar_chart" name="chart" value="bar" /><img class="imgBar" src="{{url_for('static', filename='bar_chart.png') }}">
       </label>
       <label>
-        <input type="radio" id="line_chart" name="chart" value="line" /><img src="{{url_for('static', filename='line_chart.png') }}">
+        <input type="radio" id="line_chart" name="chart" value="line" /><img class="imgBar" src="{{url_for('static', filename='line_chart.png') }}">
       </label>
       <label>
-        <input type="radio" id="pie_chart" name="chart" value="pie" /><img src="{{url_for('static', filename='pie_chart.png') }}">
+        <input type="radio" id="pie_chart" name="chart" value="pie" /><img class="imgBar" src="{{url_for('static', filename='pie_chart.png') }}">
       </label>
       <label>
-        <input type="radio" id="dot_chart" name="chart" value="dot" /><img src="{{url_for('static', filename='dot_chart.png') }}">
+        <input type="radio" id="dot_chart" name="chart" value="dot" /><img class="imgBar" src="{{url_for('static', filename='dot_chart.png') }}">
       </label>
       <label>
-        <input type="radio" id="scatter_chart" name="chart" value="scatter" /><img src="{{url_for('static', filename='scatter_chart.png') }}">
+        <input type="radio" id="scatter_chart" name="chart" value="scatter" /><img class="imgBar" src="{{url_for('static', filename='scatter_chart.png') }}">
       </label>
       <label>
-        <input type="radio" id="map_chart" name="chart" value="map" /><img src="{{url_for('static', filename='map_chart.png') }}">
+        <input type="radio" id="map_chart" name="chart" value="map" /><img class="imgBar" src="{{url_for('static', filename='map_chart.png') }}">
       </label>
-       <button class="btn btn-primary" style="margin-left: 10px;" onclick="GenerateChart()">Generar grafico</button> 
+       <button class="btn btn-primary" id="buttonGenerateChart" disabled style="margin-left: 10px;" onclick="GenerateChart()">Generar grafico</button> 
     </td>
   </tr>
   <tr style="height:20px"><td style="width:10px"></td></tr>
 
   <tr valign="top">
     <td style="width:10px"></td>
-    <td>
+    <td class="visually-hidden" id="columnsHide">
       <h3>Columnas del dataset</h3>
       {% set widthCard = 279 %}
 
@@ -136,7 +206,7 @@
 
     </td>
     <td style="width:25px;"></td>
-    <td>
+    <td class="visually-hidden" id="columnsSelectedAndCondition">
         <h3 id="x_axi_title">Eje X</h3>
         <div  id="order-axi-x" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
         </div>
@@ -173,7 +243,7 @@
         <br/>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-          Agregar condicion
+          Agregar Condicion
         </button>
     </td>
     <td style="width:100px;"></td>
@@ -191,12 +261,12 @@
 
       <form id="formCondition">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">genere la condicion</h5>
+          <h5 class="modal-title" id="staticBackdropLabel">genere el filtro siguiendo los pasos</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           
-          <h4>1. Seleccione la variable por la que quiere filtrar</h4>
+          <h4>1. Seleccione la columna por la que quiere filtrar:</h4>
           {% macro columnsConditionRecursion(databaseStructureRecursion, columnPath) %}  
 
 
@@ -238,70 +308,78 @@
             {% endif %}
           {% endfor %}
           
-          <br/>
+
           <br/>  
-          <h4>2. Seleccione como quiere filtrar la variable</h4>
-            <div class="form-check" id="includeDiv" style="visibility: hidden;">
-              <input class="form-check-input" type="radio" name="columnCondition" id="include" value="include">
-              <label class="form-check-label" for="columnCondition">
-                Incluir
-              </label>
-            </div>
-            <div class="form-check" id="excludeDiv" style="visibility: hidden;">
-              <input class="form-check-input" type="radio" name="columnCondition" id="exclude" value="exclude">
-              <label class="form-check-label" for="columnCondition">
-                Excluir
-              </label>
-            </div>
-            <div class="form-check" id="likeDiv" style="visibility: hidden;">
-              <input class="form-check-input" type="radio" name="columnCondition" id="like" value="like">
-              <label class="form-check-label" for="columnCondition">
-                Similar a la palabra
-              </label>
-            </div>
-            <div class="form-check" id="higherDiv" style="visibility: hidden;">
-              <input class="form-check-input" type="radio" name="columnCondition" id="higher" value="higher">
-              <label class="form-check-label" for="columnCondition">
-                Mayor que
-              </label>
-            </div>
-            <div class="form-check" id="lowerDiv" style="visibility: hidden;">
-              <input class="form-check-input" type="radio" name="columnCondition" id="lower" value="lower">
-              <label class="form-check-label" for="columnCondition">
-                Menor que
-              </label>
-            </div>
-            <div class="form-check" id="betweenDiv" style="visibility: hidden;">
-              <input class="form-check-input" type="radio" name="columnCondition" id="between" value="between">
-              <label class="form-check-label" for="columnCondition">
-                Dentro del rango
-              </label>
+          <div class="visually-hidden" id='secondStepCondition'>
+            <h4>2. Seleccione el criterio para filtrar la columna seleccionada: </h4>
+              <div class="form-check" id="includeDiv" style="visibility: hidden;">
+                <input class="form-check-input" type="radio" name="columnCondition" id="include" value="include">
+                <label class="form-check-label" for="columnCondition">
+                  Incluir
+                </label>
+              </div>
+              <div class="form-check" id="excludeDiv" style="visibility: hidden;">
+                <input class="form-check-input" type="radio" name="columnCondition" id="exclude" value="exclude">
+                <label class="form-check-label" for="columnCondition">
+                  Excluir
+                </label>
+              </div>
+              <div class="form-check" id="likeDiv" style="visibility: hidden;">
+                <input class="form-check-input" type="radio" name="columnCondition" id="like" value="like">
+                <label class="form-check-label" for="columnCondition">
+                  Similar a la palabra
+                </label>
+              </div>
+              <div class="form-check" id="higherDiv" style="visibility: hidden;">
+                <input class="form-check-input" type="radio" name="columnCondition" id="higher" value="higher">
+                <label class="form-check-label" for="columnCondition">
+                  Mayor que
+                </label>
+              </div>
+              <div class="form-check" id="lowerDiv" style="visibility: hidden;">
+                <input class="form-check-input" type="radio" name="columnCondition" id="lower" value="lower">
+                <label class="form-check-label" for="columnCondition">
+                  Menor que
+                </label>
+              </div>
+              <div class="form-check" id="betweenDiv" style="visibility: hidden;">
+                <input class="form-check-input" type="radio" name="columnCondition" id="between" value="between">
+                <label class="form-check-label" for="columnCondition">
+                  Dentro del rango
+                </label>
+              </div>
             </div>
             
+          <div class="visually-hidden" id="thirdStepCondition">  
+            <h4>3. Ingrese/seleccione el valor o los valores para el criterio de filtrado: </h4>
+
+
+            <div class="mb-3">
+              <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputCondition" class="form-control">
+            </div>          
             
-          <h4>3. Ingrese/seleccione el valor</h4>
+            <div class="mb-3">
+              <label for="inputSearchCheckBox" class="form-label" style="display:none;">Filtro:</label>
+              <input style="width: 300px  ;display: none;" name="inputConditon" type="text" id="inputSearchCheckBox" class="form-control">
+            </div>  
 
+            <div class="mb-3">
+              <label for="inputEnd" class="form-label" style="display: none;" id="label-from">Desde: </label>
+              <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputStart" class="form-control">
+            </div>
 
-          <div class="mb-3">
-            <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputCondition" class="form-control">
-          </div>          
-          
-          <div class="mb-3">
-            <label for="inputEnd" class="form-label" style="display: none;" id="label-from">Desde: </label>
-            <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputStart" class="form-control">
+            <div class="mb-3">
+              <label for="inputEnd" class="form-label" style="display: none;" id="label-to">Hasta: </label>
+              <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputEnd" class="form-control">
+            </div>
+
+            <div class="card overflow-auto" style="height:200px; width: 400px; display: none;" id="card-include-exclude">
+              <div style="vertical-align: middle;" class="form-check" id="optionContainer">
+
+              </div>            
+            
+            </div>  
           </div>
-
-          <div class="mb-3">
-            <label for="inputEnd" class="form-label" style="display: none;" id="label-to">Hasta: </label>
-            <input style="width: 300px  ;display: none;" name="inputConditon" type="date" id="inputEnd" class="form-control">
-          </div>
-
-          <div class="card overflow-auto" style="height:200px; width: 400px; display: none;" id="card-include-exclude">
-            <div style="vertical-align: middle;" class="form-check" id="optionContainer">
-
-            </div>            
-          
-          </div>  
           
         </div>
         <div class="modal-footer">
@@ -323,16 +401,27 @@
     observerX.observe(targetNodeX, config);  
     observerY.observe(targetNodeY, config);
 
-    $('[name=columns-dataset]').each(function(index) {
+    if ($('[name=columns-dataset]').length == 0){
+      observer.observe(document.getElementById('order-columns'), config);
 
-      observer.observe(document.getElementById($(this).attr('id')),config);
 
-    });
+    }else{
+      $('[name=columns-dataset]').each(function(index) {
+
+        observer.observe(document.getElementById($(this).attr('id')),config);
+
+      });
+
+    }
+
+    
 
 
     $("input[type=radio][name=chart]").prop('checked', false);
     $("input[type=radio][name=columnModal]").prop('checked', false);
     $("input[type=radio][name=columnCondition]").prop('checked', false);
+    $('#modalExplanation').modal('toggle');
+
     console.log( "ready!" );
 
     //$("#order-columns > .list-group-item").each(function(index){
@@ -352,6 +441,12 @@
   
   //this is triggered when the option of the radio chart is changed
   $('input:radio[name="chart"]').change(function(){
+
+    $('#columnsHide').removeClass('visually-hidden');
+    $('#columnsSelectedAndCondition').removeClass('visually-hidden');
+    $('#buttonGenerateChart').prop('disabled', true);
+    
+    //
 
     hideIFrame()
     
@@ -373,6 +468,12 @@
         $('#x_axi_title').text('Latitud');
         $('#y_axi_title').text('Longitud');
 
+      }
+      else{
+        if ($(this).val() == 'data_table') {
+          $('#x_axi_title').text('Columna');
+          $('#y_axi_title').text('Fila');
+        }
       }
 
     }
@@ -655,6 +756,10 @@
 
   //Method triggered when a "columna" is selected in the "agregar condicion" modal
   $('input:radio[name="columnModal"]').change(function() {
+
+    $('#secondStepCondition').removeClass('visually-hidden');
+    $('#thirdStepCondition').addClass('visually-hidden');
+    
     
     //hide the "valor" box
     $("#card-include-exclude").css("display", "none"); 
@@ -686,6 +791,7 @@
       $("#lowerDiv").css("visibility", "visible");
 
       $("#likeDiv").css("visibility", "hidden");  
+
      
 
 
@@ -720,6 +826,7 @@
       $("#higherDiv").css("visibility", "hidden"); 
       $("#lowerDiv").css("visibility", "hidden"); 
 
+
       if ($(this).attr('columnType') == 'varchar(255)') {
 
         $("#inputCondition").attr('type', 'text');
@@ -745,6 +852,10 @@
 
   //Method triggered when a "accion" is selected in the "agregar condicion" modal
   $('input:radio[name="columnCondition"]').change(function() {
+
+    $('#thirdStepCondition').removeClass('visually-hidden');
+    $( "#inputSearchCheckBox" ).css("display", "contents");
+    $( "#inputSearchCheckBox" ).prev().css("display", "contents");
     
     //check if the option selected is "incluir" or "excluir", if true:   
     if ($(this).val() == 'include' || $(this).val() == 'exclude' ) {
@@ -755,6 +866,9 @@
       $("#inputEnd").css("display", "none"); 
       $("#label-from").css("display", "none");
       $("#label-to").css("display", "none");
+
+      $("#inputSearchCheckBox").css("display", "");
+      $( "#inputSearchCheckBox" ).prev().css("display", "");
 
       //show the "valor" box
       $("#card-include-exclude").css("display", ""); 
@@ -814,6 +928,29 @@
 
     }
 
+  });
+
+
+
+  
+
+  $( "#inputSearchCheckBox" ).on("input", function() {
+    var valueOfSearch = $(this).val(); 
+    $('.form-card').each(function(index) {
+      var valueOfCheckBox = $(this).val();
+      if (valueOfCheckBox.includes(valueOfSearch)) {
+        $(this).css("display", "");
+        $(this).next().css("display", "");
+        $(this).next().next().css("display", "");
+
+      }else{
+        $(this).css("display", "none");
+        $(this).next().css("display", "none");
+        $(this).next().next().css("display", "none");
+      }
+
+    });
+    
   });
 
 
@@ -980,6 +1117,10 @@
           else if (mutation.type === 'attributes') {
               if (mutation.attributeName == 'draggable') {
 
+                if ($("#order-axi-x > .list-group-item").length > 0 ){
+                  $('#buttonGenerateChart').prop('disabled', false);;
+                }
+
                 
                 //this move last element dropped in the 'eje x' box if there is already one inside of it to the 'columnas' box
                 $("#order-axi-x > .list-group-item").each(function(index){
@@ -1005,6 +1146,10 @@
           }
           else if (mutation.type === 'attributes') {
               if (mutation.attributeName == 'draggable') {
+
+                if ($("#order-axi-x > .list-group-item").length == 0 ){
+                      $('#buttonGenerateChart').prop('disabled', true);;
+                    }
                 
                 //this move last element dropped in the 'eje y' box if there is already one inside of it to the 'columnas' box
                 $("#order-axi-y > .list-group-item").each(function(index){
@@ -1034,7 +1179,13 @@
               if (mutation.attributeName == 'draggable') {
                 var id = (mutation.target).id;
 
+                if ($("#order-axi-x > .list-group-item").length == 0 ){
+                      $('#buttonGenerateChart').prop('disabled', true);
+                    }
+                
                 if(!((mutation.target).draggable)){
+
+                    
 
 
                     var column = document.getElementById(id);
