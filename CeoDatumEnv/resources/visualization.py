@@ -1199,6 +1199,7 @@ def ajaxGetColumnData(database, column):
     pos = positionInQuery(columnsToAddToDict, dictPositionsInQuery)
 
     groupByString = 't'+str(pos)+'.\"'+valueColumn+'\"'
+
     selectString = groupByString + ',  COUNT(t'+str(pos)+'.id) as count'
 
 

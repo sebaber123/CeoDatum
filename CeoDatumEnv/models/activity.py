@@ -15,11 +15,11 @@ class Activity(object):
 		return cursor.fetchall()
 
 	@classmethod
-	def create_activity(cls, start_date, end_date, title, description, course_id, graphs, objective, has_calification, enable_expired_date):
+	def create_activity(cls, start_date, end_date, title, description, course_id, graphs, objective, has_calification, enable_expired_date, statement_title, statement):
 		con = get_db()
-		query = "INSERT INTO public.activity(start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date) VALUES(%s,%s,%s,%s,%s, %s, %s, %s) RETURNING id;"
+		query = "INSERT INTO public.activity(start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date,statement_title, statement) VALUES(%s,%s,%s,%s,%s, %s, %s, %s, %s, %s) RETURNING id;"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date))
+		cursor.execute(query, (start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date, statement_title, statement))
 		a = cursor.fetchone()[0]
 		query = "INSERT INTO public.activity_available_graph VALUES(%s, %s)"
 		var = []

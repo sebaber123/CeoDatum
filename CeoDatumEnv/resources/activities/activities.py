@@ -14,7 +14,7 @@ def activities():
 		return render_template('/')
 
 def new_activity(course_id):
-	if session['rolename_2']:
+	if session['actualRole'] == "professor":
 		graficos = Activity.get_graph_names()
 
 		datasets = datasets = Course.get_dataset_by_courseId(course_id)
@@ -36,6 +36,8 @@ def create_activity():
 		objective = request.form['objective']
 		has_calification = request.form['checkboxNoCalification']
 		enable_expired_date = request.form['checkboxExpiredDate']
+		statement = request.form['inputStatement']
+		statemenet_title = request.form['inputStatementTitle']
 		if has_calification == 1:
 			has_calification=False
 		else:
@@ -44,7 +46,7 @@ def create_activity():
 			enable_expired_date=True
 		else:
 			enable_expired_date = False
-		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date)
+		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement)
 		return redirect(url_for('courses'))
 	return redirect(url_for('home'))
 
