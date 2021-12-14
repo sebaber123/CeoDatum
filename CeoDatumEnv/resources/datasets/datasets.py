@@ -140,7 +140,15 @@ def editShare():
 
 	Dataset.dataset_edit_share(datasetId, datasetShare)
 
-	
+	establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
+
+	if datasetShare == 'protegido':
+		
+		Dataset.add_dataset_to_stablisment(datasetId, establishmentId)
+	else:	
+
+		Dataset.delete_dataset_from_stablisment(datasetId, establishmentId)
+
 
 	return redirect('/datasets/show/'+datasetId)
 

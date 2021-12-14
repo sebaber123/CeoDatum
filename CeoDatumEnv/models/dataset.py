@@ -11,7 +11,7 @@ class Dataset(object):
 		start_at = (page-1)*pagination
 
 		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d  INNER JOIN public.\"user\" as u on d.database_owner_id = u.id " + 
-				"WHERE d.share = 'publico' ORDER BY d.id limit "+str(pagination)+ " OFFSET " +str(start_at)  )
+				"WHERE d.share = 'publico' ORDER BY d.name limit "+str(pagination)+ " OFFSET " +str(start_at)  )
 
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
@@ -21,7 +21,7 @@ class Dataset(object):
 	@classmethod
 	def max_page_publics(cls, pagination):
 		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d  INNER JOIN public.\"user\" as u on d.database_owner_id = u.id " + 
-				"WHERE d.share = 'publico' ORDER BY d.id "  )
+				"WHERE d.share = 'publico'"  )
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
@@ -67,6 +67,30 @@ class Dataset(object):
 		return None		
 
 	@classmethod
+	def add_dataset_to_stablisment(cls, Bid, Eid):
+
+		con = get_db()
+
+		query="INSERT INTO public.\"Dataset_establishment\"(id_dataset, id_establishment) VALUES(%s, %s);"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(Bid), str(Eid)))
+		
+		con.commit()
+
+		return True	
+
+	@classmethod
+	def delete_dataset_from_stablisment(cls, Bid, Eid):
+
+		con = get_db()
+
+		query = ("DELETE FROM public.\"Dataset_establishment\" WHERE id_dataset = %s AND id_establishment = %s ;")
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(Bid), str(Eid)))
+
+		con.commit()	
+
+	@classmethod
 	def get_datasets_to_add_to_course(cls, user_id, establishment_id, course_id):
 
 		query = ("SELECT d.id, d.name as dataset_name FROM public.\"Database\" as d " + 
@@ -89,7 +113,7 @@ class Dataset(object):
 				"WHERE "+
 				"d.id IN (SELECT id_dataset from public.\"Dataset_establishment\" where id_establishment = "+str(establishment_id)+"   )  "+ 
 				"OR d.id IN (select id_dataset from public.\"Dataset_course\" as dc INNER JOIN public.\"user_course\" as uc on dc.id_course = uc.course_id where uc.user_id = "+str(user_id)+" ) "+
-				"limit "+str(pagination)+ " OFFSET " +str(start_at))
+				"ORDER BY d.name limit "+str(pagination)+ " OFFSET " +str(start_at))
 
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
@@ -119,7 +143,7 @@ class Dataset(object):
 
 		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d INNER JOIN public.\"user\" as u on d.database_owner_id = u.id " +
 				"WHERE d.database_owner_id = "+str(user_id)+
-				" limit "+str(pagination)+ " OFFSET " +str(start_at))
+				" ORDER BY d.name limit "+str(pagination)+ " OFFSET " +str(start_at))
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 

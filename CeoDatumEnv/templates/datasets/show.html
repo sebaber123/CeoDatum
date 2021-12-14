@@ -42,9 +42,15 @@
 
                     <h5>Nuevo estado del dataset:</h5>
                     <select style="display: inline; width: 300px;" id="share" name="share" class="form-select">
-                      <option selected value="publico">Publico</option>
-                      <option value="protegido">Protegido</option>
-                      <option value="privado">Privado</option>
+                      {% if database.share != 'publico' %}
+                        <option selected value="publico">Publico</option>
+                      {% endif %}
+                      {% if database.share != 'protegido' %}
+                        <option value="protegido">Protegido</option>
+                      {% endif%}
+                      {% if database.share != 'privado' %}
+                        <option value="privado">Privado</option>
+                      {% endif %}
                     </select>
                     <br/>
                     <input type="hidden" name="id" id="id" value="{{database.id}}"></input>
