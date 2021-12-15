@@ -8,7 +8,7 @@ from datetime import date
 
 def activities():
 	if session['name']:
-		activities = Activity.getActivitiesOfCourses(session['id'])
+		activities = Activity.getMyActivities(session['id'])
 		return render_template('activities/activities.html', activities=activities, today=date.today())
 	else:
 		return render_template('/')
@@ -38,6 +38,8 @@ def create_activity():
 		enable_expired_date = request.form['checkboxExpiredDate']
 		statement = request.form['inputStatement']
 		statemenet_title = request.form['inputStatementTitle']
+		student_select = request.form['student_select']
+		students_id = request.form.getlist('student_checkbox')
 		if has_calification == 1:
 			has_calification=False
 		else:
@@ -46,7 +48,7 @@ def create_activity():
 			enable_expired_date=True
 		else:
 			enable_expired_date = False
-		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement)
+		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement, students_id)
 		return redirect(url_for('courses'))
 	return redirect(url_for('home'))
 
@@ -55,3 +57,7 @@ def view_activity(id):
 		actividad = Activity.get_activity_by_id(id)
 		return render_template('activities/activity_view.html', activity=actividad)
 
+def solveActivity(id):
+	if session['id']:
+		actividad = Activity.get_activity_by_id(id)
+		return render_template('activities/solve_activity.html', activity=actividad)

@@ -8,14 +8,14 @@ class Activity(object):
 	db = None
 
 	@classmethod
-	def getActivitiesOfCourses(cls, user_id):
-		query = "SELECT activity.id, activity.start_date, activity.end_date, activity.title, activity.description, course.name as course_name FROM public.activity INNER JOIN user_activity ON user_activity.id_activity=activity.id INNER JOIN course ON course.id = activity.course_id WHERE user_activity.id_user=%s"
+	def getMyActivities(cls, user_id):
+		query = "SELECT * FROM public.activity as a INNER JOIN user_activity ON user_activity.id_activity = a.id WHERE id_user=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (user_id,))
 		return cursor.fetchall()
 
 	@classmethod
-	def create_activity(cls, start_date, end_date, title, description, course_id, graphs, objective, has_calification, enable_expired_date, statement_title, statement):
+	def create_activity(cls, start_date, end_date, title, description, course_id, graphs, objective, has_calification, enable_expired_date, statement_title, statement, students):
 		con = get_db()
 		query = "INSERT INTO public.activity(start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date,statement_title, statement) VALUES(%s,%s,%s,%s,%s, %s, %s, %s, %s, %s) RETURNING id;"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
@@ -26,9 +26,14 @@ class Activity(object):
 		for graph in graphs:
 			var.append((a,graph))
 		cursor.executemany(query, var)
+		query3 = "INSERT INTO public.user_activity(id_user, id_activity) VALUES(%s, %s)"
+		var2 = []
+		for student in students:
+			var2.append((student, a))
+		cursor.executemany(query3, var2)
 		con.commit()
-		
-		return 
+		return True
+
 
 	@classmethod 
 	def get_graph_names(cls):

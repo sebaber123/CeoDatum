@@ -44,7 +44,7 @@
               <img src="{{url_for('static', filename='carousel1.png') }}" class="d-block w-100" alt="...">
               <div class="carousel-caption d-none d-md-block">
                 <h5>Primer paso</h5>
-                <p>Seleccione el tipo de grafico a realizar</p>
+                <p>Seleccione el tipo de gráfico a realizar</p>
               </div>
             </div>
             <div class="carousel-item" style="height:100%">
@@ -58,14 +58,14 @@
               <img src="{{url_for('static', filename='carousel3.png') }}" class="d-block w-100" alt="..." style="height:100%">
               <div class="carousel-caption d-none d-md-block">
                 <h5>Tercer paso</h5>
-                <p>Presione el boton "Generar grafico"</p>
+                <p>Presione el botón "Generar gráfico"</p>
               </div>
             </div>
             <div class="carousel-item" style="height:100%">
               <img src="{{url_for('static', filename='carousel4.png') }}" class="d-block w-100" alt="..." style="height:100%">
               <div class="carousel-caption d-none d-md-block">
                 <h5>Cuarto paso</h5>
-                <p>Observe el grafico generado</p>
+                <p>Observe el gráfico generado</p>
               </div>
             </div>
           </div>
@@ -106,28 +106,32 @@
 
     <td style="width:100px;"></td>
     <td class="rounded-3" style="background-color: #89C2D9; padding: 5px;">
-      <label>
-        <input type="radio" id="data_table" name="chart" value="data_table" /><img class="imgBar" src="{{url_for('static', filename='Data_table.png') }}">
-      </label>
-      <label>
-        <input type="radio" id="bar_chart" name="chart" value="bar" /><img class="imgBar" src="{{url_for('static', filename='bar_chart.png') }}">
-      </label>
-      <label>
-        <input type="radio" id="line_chart" name="chart" value="line" /><img class="imgBar" src="{{url_for('static', filename='line_chart.png') }}">
-      </label>
-      <label>
-        <input type="radio" id="pie_chart" name="chart" value="pie" /><img class="imgBar" src="{{url_for('static', filename='pie_chart.png') }}">
-      </label>
-      <label>
-        <input type="radio" id="dot_chart" name="chart" value="dot" /><img class="imgBar" src="{{url_for('static', filename='dot_chart.png') }}">
-      </label>
-      <label>
-        <input type="radio" id="scatter_chart" name="chart" value="scatter" /><img class="imgBar" src="{{url_for('static', filename='scatter_chart.png') }}">
-      </label>
-      <label>
-        <input type="radio" id="map_chart" name="chart" value="map" /><img class="imgBar" src="{{url_for('static', filename='map_chart.png') }}">
-      </label>
-       <button class="btn btn-primary" id="buttonGenerateChart" disabled style="margin-left: 10px;" onclick="GenerateChart()">Generar grafico</button> 
+      <div class="d-block" align="center">
+        <label>
+          <input type="radio" id="data_table" name="chart" value="data_table" /><img class="imgBar" src="{{url_for('static', filename='Data_table.png') }}">
+        </label>
+        <label>
+          <input type="radio" id="bar_chart" name="chart" value="bar" /><img class="imgBar" src="{{url_for('static', filename='bar_chart.png') }}">
+        </label>
+        <label>
+          <input type="radio" id="line_chart" name="chart" value="line" /><img class="imgBar" src="{{url_for('static', filename='line_chart.png') }}">
+        </label>
+        <label>
+          <input type="radio" id="pie_chart" name="chart" value="pie" /><img class="imgBar" src="{{url_for('static', filename='pie_chart.png') }}">
+        </label>
+        <label>
+          <input type="radio" id="dot_chart" name="chart" value="dot" /><img class="imgBar" src="{{url_for('static', filename='dot_chart.png') }}">
+        </label>
+        <label>
+          <input type="radio" id="scatter_chart" name="chart" value="scatter" /><img class="imgBar" src="{{url_for('static', filename='scatter_chart.png') }}">
+        </label>
+        <label>
+          <input type="radio" id="map_chart" name="chart" value="map" /><img class="imgBar" src="{{url_for('static', filename='map_chart.png') }}">
+        </label>
+      </div>
+      <div class="d-grid gap-2 p-2">
+        <button class="btn btn-primary" id="buttonGenerateChart" disabled style="margin-left: 10px;" onclick="GenerateChart()">Generar gráfico</button> 
+      </div>   
     </td>
   </tr>
   <tr style="height:20px"><td style="width:10px"></td></tr>
@@ -221,7 +225,7 @@
           </div>
 
           <div id="divDispersionX" style="visibility: hidden;">
-            <label style="margin-right: 10px;" for="dispersionX">Dispersion en eje X: </label><output id="dispersionYOutput">0.5</output>
+            <label style="margin-right: 10px;" for="dispersionX">Dispersión en eje X: </label><output id="dispersionYOutput">0.5</output>
             <input  id="dispersionX" name="dispersionX" type='range' min='0' max='1' step='.05' value='0.5' oninput="this.previousElementSibling.value = this.value"/>  
           </div>
         </div>
@@ -234,16 +238,16 @@
           </div>
         </div>
         <div id="divDispersionY" style="visibility: hidden;">
-          <label style="margin-right: 10px;" for="dispersionY">Dispersion en eje Y: </label><output id="dispersionYOutput">0.5</output>
+          <label style="margin-right: 10px;" for="dispersionY">Dispersión en eje Y: </label><output id="dispersionYOutput">0.5</output>
           <input  id="dispersionY" name="dispersionY" type='range' min='0' max='1' step='.05' value='0.5' oninput="this.previousElementSibling.value = this.value"/>
         </div>
-        <h3>condiciones</h3>
+        <h3>Condiciones</h3>
         <div  id="order-conditions" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
         </div>
         <br/>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-          Agregar Condicion
+          Agregar Condición
         </button>
     </td>
     <td style="width:100px;"></td>
@@ -261,7 +265,7 @@
 
       <form id="formCondition">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">genere el filtro siguiendo los pasos</h5>
+          <h5 class="modal-title" id="staticBackdropLabel">Genere el filtro siguiendo los pasos</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">

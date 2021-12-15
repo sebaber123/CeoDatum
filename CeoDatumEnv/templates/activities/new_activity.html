@@ -60,7 +60,7 @@
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputEndDate">Crear actividad para:</label>
-		  		<select class="form-select" aria-label="Default select example" id="student_select">
+		  		<select class="form-select" aria-label="Default select example" name="student_select" id="student_select">
 				  <option selected value="0">Todos los alumnos</option>
 				  <option value="1">Grupo reducido</option>
 				</select>
@@ -72,7 +72,7 @@
 			  <div class="card-body">
 			   	{% for student in students%}
 		  		<div class="form-check">
-				  <input class="form-check-input" type="checkbox" value="" id="student{{student.id}}">
+				  <input class="form-check-input" type="checkbox" value="{{student.id}}" id="student{{student.id}}" checked name="student_checkbox">
 				  <label class="form-check-label" for="student{{student.id}}">
 				  {{student.surname}}, {{student.name}}
 				  </label>
@@ -209,6 +209,7 @@
 				$('#student_checkbox').removeClass('d-none');
 			}else{
 				$('#student_checkbox').addClass('d-none');
+				$('input[name="student_checkbox"').prop("checked", true);
 			}
 		});
 	    

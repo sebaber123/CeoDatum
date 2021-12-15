@@ -74,6 +74,7 @@ app.add_url_rule('/activities', 'activities', activities.activities, methods=['G
 app.add_url_rule('/activities/new_activity/<course_id>', 'new_activity', activities.new_activity)
 app.add_url_rule('/activities/create_activity', 'create_activity', activities.create_activity, methods=['POST'])
 app.add_url_rule('/activities/view_activity/<id>', 'view_activity', activities.view_activity)
+app.add_url_rule('/resolverActividad/<int:id>', 'resolverActividad', activities.solveActivity)
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
