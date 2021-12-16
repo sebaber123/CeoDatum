@@ -33,9 +33,15 @@ def word_cloud(text):
 	return img_base64
 
 
-def twitter_search():
+def twitter_search(noNav):
 
-	return render_template('home/twitterSearch.html')
+	noNavBool = False
+
+	if noNav ==1:
+
+		noNavBool = True
+
+	return render_template('home/twitterSearch.html', noNav=noNavBool)
 
 
 preposiciones = ['a', 'al', 'ante', 'bajo', 'cabe', 'con', 'contra', 'de', 'del', 'desde', 'durante', 'en', 'entre', 'hacia', 'hasta', 'mediante', 'para', 'por', 'según', 'sin', 'so', 'sobre', 'tras', 'versus', 'vía']

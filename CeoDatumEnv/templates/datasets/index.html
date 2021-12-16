@@ -1,10 +1,20 @@
 {% extends "layout.html" %}
 {% block title %}Datasets{% endblock %}
 {% block content %}
+<head>
+	<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+
+</head>
 <div class="container">
 	<div name="global_datasets" class="container-fluid">
 		<h1>Datasets {{nombre}}</h1>
 	</div>
+	 <div class="mb-3">
+	    <label for="search" class="form-label">Buscador</label>
+	    <br/>
+	    <input type="text" class="form-control" id="search" style="width:300px; display:inline-block">
+	    <button type="button" class="btn btn-primary" onclick="search()">Buscar</button>
+	  </div>
 	<table class="table table-bordered table-striped">
 		<thead>
     		<tr>
@@ -47,7 +57,7 @@
 	  	{% else %}
 
 		    <li class="page-item">
-	      		<a class="page-link" aria-current="page" href="{{url_for('datasets_index_'+name)}}/{{actualPage-1}}">
+	      		<a class="page-link" aria-current="page" href="{{url_for('datasets_index_'+name)}}/{{actualPage-1}}{% if condition %}&{{condition}}{% endif %}">
       				Anterior
 	      		</a>
 
@@ -68,7 +78,7 @@
 
 
 	    	
-	    		<a class="page-link " aria-current="page" href="{{url_for('datasets_index_'+name)}}/{{page}}">
+	    		<a class="page-link " aria-current="page" href="{{url_for('datasets_index_'+name)}}/{{page}}{% if condition %}&{{condition}}{% endif %}">
 	    			{{page}}
 		    	</a>
 		    </li>
@@ -77,7 +87,7 @@
 	    {% if actualPage < maxPage %}
 
 	    	<li class="page-item">
-	      		<a class="page-link" aria-current="page" href="{{url_for('datasets_index_'+name)}}/{{actualPage+1}}">
+	      		<a class="page-link" aria-current="page" href="{{url_for('datasets_index_'+name)}}/{{actualPage+1}}{% if condition %}&{{condition}}{% endif %}">
       				Siguiente
 	      		</a>
 
@@ -96,5 +106,18 @@
 	  </ul>
 	</nav>
 </div>
+
+<script>
+	function search(){
+		var SearchString = $('#search').val()
+
+		if (SearchString!= ''){
+			window.location.replace("{{url_for('datasets_index_'+name)}}/1&"+SearchString);
+		}else{
+			window.location.replace("{{url_for('datasets_index_'+name)}}/1");
+		}
+	}
+
+</script>	
 
 {% endblock %}

@@ -4,7 +4,7 @@ from models.visualization import Visualization
 from models.user import User
 
 
-pagination = 5
+pagination = 10
 
 def datasets():
 	return render_template('datasets/datasets.html')	
@@ -37,37 +37,55 @@ def getAvailablePages(actualPage, maxPage):
 	return pagesArray		
 
 
-def indexPublics(page):
+def indexPublics(page, condition):
 
-	datasets = Dataset.get_dataset_public(page, pagination)
+	stringCondtion= ''
 
-	maxPage = Dataset.max_page_publics(pagination)
+	if condition:
+
+		stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
+
+	datasets = Dataset.get_dataset_public(page, pagination, stringCondtion)
+
+	maxPage = Dataset.max_page_publics(pagination, stringCondtion)
 
 	availablePages = getAvailablePages(page, maxPage)
 	
-	return render_template('datasets/index.html', datasets=datasets, nombre='Públicos', name='publics', availablePages=availablePages, maxPage=maxPage, actualPage=page)	
+	return render_template('datasets/index.html', datasets=datasets, nombre='Públicos', name='publics', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)	
 
-def indexProtecteds(page):
+def indexProtecteds(page, condition):
+
+	stringCondtion= ''
+
+	if condition:
+
+		stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
 
 	establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
 
-	datasets = Dataset.get_dataset_protected(session['id'], establishmentId, page, pagination)
+	datasets = Dataset.get_dataset_protected(session['id'], establishmentId, page, pagination, stringCondtion)
 
-	maxPage = Dataset.max_page_protecteds(pagination, establishmentId, session['id'])
-
-	availablePages = getAvailablePages(page, maxPage)
-	
-	return render_template('datasets/index.html', datasets=datasets, nombre='protegidos', name='protecteds', availablePages=availablePages, maxPage=maxPage, actualPage=page)	
-
-def indexPrivates(page):
-
-	datasets = Dataset.get_dataset_privates(session['id'], page, pagination)
-
-	maxPage = Dataset.max_page_privates(pagination, session['id'])
+	maxPage = Dataset.max_page_protecteds(pagination, establishmentId, session['id'], stringCondtion)
 
 	availablePages = getAvailablePages(page, maxPage)
 	
-	return render_template('datasets/index.html', datasets=datasets, nombre='privados', name='privates', availablePages=availablePages, maxPage=maxPage, actualPage=page)			
+	return render_template('datasets/index.html', datasets=datasets, nombre='protegidos', name='protecteds', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)	
+
+def indexPrivates(page, condition):
+
+	stringCondtion= ''
+
+	if condition:
+
+		stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
+
+	datasets = Dataset.get_dataset_privates(session['id'], page, pagination, stringCondtion)
+
+	maxPage = Dataset.max_page_privates(pagination, session['id'], stringCondtion)
+
+	availablePages = getAvailablePages(page, maxPage)
+	
+	return render_template('datasets/index.html', datasets=datasets, nombre='privados', name='privates', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)			
 
 def show(Bid):	
 

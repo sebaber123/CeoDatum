@@ -106,7 +106,16 @@
 
     <td style="width:100px;"></td>
     <td class="rounded-3" style="background-color: #89C2D9; padding: 5px;">
-      <div class="d-block" align="center">
+
+      {% for graph in graphs %}
+
+        <label>
+          <input type="radio" id="{{graph}}" name="chart" value="{{graph}}" /><img class="imgBar" src="{{url_for('static', filename=graph+'_chart.png') }}">
+        </label>
+
+      {% endfor %}
+      
+        <!--
         <label>
           <input type="radio" id="data_table" name="chart" value="data_table" /><img class="imgBar" src="{{url_for('static', filename='Data_table.png') }}">
         </label>
@@ -128,10 +137,10 @@
         <label>
           <input type="radio" id="map_chart" name="chart" value="map" /><img class="imgBar" src="{{url_for('static', filename='map_chart.png') }}">
         </label>
-      </div>
-      <div class="d-grid gap-2 p-2">
+        -->
+      
         <button class="btn btn-primary" id="buttonGenerateChart" disabled style="margin-left: 10px;" onclick="GenerateChart()">Generar gráfico</button> 
-      </div>   
+         
     </td>
   </tr>
   <tr style="height:20px"><td style="width:10px"></td></tr>
@@ -881,7 +890,7 @@
       $( "#optionContainer" ).empty();
 
       //load the values of the "columna" in the "valor" box
-      $.getJSON($SCRIPT_ROOT + '{{database.name}}&' + $('input:radio[name="columnModal"]:checked').val() , {
+      $.getJSON($SCRIPT_ROOT + 'ajax/{{database.name}}&' + $('input:radio[name="columnModal"]:checked').val() , {
         }, function(data) {
 
           //load the HTML in the "valor" box

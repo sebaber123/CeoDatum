@@ -59,17 +59,34 @@ def create_activity():
 		statemenet_title = request.form['inputStatementTitle']
 		student_select = request.form['student_select']
 		students_id = request.form.getlist('student_checkbox')
-		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, not has_calification, enable_expired_date, statemenet_title, statement, students_id)
+		datasetId = request.form['datasetSelect']
+		socialGraph = False
+		if request.form.get('checkboxSocialGraph'):
+			socialGraph = request.form.get('checkboxSocialGraph')
+			if socialGraph == 'on':
+				socialGraph = True
+		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement, students_id, datasetId, socialGraph)
 		return redirect(url_for('courses'))
 	return redirect(url_for('home'))
+
+def view_activity_data(id):
+	if session['id']:
+		actividad = Activity.get_activity_by_id(id)
+		graficos_disponibles = Activity.get_graph_of_activity_by_id(id)
+		return render_template('activities/activity_view_data.html', activity=actividad, available_graphs=graficos_disponibles)
 
 def view_activity(id):
 	if session['id']:
 		actividad = Activity.get_activity_by_id(id)
-		graficos_disponibles = Activity.get_available_graph_from_activity(id)
-		return render_template('activities/activity_view.html', activity=actividad, available_graphs=graficos_disponibles)
+		return render_template('activities/activity_view.html', activity=actividad, noNav=True)
 
 def solveActivity(id):
 	if session['id']:
-		actividad = Activity.get_activity_by_id(id)
-		return render_template('activities/solve_activity.html', activity=actividad)
+		activity = Activity.get_activity_by_id(id)
+		datasetId= activity['dataset_id']
+		socialGraph = activity['social_graph']
+
+		graphs = Activity.get_graph_of_activity_by_id(id)
+		plotterTab = len(graphs) != 0
+
+		return render_template('activities/solve_activity.html', activity=activity, activityId=id, datasetId=datasetId, noNav=True, socialGraph=socialGraph, plotterTab=plotterTab)

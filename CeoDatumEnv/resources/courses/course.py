@@ -36,6 +36,7 @@ def view_course(course_id):
 		course = Course.get_course(course_id)
 		activities = Activity.get_activities_of_course(course_id)
 		students = User.get_user_from_course(course_id)
+		
 
 		establismentId = (User.get_user_by_id(session['id']))['establishment_id']
 
