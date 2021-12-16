@@ -122,7 +122,7 @@ def queryConstruction(database, rowName, column, condition):
     conditionQueryString = ''
     
     if condition != None:
-        for cond in condition.split(sep='%%%'):
+        for cond in condition.split(sep='~~~'):
             
             if cond.find('like \'%') == -1:
 
@@ -184,8 +184,8 @@ def conditionsToString(database, condition, dictPositionsInQuery):
     #check if there is a condition to transform
     if condition != None:
         
-        #loop through the conditions. The conditions in the string are divided by '%%%'
-        for cond in condition.split(sep='%%%'):
+        #loop through the conditions. The conditions in the string are divided by '~~~'
+        for cond in condition.split(sep='~~~'):
             
             #string condition 
             columnCondition = ''
@@ -427,7 +427,7 @@ def bar_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
 
     if conditionCallBack:
 
-        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'~~~'+columnXCallBack+' =\'@x\''
 
     else:
 
@@ -541,7 +541,7 @@ def line_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStr
 
     if conditionCallBack:
 
-        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x_values\''
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'~~~'+columnXCallBack+' =\'@x_values\''
 
     else:
 
@@ -592,13 +592,13 @@ def data_table(database, rowName, column, condition):
         if condition != None:
 
             #loop through the conditions. The conditions in the string are divided by '***'
-            for cond in condition.split(sep='%%%'):
+            for cond in condition.split(sep='~~~'):
 
                 #check if the columns of the condition is the same of the column of the datatable 
                 if (cond[:+len(column)] == column):
 
                     #add the condition to the string
-                    conditionsOfColumn = conditionsOfColumn + cond + '%%%'
+                    conditionsOfColumn = conditionsOfColumn + cond + '~~~'
 
             #delete the last '***'
             conditionsOfColumn = conditionsOfColumn[:-3]     
@@ -699,7 +699,7 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
         inspectStringsToGenerateStrings = [ columnXCallBack+' !=\''+str(row[rowName])+'\'' for row in data]
         inspectStringsToGenerateStrings = inspectStringsToGenerateStrings[0:9]
 
-        inspectStringToOthers = '%%%'.join(inspectStringsToGenerateStrings)
+        inspectStringToOthers = '~~~'.join(inspectStringsToGenerateStrings)
         
         totalOthers = sum(countsToOthers)
 
@@ -752,7 +752,7 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
 
     if conditionCallBack:
 
-        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%@inspectString'
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'~~~@inspectString'
 
     else:
 
@@ -906,7 +906,7 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
 
         if conditionCallBack:
 
-            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'~~~'+columnXCallBack+' =\'@x\''
 
         else:
 
@@ -950,11 +950,11 @@ def dot_plot(x_axis_name, y_axis_name, data_db_name, table, column_x, selectStri
 
         if conditionCallBack:
 
-            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''+'%%%'+columnYCallBack+' =\'@y\''
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'~~~'+columnXCallBack+' =\'@x\''+'~~~'+columnYCallBack+' =\'@y\''
 
         else:
 
-            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''+'%%%'+columnYCallBack+' =\'@y\''
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''+'~~~'+columnYCallBack+' =\'@y\''
         
 
     p.tools.append(hover_tool) 
@@ -1057,7 +1057,7 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
 
         if conditionCallBack:
 
-            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'~~~'+columnXCallBack+' =\'@x\''
 
         else:
 
@@ -1095,11 +1095,11 @@ def scatter_plot(x_axis_name, y_axis_name, data_db_name, column_x, selectString,
 
         if conditionCallBack:
 
-            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@x\''+'%%%'+columnYCallBack+' =\'@y\''
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'~~~'+columnXCallBack+' =\'@x\''+'~~~'+columnYCallBack+' =\'@y\''
 
         else:
 
-            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''+'%%%'+columnYCallBack+' =\'@y\''
+            url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@x\''+'~~~'+columnYCallBack+' =\'@y\''
 
     p.tools.append(hover_tool)  
 
@@ -1390,7 +1390,7 @@ def inspect_rows(databaseId, objectString, condition):
     conditionQueryString = ''
 
     if condition != None:
-        for cond in condition.split(sep='%%%'):
+        for cond in condition.split(sep='~~~'):
             
             #get the name of the column (first part of the condition)
             columnCondition = cond.split(sep='=')[0]

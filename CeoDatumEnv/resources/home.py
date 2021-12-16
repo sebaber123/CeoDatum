@@ -98,7 +98,6 @@ def configurateUploadJSON ():
 
 	share = request.form['share']
 
-	aa
 
 	dateFormat =  request.form['dateFormat']
 
