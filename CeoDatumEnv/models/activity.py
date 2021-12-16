@@ -9,7 +9,7 @@ class Activity(object):
 
 	@classmethod
 	def getMyActivities(cls, user_id):
-		query = "SELECT * FROM public.activity as a INNER JOIN user_activity ON user_activity.id_activity = a.id WHERE id_user=%s"
+		query = "SELECT a.id, a.start_date, a.end_date, title, has_calification, enable_expired_date, calification, commentary, is_finished, name as course_name  FROM public.activity as a INNER JOIN user_activity ON user_activity.id_activity = a.id INNER JOIN course ON a.course_id= course.id WHERE id_user=%s ORDER BY a.end_date desc"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (user_id,))
 		return cursor.fetchall()
@@ -58,3 +58,12 @@ class Activity(object):
 		cursor.execute(query, (activity_id,))
 
 		return cursor.fetchone()
+
+	@classmethod 
+	def get_available_graph_from_activity(cls, activity_id):
+		query = "SELECT * FROM public.\"Graph\" as g INNER JOIN activity_available_graph as a ON a.id_graph = g.id WHERE a.id_activity=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (activity_id,))
+
+		return cursor.fetchall()
+

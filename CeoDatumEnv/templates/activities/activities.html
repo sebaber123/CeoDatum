@@ -5,7 +5,7 @@
 {% block title %}Actividades{% endblock %}
 {% block content %}
 <div class="container">
-	<div name="pending_activities" class="container-fluid">
+	<div name="current_activities" class="container-fluid">
 		<h1>Actividades pendientes</h1>
 		<table class="table table-primary table-hover">
 		  <thead>
@@ -14,35 +14,106 @@
 		      <th scope="col">Curso</th>
 		      <th scope="col">Fecha de comienzo</th>
 		      <th scope="col">Fecha de cierre</th>
-		   	  <th scope="col">Estado</th>
 		   	  <th scope="col"></th>	
 		  </thead>
 		  <tbody>
-		  	{% for activity in activities %}
+		  	{% for activity in current_activities %}
 		  	<tr>
 		  		<td>{{activity.title}}</td>
 		  		<td>{{activity.course_name}}</td>
 		  		<td>{{activity.start_date.strftime('%d-%m-%y')}}</td>
 		  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
-		  		<td>{% if activity.end_date < today %} Atrasado por {{(today - activity.end_date).days }} dias {% else %} Sin entregar {% endif %}
 		  		<td><a href="/resolverActividad/{{activity.id}}">Resolver</a></td>
 		  	</tr>
 		  	{% endfor %}
 		  </tbody>
 		</table>
 	</div>
-	<div class="container-fluid" name="finished_activities">
-		<h1>Actividades realizadas</h1>
+	<div name="overdue_activities" class="container-fluid">
+		<h1>Actividades atrasadas</h1>
 		<table class="table table-primary table-hover">
 		  <thead>
 		    <tr>
 		      <th scope="col">Título</th>
-		      <th scope="col">Curso</th>
+		      <th scope="col">Fecha de comienzo</th>
 		      <th scope="col">Fecha de cierre</th>
-		      <th scope="col">Calificación</th>
-		      <th scope="col">Comentario</th>
-		    </tr>
+		   	  <th scope="col">Curso</th>
+		   	  <th scope="col">Estado</th>	
+		   	  <th scope="col"></th>	
 		  </thead>
+		  <tbody>
+		  	{% for activity in overdue_activities %}
+		  	<tr>
+		  		<td>{{activity.title}}</td>
+		  		<td>{{activity.start_date.strftime('%d-%m-%y')}}</td>
+		  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
+		  		<td>{{activity.course_name}}</td>
+		  		<td>Atrasado por {{(today - activity.end_date).days }}</td>
+		  		<td><a href="/resolverActividad/{{activity.id}}">Resolver</a></td>
+		  	</tr>
+		  	{% endfor %}
+		  </tbody>
+		</table>
+	</div>
+	<div name="corrected_activities" class="container-fluid">
+		<h1>Actividades corregidas</h1>
+		<table class="table table-primary table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">Título</th>
+		   	  <th scope="col">Curso</th>
+		   	  <th scope="col">Calificación</th>
+		   	  <th scopr="col">Comentario</th>	
+		  </thead>
+		  <tbody>
+		  	{% for activity in corrected_activities %}
+		  	<tr>
+		  		<td>{{activity.title}}</td>
+		  		<td>{{activity.course_name}}</td>
+		  		<td>{% if (activity.calification == -1) %}<span class="text-secondary">Sin calificación</span>{% else %}{{activity.calification}}{% endif %}</td>
+		  		<td>{{activity.commentary}}</td>
+		  	</tr>
+		  	{% endfor %}
+		  </tbody>
+		</table>
+	</div>
+	<div name="corrected_activities" class="container-fluid">
+		<h1>Actividades entregadas</h1>
+		<table class="table table-primary table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">Título</th>
+		   	  <th scope="col">Curso</th>
+		      <th scope="col">Fecha de cierre</th>
+		  </thead>
+		  <tbody>
+		  	{% for activity in corrected_activities %}
+		  	<tr>
+		  		<td>{{activity.title}}</td>
+		  		<td>{{activity.course_name}}</td>
+		  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
+		  	</tr>
+		  	{% endfor %}
+		  </tbody>
+		</table>
+	</div>
+	<div name="undelivered_activities" class="container-fluid">
+		<h1>Actividades vencidas</h1>
+		<table class="table table-primary table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">Título</th>
+		   	  <th scope="col">Curso</th>
+		      <th scope="col">Fecha de cierre</th>
+		  </thead>
+		  <tbody>
+		  	{% for activity in undelivered_activities %}
+		  	<tr>
+		  		<td>{{activity.title}}</td>
+		  		<td>{{activity.course_name}}</td>
+		  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
+		  	</tr>
+		  	{% endfor %}
 		  </tbody>
 		</table>
 	</div>
