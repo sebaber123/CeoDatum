@@ -1,12 +1,31 @@
 {% extends "layout.html" %}
 {% block title %}Actividades{% endblock %}
 {% block content %}
-<div class="container">
-	<h1>{{activity.title}}</h1>
-	<p>{{activity.description}}</p>
-	<p>{{activity.objective}}</p>
-	<p>{{activity.start_date}}</p>
-	<p>{{activity.end_date}}</p>
+<div class="container" style="height: 100%;">
+    <div style="height: 100%;" class="row align-items-start">
+      <div class="col">
+        
+      </div>
+      <div style="background-color: #61A5C2; text-align:center; margin: auto;height: 100%;" class="col-9">
+	        <br/>
+	        <h5 style="display:inline-block;">Consigna {{activity.title}}</h5>
+	        <hr>
+	        <h5 style="display:inline-block;">Descripcion: {{activity.description}}</h5>
+	        <hr>
+	        <h5 style="display:inline-block;">Objetivo: {{activity.objective}}</h5>
+	        <hr> 
+	        <h5 style="display:inline-block;">Fecha de inicio: {{activity.start_date}}</h5>
+	        <hr> 
+	        <h5 style="display:inline-block;">Fecha de fin: {{activity.end_date}}</h5>
+	        <hr>  
+      </div>
+      
+      <div class="col">
+        
+      </div>
+    </div>
+  </div>    
 </div>
+
 
 {% endblock %}

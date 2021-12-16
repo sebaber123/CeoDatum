@@ -15,11 +15,11 @@ class Activity(object):
 		return cursor.fetchall()
 
 	@classmethod
-	def create_activity(cls, start_date, end_date, title, description, course_id, graphs, objective, has_calification, enable_expired_date, statement_title, statement, students):
+	def create_activity(cls, start_date, end_date, title, description, course_id, graphs, objective, has_calification, enable_expired_date, statement_title, statement, students, datasetId, socialGraph):
 		con = get_db()
-		query = "INSERT INTO public.activity(start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date,statement_title, statement) VALUES(%s,%s,%s,%s,%s, %s, %s, %s, %s, %s) RETURNING id;"
+		query = "INSERT INTO public.activity(start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date,statement_title, statement, dataset_id, social_graph) VALUES(%s,%s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date, statement_title, statement))
+		cursor.execute(query, (start_date, end_date, title, description, course_id, objective, has_calification, enable_expired_date, statement_title, statement, str(datasetId), str(socialGraph)))
 		a = cursor.fetchone()[0]
 		query = "INSERT INTO public.activity_available_graph VALUES(%s, %s)"
 		var = []
@@ -58,3 +58,12 @@ class Activity(object):
 		cursor.execute(query, (activity_id,))
 
 		return cursor.fetchone()
+
+	@classmethod
+	def get_graph_of_activity_by_id(cls, activity_id):
+		query = "SELECT * FROM public.activity_available_graph as aag INNER JOIN public.\"Graph\" as g on aag.graph_id = g.id WHERE aag.activity_id=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(activity_id),))
+
+		return cursor.fetchall()
+

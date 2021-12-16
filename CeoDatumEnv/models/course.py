@@ -35,8 +35,9 @@ class Course(object):
 
 	@classmethod
 	def invite_user_to_course(cls,username,course_id):
+
 		con = get_db()
-		query = "INSERT INTO public.user_course VALUES(%s, %s)"
+		query = "INSERT INTO public.user_course(user_id, course_id) VALUES(%s, %s)"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (username,course_id))
 		con.commit()

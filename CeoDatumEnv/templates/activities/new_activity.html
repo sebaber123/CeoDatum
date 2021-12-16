@@ -37,7 +37,7 @@
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputDescription">Dataset</label>
-		  		<select class="form-select">
+		  		<select class="form-select" name="datasetSelect">
 		  			{% for dataset in datasets %}
 		 					<option value="{{dataset.id}}">{{dataset.dataset_name}}</option>
 		 			{% endfor %}
@@ -49,6 +49,10 @@
 		  		<input type="checkbox" class="form-check-input" id="checkboxGraph{{ graph.id }}" value="{{ graph.id }}" name="graph">
     			<label class="form-check-label" for="checkboxGraph{{ graph.id }}">{{ graph.spanish_name }}</label>
 		  		{% endfor %}
+		  	</div>
+		  	<div class="form-group mb-1">
+		  		<input class="form-check-input" type="checkbox" name="checkboxSocialGraph" id="checkboxSocialGraph">
+		  		<label for="checkboxSocialGraph">Grafos sociales</label>
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputBeginDate">Fecha de inicio</label>
@@ -72,8 +76,8 @@
 			  <div class="card-body">
 			   	{% for student in students%}
 		  		<div class="form-check">
-				  <input class="form-check-input" type="checkbox" value="{{student.id}}" id="student{{student.id}}" checked name="student_checkbox">
-				  <label class="form-check-label" for="student{{student.id}}">
+				  <input class="form-check-input" type="checkbox" value="{{student[1]}}" id="student{{student[1]}}" checked name="student_checkbox">
+				  <label class="form-check-label" for="student{{student[1]}}">
 				  {{student.surname}}, {{student.name}}
 				  </label>
 				</div>

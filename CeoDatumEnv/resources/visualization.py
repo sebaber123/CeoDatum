@@ -9,6 +9,7 @@ from bokeh.io import curdoc
 from bokeh.resources import INLINE
 from bokeh.embed import components
 from models.visualization import Visualization
+from models.activity import Activity
 from math import pi
 import numpy as np
 from bokeh.transform import cumsum, jitter
@@ -17,7 +18,21 @@ from bokeh.tile_providers import CARTODBPOSITRON, get_provider
 
 
 #return the plotter page
-def plotter(Bid):
+def plotter(Bid, activityId):
+
+    graphs = []
+    noNav = False
+
+    if activityId:
+
+        graphs = Activity.get_graph_of_activity_by_id(activityId)
+        graphs = [ x['name'] for x in graphs]
+
+        noNav = True
+
+    else:
+    
+        graphs = ['data_table','bar','line','pie','dot','scatter','map'] 
 
     #get the columns of the database
     columns = Visualization.get_db_data(Bid)
@@ -54,7 +69,7 @@ def plotter(Bid):
 
 
 
-    return render_template('home/plotter.html', columns = columns, database= database, databaseStructure = databaseStructure)  
+    return render_template('home/plotter.html', columns = columns, database= database, databaseStructure = databaseStructure, graphs=graphs, noNav=noNav)  
 
 def generateStructureRecursion(databaseName, columnName, columnNameOfObject): 
 
@@ -670,6 +685,28 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
     #get the counts of the data
     counts = [int(row['count']) for row in data]
 
+
+    inspectString = [ (columnXCallBack+' =\''+str(row[rowName])+'\'') for row in data]
+
+    if len(data)>10:
+
+        countsToOthers= counts[9:len(data)]
+        
+        counts = counts [0:9]
+        rowData = rowData [0:9]
+        inspectString = inspectString[0:9]
+
+        inspectStringsToGenerateStrings = [ columnXCallBack+' !=\''+str(row[rowName])+'\'' for row in data]
+        inspectStringsToGenerateStrings = inspectStringsToGenerateStrings[0:9]
+
+        inspectStringToOthers = '%%%'.join(inspectStringsToGenerateStrings)
+        
+        totalOthers = sum(countsToOthers)
+
+        counts.append(totalOthers)
+        rowData.append('otros')
+        inspectString.append(inspectStringToOthers)
+
     #create the dictionary
     dictionary = {}
 
@@ -682,6 +719,8 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
     
     #calculate the total of the counts
     totalSum = data['value'].sum()
+
+    data['inspectString'] = inspectString
 
     #calculate the angle of each portion of the pie chart
     data['angle'] = data['value']/totalSum * 2*pi
@@ -713,11 +752,11 @@ def pie_plot(rowName, data_db_name, table, column_x, selectString, fromString, g
 
     if conditionCallBack:
 
-        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%'+columnXCallBack+' =\'@'+rowName+'\''
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+conditionCallBack+'%%%@inspectString'
 
     else:
 
-        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&'+columnXCallBack+' =\'@'+rowName+'\''
+        url = (url_for('home'))+'inspectRows/'+str(databaseId)+'&'+objectStringCallBack+'&@inspectString'
     
     
     taptool = p.select(type=TapTool)

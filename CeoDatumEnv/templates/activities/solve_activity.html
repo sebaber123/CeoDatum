@@ -1,13 +1,54 @@
-{% endblock %}
-{% block title %}Actividades{% endblock %}
+{% extends "layout.html" %}
 {% block content %}
-<div class="container">
-	{{activity.statement}}
-    <embed type="text/html" src="plotter.html" width="500" height="200"> 
-</div>
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+	
+		<nav  >
+	      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+	        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-activity" type="button" role="tab" aria-controls="nav-activity" aria-selected="true">Actividad</button>
+	        {% if plotterTab %}
+
+	        	<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-plotter" type="button" role="tab" aria-controls="nav-plotter" aria-selected="false">Graficador</button>
+
+	        {% endif %}
+	        
+	        
+	        {% if socialGraph %}
+	        	<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-social" type="button" role="tab" aria-controls="nav-social" aria-selected="false">Grafo social</button>
+
+	        {% endif %}
+	        
+	        <a class="btn btn-danger ms-auto mb-2 mb-lg-0"  href="{{url_for('activities')}}" onclick="confirm('perdera todo su progreso, seguro quiere salir?')" >salir</a>
+	      </div>
+
+	    </nav>
+	    <div class="tab-content" id="nav-tabContent" style="height:95.5%; width: 100%">
+	      <div class="tab-pane fade show active" id="nav-activity" role="tabpanel" aria-labelledby="nav-home-tab" style="height:100%">
+	        <div style="display: flex; justify-content: center;height:100%">
+	           <iframe src="{{url_for('view_activity', id=activityId)}}" style="width:100%; height:100%"></iframe>
+	        </div>
+	      </div>
+	      	{% if plotterTab %}
+	       		<div class="tab-pane fade" id="nav-plotter" role="tabpanel" aria-labelledby="nav-profile-tab" style="height:100%">
+	          		<iframe src="{{url_for('plotter', Bid=datasetId , activityId=activityId)}}" style="width:100%; height:100%"></iframe>
+	      		</div>
+
+	        {% endif %}
+	     
+	      	{% if socialGraph %}
+	      		<div class="tab-pane fade" id="nav-social" role="tabpanel" aria-labelledby="nav-profile-tab" style="height:100%">
+		          	<iframe src="{{url_for('twitter_search', noNav=1)}}" style="width:100%; height:100%"></iframe>
+		      	</div>  
+    		{% endif %}
+	      
+	    </div>
 
 <script>
-	$()
-</script>
 
-{% endblock %}
+</script>  
+</body>	
+
+{% endblock %}    

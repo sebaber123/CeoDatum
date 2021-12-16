@@ -62,8 +62,9 @@ app.add_url_rule('/register', 'register', user.register, methods=['POST'])
 
 app.add_url_rule('/forgotPassword', 'forgotPassword', user.forgotPassword, methods=['GET'])
 
-app.add_url_rule('/plotter/<int:Bid>', 'plotter', visualization.plotter, methods=['GET'])
-app.add_url_rule('/plotter/<database>&<column>', 'ajax_get_column_data', visualization.ajaxGetColumnData, methods=['GET'])
+app.add_url_rule('/plotter/<int:Bid>', 'plotter', visualization.plotter, methods=['GET'], defaults={'activityId':None})
+app.add_url_rule('/plotter/<int:Bid>&<int:activityId>', 'plotter', visualization.plotter, methods=['GET'])
+app.add_url_rule('/plotter/ajax/<database>&<column>', 'ajax_get_column_data', visualization.ajaxGetColumnData, methods=['GET'])
 
 app.add_url_rule('/dragAndDrop', 'dragAndDrop', home.dragAndDrop, methods=['GET'])
 app.add_url_rule('/dragAndDrop/uploadFile', 'uploadFile', home.uploadFile, methods=['POST'])
@@ -107,7 +108,8 @@ app.add_url_rule('/courseAddDataset', 'course_add_dataset', course.course_add_da
 
 #TWITTER
 app.add_url_rule('/twitterSearch/<stringToSearch>&<int:topQuantity>&<int:articles>&<int:prep>&<int:pron>&<int:conj>&<int:adv>&<int:verbos>&<int:links>', 'api_twitter_search', socialGraph.api_twitter_search, methods=['GET'])
-app.add_url_rule('/twitter', 'twitter_search', socialGraph.twitter_search, methods=['GET'])
+app.add_url_rule('/twitter', 'twitter_search', socialGraph.twitter_search, methods=['GET'], defaults={'noNav':0})
+app.add_url_rule('/twitter/<int:noNav>', 'twitter_search', socialGraph.twitter_search, methods=['GET'])
 
 #INSPECT
 app.add_url_rule('/inspectRows/<databaseId>&<objectString>', 'inspect_rows', visualization.inspect_rows, methods=['GET'], defaults={'condition':None})
@@ -115,14 +117,18 @@ app.add_url_rule('/inspectRows/<databaseId>&<objectString>&<condition>', 'inspec
 app.add_url_rule('/inspectRows/<databaseId>&<objectString>&<condition>', 'inspect_rows', visualization.inspect_rows, methods=['GET'])
 
 #DATASETS
-app.add_url_rule('/datasets/indexPublics', 'datasets_index_publics', datasets.indexPublics, methods=['GET'], defaults={'page':1})
-app.add_url_rule('/datasets/indexPublics/<int:page>', 'datasets_index_publics', datasets.indexPublics, methods=['GET'])
+app.add_url_rule('/datasets/indexPublics', 'datasets_index_publics', datasets.indexPublics, methods=['GET'], defaults={'page':1, 'condition':None})
+app.add_url_rule('/datasets/indexPublics/<int:page>', 'datasets_index_publics', datasets.indexPublics, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/datasets/indexPublics/<int:page>&<condition>', 'datasets_index_publics', datasets.indexPublics, methods=['GET'])
 
-app.add_url_rule('/datasets/indexProtecteds', 'datasets_index_protecteds', datasets.indexProtecteds, methods=['GET'], defaults={'page':1})
-app.add_url_rule('/datasets/indexProtecteds/<int:page>', 'datasets_index_protecteds', datasets.indexProtecteds, methods=['GET'])
+app.add_url_rule('/datasets/indexProtecteds', 'datasets_index_protecteds', datasets.indexProtecteds, methods=['GET'], defaults={'page':1, 'condition':None})
+app.add_url_rule('/datasets/indexProtecteds/<int:page>', 'datasets_index_protecteds', datasets.indexProtecteds, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/datasets/indexProtecteds/<int:page>&<condition>', 'datasets_index_protecteds', datasets.indexProtecteds, methods=['GET'])
 
-app.add_url_rule('/datasets/indexPrivates', 'datasets_index_privates', datasets.indexPrivates, methods=['GET'], defaults={'page':1})
-app.add_url_rule('/datasets/indexPrivates/<int:page>', 'datasets_index_privates', datasets.indexPrivates, methods=['GET'])
+app.add_url_rule('/datasets/indexPrivates', 'datasets_index_privates', datasets.indexPrivates, methods=['GET'], defaults={'page':1, 'condition':None})
+app.add_url_rule('/datasets/indexPrivates/<int:page>', 'datasets_index_privates', datasets.indexPrivates, methods=['GET'], defaults={'condition':None})
+app.add_url_rule('/datasets/indexPrivates/<int:page>&<condition>', 'datasets_index_privates', datasets.indexPrivates, methods=['GET'])
+
 
 app.add_url_rule('/datasets/show/<int:Bid>', 'datasets_show', datasets.show, methods=['GET'])
 app.add_url_rule('/datasets/show/', 'dataset_edit_share', datasets.editShare, methods=['POST'])

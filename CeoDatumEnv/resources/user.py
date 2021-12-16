@@ -18,41 +18,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 def index():    
     return render_template('home/dragAndDrop.html')
 
-"""def intentoLine():
-    
-    #line plot
-    dates = [datetime.strptime('21/12/2020', '%d/%m/%Y'),datetime.strptime('22/12/2020', '%d/%m/%Y'),datetime.strptime('23/12/2020', '%d/%m/%Y')]
-    counts = [3,4,8]
-    line = line_plot(dates, counts,'fecha', 'cantidad')
-    script, div = components(line)
 
-
-    return render_template(
-        'home/intento.html',
-        plot_script=script,
-        plot_div=div,
-        js_resources=INLINE.render_js(),
-        css_resources=INLINE.render_css(),
-    ).encode(encoding='UTF-8')
-
-def intentoBar():
-    #bar plot
-    bar2 = bar_plot('fecha', 'cantidad', 'PruebaDatos1', 'prueb', 'fecha', 'boolean = True')
-    script, div = components(bar2)
-
-
-    return render_template(
-        'home/intento.html',
-        plot_script=script,
-        plot_div=div,
-        js_resources=INLINE.render_js(),
-        css_resources=INLINE.render_css(),
-    ).encode(encoding='UTF-8')
-
-
-def embebido():
-    return render_template('home/embebido.html')    
-"""
 def login_form():
     return render_template('user/login_form.html')
 
@@ -91,7 +57,7 @@ def login():
         return register_form()
 
 def user_exist(username):
-    if session['rolename_2']:
+    if 'professor' in session['roles']:
         result = User.user_or_email_exist(username)
         if result:
             return jsonify(result = result['id'])

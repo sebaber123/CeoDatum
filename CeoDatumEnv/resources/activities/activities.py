@@ -9,6 +9,7 @@ from datetime import date
 def activities():
 	if session['name']:
 		activities = Activity.getMyActivities(session['id'])
+		
 		return render_template('activities/activities.html', activities=activities, today=date.today())
 	else:
 		return render_template('/')
@@ -40,6 +41,16 @@ def create_activity():
 		statemenet_title = request.form['inputStatementTitle']
 		student_select = request.form['student_select']
 		students_id = request.form.getlist('student_checkbox')
+		datasetId = request.form['datasetSelect']
+
+		socialGraph = False
+		
+		if request.form.get('checkboxSocialGraph'):
+			socialGraph = request.form.get('checkboxSocialGraph')
+			if socialGraph == 'on':
+				socialGraph = True
+		
+
 		if has_calification == 1:
 			has_calification=False
 		else:
@@ -48,16 +59,22 @@ def create_activity():
 			enable_expired_date=True
 		else:
 			enable_expired_date = False
-		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement, students_id)
+		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement, students_id, datasetId, socialGraph)
 		return redirect(url_for('courses'))
 	return redirect(url_for('home'))
 
 def view_activity(id):
 	if session['id']:
 		actividad = Activity.get_activity_by_id(id)
-		return render_template('activities/activity_view.html', activity=actividad)
+		return render_template('activities/activity_view.html', activity=actividad, noNav=True)
 
 def solveActivity(id):
 	if session['id']:
-		actividad = Activity.get_activity_by_id(id)
-		return render_template('activities/solve_activity.html', activity=actividad)
+		activity = Activity.get_activity_by_id(id)
+		datasetId= activity['dataset_id']
+		socialGraph = activity['social_graph']
+
+		graphs = Activity.get_graph_of_activity_by_id(id)
+		plotterTab = len(graphs) != 0
+
+		return render_template('activities/solve_activity.html', activity=activity, activityId=id, datasetId=datasetId, noNav=True, socialGraph=socialGraph, plotterTab=plotterTab)
