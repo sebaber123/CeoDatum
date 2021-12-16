@@ -4,90 +4,105 @@
 {% endblock %}
 {% block title %}Actividades{% endblock %}
 {% block content %}
-<div class="container">
-	<div name="current_activities" class="container-fluid">
-		<h1>Actividades pendientes</h1>
+
+<div class="container p-2">
+	<h1>Mis actividades</h1>
+	<nav class="p-2">
+	  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+	    <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Pendientes</button>
+	    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Atrasadas</button>
+	    <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Corregidas</button>
+	    <button class="nav-link" id="nav-delayed-tab" data-bs-toggle="tab" data-bs-target="#nav-delayed" type="button" role="tab" aria-controls="nav-delayed" aria-selected="false">Entregadas</button>
+	    <button class="nav-link" id="nav-undelivered-tab" data-bs-toggle="tab" data-bs-target="#nav-undelivered" type="button" role="tab" aria-controls="nav-undelivered" aria-selected="false">Vencidas</button>
+	  </div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">
+	  <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="">
+		 <div name="current_activities" class="container-fluid">
+			<table class="table table-primary table-hover">
+			  <thead>
+			    <tr>
+			      <th scope="col">Título</th>
+			      <th scope="col">Curso</th>
+			      <th scope="col">Fecha de comienzo</th>
+			      <th scope="col">Fecha de cierre</th>
+			   	  <th scope="col"></th>	
+			  </thead>
+			  <tbody>
+			  	{% for activity in current_activities %}
+			  	<tr>
+			  		<td>{{activity.title}}</td>
+			  		<td>{{activity.course_name}}</td>
+			  		<td>{{activity.start_date.strftime('%d-%m-%y')}}</td>
+			  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
+			  		<td><a href="/resolverActividad/{{activity.id}}">Resolver</a></td>
+			  	</tr>
+			  	{% endfor %}
+			  </tbody>
+			</table>
+			</div> 	
+		  </div>
+	  <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+		<div name="overdue_activities" class="container-fluid">
+			<table class="table table-primary table-hover">
+			  <thead>
+			    <tr>
+			      <th scope="col">Título</th>
+			      <th scope="col">Fecha de comienzo</th>
+			      <th scope="col">Fecha de cierre</th>
+			   	  <th scope="col">Curso</th>
+			   	  <th scope="col">Estado</th>	
+			   	  <th scope="col"></th>	
+			  </thead>
+			  <tbody>
+			  	{% for activity in overdue_activities %}
+			  	<tr>
+			  		<td>{{activity.title}}</td>
+			  		<td>{{activity.start_date.strftime('%d-%m-%y')}}</td>
+			  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
+			  		<td>{{activity.course_name}}</td>
+			  		<td>Atrasado por {{(today - activity.end_date).days }}</td>
+			  		<td><a href="/resolverActividad/{{activity.id}}">Resolver</a></td>
+			  	</tr>
+			  	{% endfor %}
+			  </tbody>
+			</table>
+		</div>	
+	  </div>
+	  <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+		<div name="corrected_activities" class="container-fluid">
+			<table class="table table-primary table-hover">
+			  <thead>
+			    <tr>
+			      <th scope="col">Título</th>
+			   	  <th scope="col">Curso</th>
+			   	  <th scope="col">Calificación</th>
+			   	  <th scopr="col">Comentario</th>	
+			  </thead>
+			  <tbody>
+			  	{% for activity in corrected_activities %}
+			  	<tr>
+			  		<td>{{activity.title}}</td>
+			  		<td>{{activity.course_name}}</td>
+			  		<td>{% if (activity.calification == -1) %}<span class="text-secondary">Sin calificación</span>{% else %}{{activity.calification}}{% endif %}</td>
+			  		<td>{{activity.commentary}}</td>
+			  	</tr>
+			  	{% endfor %}
+			  </tbody>
+			</table>
+		</div>	  	
+	  </div>
+	  <div class="tab-pane fade" id="nav-delayed" role="tabpanel" aria-labelledby="nav-delayed-tab">
+	  	<div name="undelivered_activities" class="container-fluid">
 		<table class="table table-primary table-hover">
 		  <thead>
 		    <tr>
 		      <th scope="col">Título</th>
-		      <th scope="col">Curso</th>
-		      <th scope="col">Fecha de comienzo</th>
-		      <th scope="col">Fecha de cierre</th>
-		   	  <th scope="col"></th>	
-		  </thead>
-		  <tbody>
-		  	{% for activity in current_activities %}
-		  	<tr>
-		  		<td>{{activity.title}}</td>
-		  		<td>{{activity.course_name}}</td>
-		  		<td>{{activity.start_date.strftime('%d-%m-%y')}}</td>
-		  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
-		  		<td><a href="/resolverActividad/{{activity.id}}">Resolver</a></td>
-		  	</tr>
-		  	{% endfor %}
-		  </tbody>
-		</table>
-	</div>
-	<div name="overdue_activities" class="container-fluid">
-		<h1>Actividades atrasadas</h1>
-		<table class="table table-primary table-hover">
-		  <thead>
-		    <tr>
-		      <th scope="col">Título</th>
-		      <th scope="col">Fecha de comienzo</th>
-		      <th scope="col">Fecha de cierre</th>
 		   	  <th scope="col">Curso</th>
-		   	  <th scope="col">Estado</th>	
-		   	  <th scope="col"></th>	
-		  </thead>
-		  <tbody>
-		  	{% for activity in overdue_activities %}
-		  	<tr>
-		  		<td>{{activity.title}}</td>
-		  		<td>{{activity.start_date.strftime('%d-%m-%y')}}</td>
-		  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
-		  		<td>{{activity.course_name}}</td>
-		  		<td>Atrasado por {{(today - activity.end_date).days }}</td>
-		  		<td><a href="/resolverActividad/{{activity.id}}">Resolver</a></td>
-		  	</tr>
-		  	{% endfor %}
-		  </tbody>
-		</table>
-	</div>
-	<div name="corrected_activities" class="container-fluid">
-		<h1>Actividades corregidas</h1>
-		<table class="table table-primary table-hover">
-		  <thead>
-		    <tr>
-		      <th scope="col">Título</th>
-		   	  <th scope="col">Curso</th>
-		   	  <th scope="col">Calificación</th>
-		   	  <th scopr="col">Comentario</th>	
-		  </thead>
-		  <tbody>
-		  	{% for activity in corrected_activities %}
-		  	<tr>
-		  		<td>{{activity.title}}</td>
-		  		<td>{{activity.course_name}}</td>
-		  		<td>{% if (activity.calification == -1) %}<span class="text-secondary">Sin calificación</span>{% else %}{{activity.calification}}{% endif %}</td>
-		  		<td>{{activity.commentary}}</td>
-		  	</tr>
-		  	{% endfor %}
-		  </tbody>
-		</table>
-	</div>
-	<div name="corrected_activities" class="container-fluid">
-		<h1>Actividades entregadas</h1>
-		<table class="table table-primary table-hover">
-		  <thead>
-		    <tr>
-		      <th scope="col">Título</th>
-		   	  <th scope="col">Curso</th>
 		      <th scope="col">Fecha de cierre</th>
 		  </thead>
 		  <tbody>
-		  	{% for activity in corrected_activities %}
+		  	{% for activity in finished_activities %}
 		  	<tr>
 		  		<td>{{activity.title}}</td>
 		  		<td>{{activity.course_name}}</td>
@@ -96,9 +111,10 @@
 		  	{% endfor %}
 		  </tbody>
 		</table>
-	</div>
-	<div name="undelivered_activities" class="container-fluid">
-		<h1>Actividades vencidas</h1>
+		</div>
+	  </div>
+	  <div class="tab-pane fade" id="nav-undelivered" role="tabpanel" aria-labelledby="nav-undelivered-tab">
+	  	<div name="undelivered_activities" class="container-fluid">
 		<table class="table table-primary table-hover">
 		  <thead>
 		    <tr>
@@ -116,7 +132,10 @@
 		  	{% endfor %}
 		  </tbody>
 		</table>
+		</div>
+	  </div>
 	</div>
+	
 </div>
 
 {% endblock %}

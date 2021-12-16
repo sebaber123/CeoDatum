@@ -67,3 +67,28 @@ class Activity(object):
 
 		return cursor.fetchall()
 
+	@classmethod
+	def get_students_from_activity(cls, activity_id):
+		query = "SELECT * FROM public.user u INNER JOIN user_activity ua ON u.id = ua.id_user WHERE ua.id_activity=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(activity_id),))
+
+		return cursor.fetchall()
+
+	@classmethod
+	def get_activity_of_student(cls,activity_id, user_id):
+		query = "SELECT * FROM public.user_activity INNER JOIN public.user u ON u.id = user_activity.id_user WHERE id_activity=%s and id_user=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (activity_id,user_id))
+
+		return cursor.fetchone()
+
+	@classmethod
+	def correct_activity(cls, activity_id, user_id, calification, commentary):
+		con = get_db()
+		query = "UPDATE user_activity SET calification=%s, commentary=%s WHERE id_activity=%s and id_user=%s"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (calification, commentary, activity_id,user_id))
+		con.commit()
+
+		return True

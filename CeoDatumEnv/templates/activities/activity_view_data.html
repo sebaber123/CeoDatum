@@ -26,14 +26,16 @@
 			      <th scope="col">Alumno</th>
 			      <th scope="col">Estado</th>
 			      <th scope="col">Fecha de entrega</th>
+			      <th></th>
 			    </tr>
 			  </thead>
 			  <tbody>
-			  	{% for curso in cursos %}
-			    <tr onclick="function1({{curso.id}});">
-			      <td>{{ curso.name }}</td>
-			      <td>{{ curso.start_date }}</td>
-			      <td>{{ curso.end_date }}</td>
+			  	{% for student in students %}
+			    <tr onclick="corregir({{student.id}});">
+			      <td>{{ student.name }} {{student.surname}}</td>
+			      <td>
+			      {% if student.is_finished and student.calification%}Calificado{% elif student.is_finished %}Para corrección{% else %}Sin entregar{%endif%}</td>
+			      <td></td>
 			    </tr>
 			    {% endfor %}
 			  </tbody>
@@ -78,4 +80,9 @@
 		  </div>
 		</div>
 	</div>
+	<script>
+		function corregir(id){
+			window.location.href = '/activities/correct/{{activity.id}}&' + id;
+		}
+	</script>
 {% endblock %}

@@ -4,25 +4,23 @@
 {% endblock %}
 {% block title %} Login  {% endblock %}
 {% block content %}
-<div class="container-fluid" style="height: 90%">
+<div class="container-fluid p-3" style="height: 90%">
   <div class="row" style="height: 100%">
    <div class="col-3">
    </div>
    <div class="col-6 blue-background">
-
-
-      <h2 align="center">CeoDatum</h2>
+      <h2 align="center">Login de usuario</h2>
       <p align="center">Ingrese usuario y contraseña para acceder.</p>
         <div class="main">
          <div class="login-form">
             <p align="center">{{error}}{{registerSuccess}}</p>
             <form action="/login" method='POST'>
                <div class="form-group">
-                  <label class="text-white">Nombre de usuario</label>
+                  <label class="">Nombre de usuario</label>
                   <input type="text" name="name" class="form-control" placeholder="Nombre de usuario"required>
                </div>
                <div class="form-group">
-                  <label class="text-white">Contraseña</label>
+                  <label class="">Contraseña</label>
                   <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
                </div>
                <div class="buttons-area" align="center">

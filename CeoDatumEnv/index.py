@@ -77,7 +77,8 @@ app.add_url_rule('/activities/create_activity', 'create_activity', activities.cr
 app.add_url_rule('/activities/view_activity/<id>', 'view_activity', activities.view_activity)
 app.add_url_rule('/activities/view_activity_data/<id>', 'view_activity_data', activities.view_activity_data)
 app.add_url_rule('/resolverActividad/<int:id>', 'resolverActividad', activities.solveActivity)
-
+app.add_url_rule('/activities/correct/<activity_id>&<user_id>', 'correct_activity_view', activities.correct_activity_view)
+app.add_url_rule('/activity/correctActivity/<activity_id>&<user_id>', 'correct_activity', activities.correct_activity, methods=['POST'])
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
 app.add_url_rule('/configuration', 'configuration', configuration.configuration, methods=['GET'])

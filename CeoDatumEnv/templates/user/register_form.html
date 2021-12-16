@@ -6,12 +6,12 @@
 {% endblock %}
 {% block title %} Login  {% endblock %}
 {% block content %}
-<div class="container-fluid" style="height: 90%">
+<div class="container-fluid mt-2" style="height: 90%">
   <div class="row" style="height: 100%">
    <div class="col-3">
    </div>
    <div class="col-6 blue-background">   
-      <h3 align="center" style="color: #012a4a">Formulario de registro</h3>
+      <h3 align="center">Formulario de registro</h3>
         <label class="text-alert">{{error}}</label>
         <label class="text-alert">{{ emailExist }}</label>
         <label class="text-alert">{{ emptyField }}</label>
@@ -19,45 +19,45 @@
          <div class="login-form">
             <form action="/register" method='POST' onsubmit="return validate();">
               <div class="form-group">
-                  <label class="text-white">Correo electrónico</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label>Correo electrónico</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <input type="email" name="email" id="emailInput" class="form-control" placeholder="Correo electrónico" required>
                </div>
                <div class="form-group">
-                  <label class="text-white">Nombre de usuario</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="">Nombre de usuario</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <input type="text" name="username" class="form-control" placeholder="Nombre de usuario" required>
                </div>
                <div class="form-group">
-                  <label class="text-white">Contraseña</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="">Contraseña</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <label class="contador_caracteres text-white mt-1" id="password-contador"></label>
                   <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña" required>
                </div>
                 <div class="form-group" for="password_repeat">
-                  <label class="text-white">Repetir contraseña</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="">Repetir contraseña</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <input type="password" name="password_repeat" id="password_repeat" class="form-control" placeholder="Repetir contraseña" required>
                 </div>
                 <label class="d-none d-block text-danger" id="passwordcheck_error"></label>
                 <div class="form-group">
-                  <label class="text-white" for="name">Nombre</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="" for="name">Nombre</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <input type="text" name="name" class="form-control" placeholder="Nombre" required>
                 </div>
                 <div class="form-group">
-                  <label class="text-white" for="surname">Apellido</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="" for="surname">Apellido</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <input type="text" name="surname" class="form-control" placeholder="Apellido" required>
                 </div>
                 <div class="form-group">
-                  <label class="text-white" for="birthday">Fecha de nacimiento</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="" for="birthday">Fecha de nacimiento</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <input type="date" name="birthday" class="form-control" placeholder="Fecha de nacimiento" required>
                 </div>
                 <div class="form-group">
-                  <label class="text-white" for="provinceFormControlSelect">Provincia</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="" for="provinceFormControlSelect">Provincia</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <select class="form-control" id="provinceFormControlSelect" name="provinceFormControlSelect" required> 
                     <option selected value=""> -- Selecciona una opción -- </option>
                     {% for provincia in provincias %}
@@ -66,15 +66,15 @@
                   </select>
                 </div>
                   <div class="form-group d-none" id="cityFormGroup">
-                  <label class="text-white" for="cityFormControlSelect">Ciudad</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="" for="cityFormControlSelect">Ciudad</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <select class="form-control" id="cityFormControlSelect" name="cityFormControlSelect" required>
                   <option selected value=""> -- Selecciona una opción -- </option>                  
                   </select>
                 </div>
                 <div class="form-group d-none" id="instituteFormGroup">
-                  <label class="text-white" for="instituteFormControlSelect">Establecimiento educativo</label>
-                  <label class="text-white" style="font-size:12px">(*)</label>
+                  <label class="" for="instituteFormControlSelect">Establecimiento educativo</label>
+                  <label class="" style="font-size:12px">(*)</label>
                   <select class="form-control" id="instituteFormControlSelect" name="instituteFormControlSelect" required>
                    <option selected value=""> -- Selecciona una opción -- </option>
                   </select>
@@ -82,7 +82,7 @@
                 <div class="buttons-area" align="center">
                   <button type="submit" name="submit" class="btn btn-dark" value="register">Registrarse</button>
                   <a type="back" name="back" class="btn btn-dark" href="{{url_for('loginForm')}}">Volver</a>
-                   <span class="text-white d-block">(*) Campos obligatorios</span>
+                   <span class=" d-block">(*) Campos obligatorios</span>
                 </div>
             </form>
          </div>
@@ -120,6 +120,8 @@
           for (var i =  0; i < data.result.length; i++) {
             $( "#instituteFormControlSelect" ).append("<option value=\"" + data.result[i][0] + "\">" + data.result[i][3] + "</option><br/>");  
           }
+          $('#instituteFormGroup').append()
+
         });
       return false;
     });
