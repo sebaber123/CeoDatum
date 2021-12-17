@@ -134,3 +134,8 @@ app.add_url_rule('/datasets/indexPrivates/<int:page>&<condition>', 'datasets_ind
 
 app.add_url_rule('/datasets/show/<int:Bid>', 'datasets_show', datasets.show, methods=['GET'])
 app.add_url_rule('/datasets/show/', 'dataset_edit_share', datasets.editShare, methods=['POST'])
+
+from resources.profile import profile
+#PROFILE
+app.add_url_rule('/profile', 'profile', profile.get_my_profile)
+app.add_url_rule('/profile/addInstitute', 'addInstitute', profile.addInstitute, methods=['POST'])

@@ -34,7 +34,7 @@
 			    <tr onclick="corregir({{student.id}});">
 			      <td>{{ student.name }} {{student.surname}}</td>
 			      <td>
-			      {% if student.is_finished and student.calification%}Calificado{% elif student.is_finished %}Para corrección{% else %}Sin entregar{%endif%}</td>
+			      {% if student.is_finished and student.calification %}Calificado{% elif student.is_finished %}Para corrección{% else %}Sin entregar{%endif%}</td>
 			      <td></td>
 			    </tr>
 			    {% endfor %}

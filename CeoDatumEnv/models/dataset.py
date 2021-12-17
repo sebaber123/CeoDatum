@@ -105,13 +105,13 @@ class Dataset(object):
 		return cursor.fetchall()	
 
 	@classmethod
-	def get_dataset_protected(cls, user_id, establishment_id, page, pagination, stringCondtion):
+	def get_dataset_protected(cls, user_id, page, pagination, stringCondtion):
 
 		start_at = (page-1)*pagination
 
-		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d INNER JOIN public.\"user\" as u on d.database_owner_id = u.id " +
+		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d INNER JOIN public.\"user\" as u on d.database_owner_id = u.id INNER JOIN user_establishment ue on ue.id_user	=u.id " +
 				"WHERE "+
-				"d.id IN (SELECT id_dataset from public.\"Dataset_establishment\" where id_establishment = "+str(establishment_id)+"   )  "+ 
+				"d.id IN (SELECT id_dataset from public.\"Dataset_establishment\" where id_establishment = ue.id_establishment)  "+ 
 				"OR d.id IN (select id_dataset from public.\"Dataset_course\" as dc INNER JOIN public.\"user_course\" as uc on dc.id_course = uc.course_id where uc.user_id = "+str(user_id)+" ) "+stringCondtion +" "+
 				"ORDER BY d.name limit "+str(pagination)+ " OFFSET " +str(start_at))
 
@@ -121,11 +121,12 @@ class Dataset(object):
 		return cursor.fetchall()	
 
 	@classmethod
-	def max_page_protecteds(cls, pagination, establishment_id, user_id, stringCondtion):
-		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d INNER JOIN public.\"user\" as u on d.database_owner_id = u.id " +
+	def max_page_protecteds(cls, pagination, user_id, stringCondtion):
+		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d INNER JOIN public.\"user\" as u on d.database_owner_id = u.id INNER JOIN user_establishment ue on ue.id_user	=u.id " +
 				"WHERE "+
-				"d.id IN (SELECT id_dataset from public.\"Dataset_establishment\" where id_establishment = "+str(establishment_id)+"   )  "+ 
-				"OR d.id IN (select id_dataset from public.\"Dataset_course\" as dc INNER JOIN public.\"user_course\" as uc on dc.id_course = uc.course_id where uc.user_id = "+str(user_id)+" ) "+stringCondtion +" ")
+				"d.id IN (SELECT id_dataset from public.\"Dataset_establishment\" where id_establishment = ue.id_establishment)  "+ 
+				"OR d.id IN (select id_dataset from public.\"Dataset_course\" as dc INNER JOIN public.\"user_course\" as uc on dc.id_course = uc.course_id where uc.user_id = "+str(user_id)+" ) "+stringCondtion)
+
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
