@@ -79,8 +79,6 @@ class Activity(object):
 
 		con.commit()
 
-
-
 		return cursor.fetchone()[0]
 
 	@classmethod
@@ -138,8 +136,11 @@ class Activity(object):
 
 		return cursor.fetchall()
 
+	@classmethod
 	def get_students_from_activity(cls, activity_id):
-		query = "SELECT * FROM public.user u INNER JOIN user_activity ua ON u.id = ua.id_user WHERE ua.id_activity=%s"
+		query = ("SELECT u.id, u.name, u.surname, ua.calification, Max(uac.date_resolution) as date_resolution FROM public.user u INNER JOIN user_activity ua ON u.id = ua.id_user LEFT JOIN public.user_activity_resolution as uac on (uac.id_activity = ua.id_activity AND uac.id_user = u.id)" +
+				" WHERE ua.id_activity=%s"+
+				" GROUP BY u.id, u.name, u.surname, ua.calification ")
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (str(activity_id),))
 
@@ -155,6 +156,7 @@ class Activity(object):
 		return cursor.fetchone()
 
 
+	@classmethod
 	def get_activity_of_student(cls,activity_id, user_id):
 		query = "SELECT * FROM public.user_activity INNER JOIN public.user u ON u.id = user_activity.id_user WHERE id_activity=%s and id_user=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
@@ -188,7 +190,7 @@ class Activity(object):
 		return cursor.fetchone()
 
 
-
+	@classmethod
 	def correct_activity(cls, activity_id, user_id, calification, commentary):
 		con = get_db()
 		query = "UPDATE user_activity SET calification=%s, commentary=%s WHERE id_activity=%s and id_user=%s"

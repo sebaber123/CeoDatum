@@ -26,16 +26,63 @@
 			      <th scope="col">Alumno</th>
 			      <th scope="col">Estado</th>
 			      <th scope="col">Fecha de entrega</th>
-			      <th></th>
+			      <th scope="col">Nota</th>
+			      <th scope="col">Ver entrega</th>
 			    </tr>
 			  </thead>
 			  <tbody>
 			  	{% for student in students %}
-			    <tr onclick="corregir({{student.id}});">
+			    <tr>
 			      <td>{{ student.name }} {{student.surname}}</td>
 			      <td>
 			      {% if student.is_finished and student.calification %}Calificado{% elif student.is_finished %}Para corrección{% else %}Sin entregar{%endif%}</td>
-			      <td></td>
+			      <td>
+			      	{% if student.date_resolution %}
+			      		{{student.date_resolution}}
+	
+			      	{% else %}
+	
+			      		No etregado
+
+			      	{% endif %}
+			      </td>
+
+			      <td>
+			      	{% if student.date_resolution %}
+			      		
+			      		{% if student.calification %}
+
+			      		{{student.calification}}
+
+			      		{% else %}
+
+			      			No calificado
+
+				      	{% endif %}
+	
+			      	{% else %}
+	
+			      		No entregado
+
+			      	{% endif %}
+
+			      	
+			      </td>
+
+
+			      <td>
+
+			      	{% if student.date_resolution %}
+
+			      	<a class="btn btn-primary" href="{{url_for('correct_activity_view', activity_id=activity.id ,user_id=student.id)}}">Ver entrega</a>
+
+			      	{% else %}
+	
+			      		No entregado
+
+			      	{% endif %}
+
+			      </td>
 			    </tr>
 			    {% endfor %}
 			  </tbody>
@@ -63,6 +110,9 @@
 			      	 {% for graph in available_graphs %}
 			      	 <span class="d-block">{{graph.spanish_name}}</span>
 			      	 {% endfor%}
+			      	 {% if activity.social_graph %}
+			      	 <span class="d-block">grafo social</span>
+			      	 {% endif %}
 			      </td>
 			    </tr>
 			  </tbody>
