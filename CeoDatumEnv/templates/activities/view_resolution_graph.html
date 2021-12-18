@@ -1,0 +1,297 @@
+{% extends "layout.html" %}
+{% block content %}
+<head>
+  <meta charset="utf-8">
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+  <style>
+    .imgBar {
+          width: 100px;
+          height: 100px;
+    }
+    
+    .row{
+      --bs-gutter-x: 0;
+    }
+
+    .form-check-input {
+      overflow: hidden; 
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+  </style>
+</head>
+<body>
+
+
+
+
+<table style="margin-top:10px;">
+  <thead>
+    <tr>
+      <th style="width:10px"></th>
+      <th style="width:290px"></th>
+      <th style="width:25px"></th>
+      <th style="width:250px"></th>
+      <th style="width:50px"></th>
+
+    </tr>
+  </thead>
+  <tr valign="top">
+  </tr>
+  <tr style="height:20px"><td style="width:10px"></td></tr>
+
+  <tr valign="top">
+    <td style="width:25px;"></td>
+    <td class="" id="columnsSelectedAndCondition">
+        <h3 id="x_axi_title">Eje X</h3>
+        <div  id="order-axi-x" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
+          
+          <div class="list-group-item" id="" parentBox="order-columns">{{plotterResolution.x_axis_to_show}}
+              <input type="hidden" id="" type="text" name="columnOfDataSet"   value="{{plotterResolution.x_axis}}">
+          </div>
+
+        </div>
+        {% if plotterResolution.graph_type == 'line' %}
+
+        <div id="modificatorX" >
+          <div id="acumulativeX" style=" margin-top: 10px;">
+
+        {% else %}
+        <div id="modificatorX" style="visibility: hidden;">
+          <div id="acumulativeX" style="display: none; margin-top: 10px;">
+
+        {% endif %}  
+
+
+            <input class="form-check-input" type="checkbox" value="" id="acumulativeXCheckBox" name="acumulativeXCheckBox" checked>
+              <label class="form-check-label" for="acumulativeXCheckBox">
+                Acumulativo
+              </label>
+            
+          </div>
+
+          {% if plotterResolution.graph_type == 'scatter' %}
+
+          <div id="divDispersionX" >
+
+          {% else %}
+
+          <div id="divDispersionX" style="visibility: hidden;">
+          {% endif %}  
+            <label style="margin-right: 10px;" for="dispersionX">Dispersión en eje X: </label><output id="dispersionYOutput">{{plotterResolution.dispersion_x}}</output>
+            <input  id="dispersionX" name="dispersionX" type='range' min='0' max='1' step='.05' value='{{plotterResolution.dispersion_x}}' oninput="this.previousElementSibling.value = this.value"/>  
+          </div>
+
+        </div>
+        
+        <div style="height:190px ">
+          <div style= "" id="container-order-y">
+            <h3 id="y_axi_title">Eje Y</h3>
+            <div  id="order-axi-y" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
+
+                {% if plotterResolution.y_axis %}
+
+                <div class="list-group-item" id="" parentBox="order-columns">{{plotterResolution.y_axis_to_show}}
+                    <input type="hidden" id="" type="text" name="columnOfDataSet"   value="{{plotterResolution.y_axis}}">
+                </div>
+
+                {% endif%}
+
+            </div>
+          </div>
+        </div>
+        {% if plotterResolution.graph_type == 'scatter' %}
+
+          <div id="divDispersionX" >
+
+        {% else %}
+        <div id="divDispersionY" style="visibility: hidden;">
+        {% endif %}  
+          <label style="margin-right: 10px;" for="dispersionY">Dispersión en eje Y: </label><output id="dispersionYOutput">{{plotterResolution.dispersion_y}}</output>
+          <input  id="dispersionY" name="dispersionY" type='range' min='0' max='1' step='.05' value='{{plotterResolution.dispersion_y}}' oninput="this.previousElementSibling.value = this.value"/>
+        </div>
+        <h3>Condiciones</h3>
+        <div  id="order-conditions" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
+
+          {% if plotterResolution.has_condition %}
+
+            {% for condition in conditions %}
+
+              <div style="min-height:30px" class="list-group-item" id="divId" name="condition">
+                <span style="width: 210px; display: block;">{{condition.stringCondition}}</span>
+                <input type="hidden" id="" type="text" name="{{condition.condition}}" value="{{condition.condition}}">
+              </div>
+
+            {% endfor %}  
+
+          {% endif %}
+
+
+
+        </div>
+    </td>
+    <td style="width:50px;"></td>
+    <td>
+      <div  class="card" style="height:722.5px; width: 1000px; ">
+      <iframe id="iframe" name="iframe" src="" height="700" width="1000"></iframe>  
+    </td>  
+  </tr>
+</table>
+
+<script>
+
+  $( document ).ready(function() {
+    
+    //iframe
+    var iframe = $('#iframe')[0];
+    
+    //src iframe string
+    var src = "/"
+
+    //get the value of the selection of the chart radio
+    var selection = '{{plotterResolution.graph_type}}';
+
+        //bar chart
+        if(selection == 'bar'){
+          //add the start of the url and the database parameter
+          src = src + "graphBar/{{datasetName}}&";
+
+          //add the axi x parameter
+          src = src + $('#order-axi-x').children(0).children(0).prop('value');
+
+
+        } else {
+
+          //line chart
+          if (selection == 'line') {
+
+            //add the start of the url and the database parameter
+            src = "/graphLine/{{datasetName}}&";
+
+            //add the axi x parameter
+            src = src + $('#order-axi-x').children(0).children(0).prop('value');
+
+            if ($('#acumulativeXCheckBox').is(':checked')) {
+              src = src + '&' + '1';
+            }  
+            else{
+              src = src + '&' + '0';
+            }
+
+
+          }
+          else{
+
+            //data table
+            if (selection == 'data_table') {
+
+              //add the start of the url and the database parameter
+              src = "/dataTable/{{datasetName}}&";
+
+              //add the axi x parameter
+              src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+              
+              //add the axi y parameter
+              src = src + $('#order-axi-y').children(0).children(0).prop('value');
+            }
+            else{
+
+              //pie chart
+              if (selection == 'pie') {
+
+                //add the start of the url and the database parameter
+                src = "/pieChart/{{datasetName}}&"
+
+                //add the axi x parameter
+                src = src + $('#order-axi-x').children(0).children(0).prop('value');
+              }
+
+              else{
+                
+                if (selection == 'dot'){
+
+                  //add the start of the url and the database parameter
+                  src = "/dotChart/{{datasetName}}&";
+
+                  //add the axi x parameter
+                  src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+                  
+                  //add the axi y parameter
+                  src = src + $('#order-axi-y').children(0).children(0).prop('value');
+
+                }
+
+                else{
+                  if (selection == 'scatter') {
+                    //add the start of the url and the database parameter
+                    src = "/scatterChart/{{datasetName}}&";
+
+                    //add the axi x parameter
+                    src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+                    
+                    //add the axi y parameter
+                    src = src + $('#order-axi-y').children(0).children(0).prop('value')+ "&";
+
+                    src = src + $('#dispersionX').val().toString() + "&";
+
+                    src = src + $('#dispersionY').val().toString();
+                  }
+                  else{
+                    if (selection == 'map') {
+
+                      //add the start of the url and the database parameter
+                      src = "/mapChart/{{datasetName}}&";
+
+                      //add the axi x parameter
+                      src = src + $('#order-axi-x').children(0).children(0).prop('value') + "&";
+                      
+                      //add the axi y parameter
+                      src = src + $('#order-axi-y').children(0).children(0).prop('value');
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        //add the conditions to the url
+        var conditions = $("#order-conditions");
+          
+          //check if there are any conditions
+          if (conditions.children(0).length > 0) {
+            
+            //String where the conditions the conditions are loaded
+            var stringConditions = '';
+            
+            //loop through the conditions
+            $('[name=condition]').each(function(index) {
+
+              //add the condition and the separator "$$$"
+              stringConditions = stringConditions + $(this).children(0)[1].value + '~~~';
+            });
+
+            //delete the las separator "$$$"
+            src = src + '&' + (stringConditions.slice(0, -3));
+
+            
+          }  
+
+        //set the url to the iframe
+        iframe.src = src
+
+        //reload the iframe
+        //iframe.contentWindow.location.reload(true);
+        document.getElementById('iframe').src = document.getElementById('iframe').src;
+        
+        $( "#iframe" ).css("opacity", 100);
+
+        //window.frames['some_frame_id'].location.href.reload()
+      });
+    
+
+</script>
+ 
+</body>
+{% endblock %}  

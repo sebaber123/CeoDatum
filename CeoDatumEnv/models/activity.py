@@ -67,3 +67,108 @@ class Activity(object):
 
 		return cursor.fetchall()
 
+	@classmethod
+	def inset_resolution(cls, activityId, userId, resolutionType, dateTimeNow ,commentary):
+
+		con = get_db()
+
+		query = "INSERT INTO public.user_activity_resolution(id_user, id_activity, date_resolution, resolution_type, commentary) VALUES(%s,%s,%s,%s,%s) RETURNING id_resolution;"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(userId), str(activityId), str(dateTimeNow), resolutionType, commentary))
+
+		con.commit()
+
+
+
+		return cursor.fetchone()[0]
+
+	@classmethod
+	def insert_resolution_plotter(cls, plotterResolutionFields, plotterResolutionFieldsValues):
+
+		con = get_db()
+
+		query = "INSERT INTO public.resolution_plotter("+plotterResolutionFields+") VALUES( "+plotterResolutionFieldsValues+") RETURNING id_resolution_plotter;"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		con.commit()
+
+
+
+		return cursor.fetchone()[0]
+
+	@classmethod
+	def insert_resolution_plotter_conditions(cls, stringConditions, resolution_plotter_id):
+
+		con = get_db()
+
+		query = "INSERT INTO public.resolution_plotter_conditions(id_resolution_plotter, condition) VALUES(%s, %s)"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		var = []
+		for condition in stringConditions.split(sep='~~~'):
+			var.append((str(resolution_plotter_id), condition))
+		cursor.executemany(query, var)
+
+		con.commit()
+
+		return None
+
+	@classmethod
+	def insert_resolution_social_graph(cls, resolution_id, searchString, excludePrepositions, excludeArticles, excludePronouns, excludeConjunctions, excludeAdverbs, excludeVerbs, excludeLinks, quantityOfWords):	
+
+		con = get_db()
+
+		query = "INSERT INTO public.resolution_social_graph(id_resolution, phrase_to_search, exclude_prepositions, exclude_articles, exclude_pronouns, exclude_conjunctions, exclude_adverbs, exclude_verbs, exclude_links, quantity_of_words) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(resolution_id), searchString, str(excludePrepositions), str(excludeArticles), str(excludePronouns), str(excludeConjunctions), str(excludeAdverbs), str(excludeVerbs), str(excludeLinks), str(quantityOfWords) ))
+
+		con.commit()
+
+		return None
+
+
+	@classmethod
+	def get_user_activity_resolution(cls, userId, activityId):
+
+		query = "SELECT * FROM public.user_activity_resolution as uas WHERE id_activity =%s AND id_user = %s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(activityId),str(userId)))
+
+		return cursor.fetchall()
+
+	@classmethod
+	def get_resolution(cls, resolution_id):
+
+		query = "SELECT * FROM public.user_activity_resolution as ar WHERE id_resolution =%s "
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (str(resolution_id),))
+
+		return cursor.fetchone()
+
+	@classmethod
+	def get_plotter_resolution(cls,resolution_id):
+		query = "SELECT * FROM public.resolution_plotter as rp WHERE id_resolution =%s "
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+		cursor.execute(query, (str(resolution_id),))
+
+		return cursor.fetchone()
+
+	@classmethod
+	def get_plotter_resolution_conditions(cls,plotter_resolution_id):
+		query = "SELECT * FROM public.resolution_plotter_conditions as uac WHERE id_resolution_plotter =%s "
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+		cursor.execute(query, (str(plotter_resolution_id),))
+
+		return cursor.fetchall()	
+
+	@classmethod
+	def get_social_graph_resolution(cls, resolution_id):
+
+		query = "SELECT * FROM public.resolution_social_graph as rp WHERE id_resolution =%s "
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+		cursor.execute(query, (str(resolution_id),))
+
+		return cursor.fetchone()
+
+

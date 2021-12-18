@@ -654,7 +654,7 @@ def data_table(database, rowName, column, condition):
         dataTableColumns.append(TableColumn(field=x, title=x))
 
     #create the data table
-    dataTable = DataTable(source=source, columns=dataTableColumns, index_position=None, width=900, height=675)
+    dataTable = DataTable(source=source, columns=dataTableColumns, index_position=None, width=900, height=640)
 
     #method that return the script and div that is needed to create the graph in the page 
     script, div = components(dataTable)

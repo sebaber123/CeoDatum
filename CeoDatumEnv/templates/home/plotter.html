@@ -372,7 +372,7 @@
             </div>          
             
             <div class="mb-3">
-              <label for="inputSearchCheckBox" class="form-label" style="display:none;">Filtro:</label>
+              <label for="inputSearchCheckBox" class="form-label" style="display:none;" id=filterConditionText>Filtro:</label>
               <input style="width: 300px  ;display: none;" name="inputConditon" type="text" id="inputSearchCheckBox" class="form-control">
             </div>  
 
@@ -868,7 +868,7 @@
 
     $('#thirdStepCondition').removeClass('visually-hidden');
     $( "#inputSearchCheckBox" ).css("display", "contents");
-    $( "#inputSearchCheckBox" ).prev().css("display", "contents");
+    $( "#filterConditionText" ).css("display", "none");
     
     //check if the option selected is "incluir" or "excluir", if true:   
     if ($(this).val() == 'include' || $(this).val() == 'exclude' ) {
@@ -880,8 +880,9 @@
       $("#label-from").css("display", "none");
       $("#label-to").css("display", "none");
 
+      $( "#filterConditionText" ).css("display", "");
       $("#inputSearchCheckBox").css("display", "");
-      $( "#inputSearchCheckBox" ).prev().css("display", "");
+
 
       //show the "valor" box
       $("#card-include-exclude").css("display", ""); 

@@ -78,6 +78,15 @@ app.add_url_rule('/activities/view_activity/<id>', 'view_activity', activities.v
 app.add_url_rule('/activities/view_activity_data/<id>', 'view_activity_data', activities.view_activity_data)
 app.add_url_rule('/resolverActividad/<int:id>', 'resolverActividad', activities.solveActivity)
 
+
+app.add_url_rule('/addPlotterResolutionToActivity', 'add_plotter_resolution_to_activity', activities.addPlotterResolutionToActivity, methods=['POST'])
+app.add_url_rule('/addSocialGraphResolutionToActivity', 'add_social_graph_resolution_to_activity', activities.addSocialGraphResolutionToActivity, methods=['POST'])
+app.add_url_rule('/viewResolutionGraph/<int:resolutionId>', 'view_resolution_graph', activities.viewResolutionGraph, methods=['GET'])
+app.add_url_rule('/viewResolutionSocialGraph/<int:resolutionId>', 'view_resolution_social_graph', activities.viewResolutionSocialGraph, methods=['GET'])
+
+
+
+
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
 app.add_url_rule('/configuration', 'configuration', configuration.configuration, methods=['GET'])
@@ -133,3 +142,5 @@ app.add_url_rule('/datasets/indexPrivates/<int:page>&<condition>', 'datasets_ind
 
 app.add_url_rule('/datasets/show/<int:Bid>', 'datasets_show', datasets.show, methods=['GET'])
 app.add_url_rule('/datasets/show/', 'dataset_edit_share', datasets.editShare, methods=['POST'])
+
+

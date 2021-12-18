@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+{% block content %}
+<head>
+  <meta charset="utf-8">
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+
+<div class="d-flex justify-content-center">
+  <div class="card justify-content-center" style="width: 60rem; margin-top: 10px;">
+
+    <div class="d-flex justify-content-center" style="margin-top: 10px;">
+      <div class="input-group mb-3"  style="width:800px">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">Palabra o frase que quiere buscar: </span>
+        </div>
+        <input type="text" class="form-control" id="searchString" aria-label="searchString" aria-describedby="basic-addon1" value="{{socialGraph.phrase_to_search}}">
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <div class="input-group mb-3"  style="width:800px">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1" style="height: 38px;" >Cantidad de palabras a mostrar: <output class="input-group-text" id="quantityOutput" style=" text-align: center; height: 34px; background-color: white;">{{socialGraph.quantity_of_words}}</output> </span>
+        </div>
+        <input type="range" class="form-control form-range" min="5" max="25" id="quantity" value="{{socialGraph.quantity_of_words}}"  aria-describedby="basic-addon1" style="width:500px; height: 38px;" oninput="$('#quantityOutput').value = this.value"/>
+      </div>
+    </div>
+  <div class="container">
+    <h4 class="form-check-label justify-content-center" align="center">Excluir:</h4>
+    <div class="row">
+      <div class="col-sm">
+      </div>
+      <div class="col-sm">
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            {% if socialGraph.exclude_prepositions %}
+            <input class="form-check-input" type="checkbox" id="preposiciones" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="preposiciones">
+            {% endif %}
+            <label class="form-check-label" for="preposiciones">Preposiciones</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            {% if socialGraph.exclude_articles %}
+            <input class="form-check-input" type="checkbox" id="articulos" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="articulos">
+            {% endif %}
+            <label class="form-check-label" for="articulos">Artículos</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            {% if socialGraph.exclude_pronouns %}
+            <input class="form-check-input" type="checkbox" id="pronombres" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="pronombres">
+            {% endif %}
+            <label class="form-check-label" for="pronombres">Pronombres</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            {% if socialGraph.exclude_conjunctions %}
+            <input class="form-check-input" type="checkbox" id="conjunciones" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="conjunciones">
+            {% endif %}
+            <label class="form-check-label" for="conjunciones">Conjunciones</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            {% if socialGraph.exclude_adverbs %}
+            <input class="form-check-input" type="checkbox" id="adverbios" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="adverbios">
+            {% endif %}
+            <label class="form-check-label" for="adverbios">Adverbios</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            {% if socialGraph.exclude_verbs %}
+            <input class="form-check-input" type="checkbox" id="conjugaciones" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="conjugaciones">
+            {% endif %}
+            <label class="form-check-label" for="conjugaciones">Conjugaciones de ser, estar, haber y tener</label>
+          </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-check form-switch">
+            {% if socialGraph.exclude_links %}
+            <input class="form-check-input" type="checkbox" id="links" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="links">
+            {% endif %}
+            <label class="form-check-label" for="links">Links</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm">
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script>
+
+</script>  
+{% endblock %}

@@ -12,6 +12,7 @@ from pyspark.sql import types as T
 from pyspark.sql.functions import *
 from pyspark.sql import  Window
 from pyspark.sql.types import DateType, TimestampType, DoubleType
+import re
 
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -215,13 +216,27 @@ def detectType(xString):
 			return 'NUMERIC (16, 10)'
 		else:
 
-			if xString.replace('/','').replace('-','').isdigit():
+			r = re.compile('.{2}/.{2}/.{4}')
+			r2 = re.compile('.{4}/.{2}/.{2}')
+			r3 = re.compile('.{2}-.{2}-.{4}')
+			r4 = re.compile('.{4}-.{2}-.{2}')
+			r5 = re.compile('.{2}/.{2}/.{2}')
+			r6 = re.compile('.{2}-.{2}-.{2}')
+
+			if ((xString.replace('/','').replace('-','').isdigit()) and (r.match(xString) or r2.match(xString) or r3.match(xString) or r4.match(xString) or r5.match(xString) or r6.match(xString))  ):
+
 				return 'date'
 
-			else:	
+			else:
 
-				#HACER
-				if xString.replace('/','').replace('-','').replace(':','').replace('.','').replace(' ','').isdigit():
+				r = re.compile('.{2}/.{2}/.{4} .{2}:.{2}..{2}')
+				r2 = re.compile('.{4}/.{2}/.{2} .{2}:.{2}..{2}')
+				r3 = re.compile('.{2}-.{2}-.{4} .{2}:.{2}..{2}')
+				r4 = re.compile('.{4}-.{2}-.{2} .{2}:.{2}..{2}')
+				r5 = re.compile('.{2}/.{2}/.{2} .{2}:.{2}..{2}')
+				r6 = re.compile('.{2}-.{2}-.{2} .{2}:.{2}..{2}')	
+
+				if ((xString.replace('/','').replace('-','').replace(':','').replace('.','').replace(' ','').isdigit()) and (r.match(xString) or r2.match(xString) or r3.match(xString) or r4.match(xString) or r5.match(xString) or r6.match(xString))):
 					return 'TIMESTAMP'
 				
 				else:
@@ -463,7 +478,10 @@ def configurateUploadCSV():
 				
 				flash('Lo sentimos, la carga del dataset ha fallado', 'danger')
 
+
 				return render_template('home/dragAndDrop.html')
+
+
 			
 		
 
