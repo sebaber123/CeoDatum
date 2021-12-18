@@ -61,11 +61,9 @@ def indexProtecteds(page, condition):
 
 		stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
 
-	establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
+	datasets = Dataset.get_dataset_protected(session['id'], page, pagination, stringCondtion)
 
-	datasets = Dataset.get_dataset_protected(session['id'], establishmentId, page, pagination, stringCondtion)
-
-	maxPage = Dataset.max_page_protecteds(pagination, establishmentId, session['id'], stringCondtion)
+	maxPage = Dataset.max_page_protecteds(pagination, session['id'], stringCondtion)
 
 	availablePages = getAvailablePages(page, maxPage)
 	

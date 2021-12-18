@@ -24,6 +24,9 @@ from resources import user, visualization, home, socialGraph, worldcloud
 from resources.activities import activities
 from resources.datasets import datasets
 from resources.configuration import configuration
+from resources.profile import profile
+from resources.courses import course
+from resources.educational_establishments import extracting_data
 
 app.add_url_rule('/', 'home', home.dragAndDrop)
 
@@ -87,6 +90,9 @@ app.add_url_rule('/viewResolutionSocialGraph/<int:resolutionId>', 'view_resoluti
 
 
 
+app.add_url_rule('/activities/correct/<activity_id>&<user_id>', 'correct_activity_view', activities.correct_activity_view)
+app.add_url_rule('/activity/correctActivity/<activity_id>&<user_id>', 'correct_activity', activities.correct_activity, methods=['POST'])
+
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
 app.add_url_rule('/configuration', 'configuration', configuration.configuration, methods=['GET'])
@@ -97,14 +103,14 @@ app.add_url_rule('/addRoleToUser/<role_id>&<user_id>', 'addRole', configuration.
 app.add_url_rule('/deleteRoleToUser/<role_id>&<user_id>', 'deleteRole', configuration.delete_role, methods=['PUT'])
 app.add_url_rule('/changeActualRole/<rolename>', 'changeActualRole', user.changeActualRole)
 
-from resources.educational_establishments import extracting_data
+
 app.add_url_rule('/get_establishments', 'get_establishments', extracting_data.extract_data, methods=['GET'])
 app.add_url_rule('/showRegister/<province>', 'get_cities_by_province', extracting_data.get_cities_by_province, methods=['GET'])
 app.add_url_rule('/showRegister/ciudad/<city>', 'get_establishment_by_city', extracting_data.get_establishments_by_city, methods=['GET'])
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
 
-from resources.courses import course
+
 app.add_url_rule('/courses', 'courses', course.get_courses, methods=['GET'])
 app.add_url_rule('/courses/<course_id>', 'course<course_id>', course.view_course, methods=['GET'])
 #Usuario existe
@@ -143,4 +149,9 @@ app.add_url_rule('/datasets/indexPrivates/<int:page>&<condition>', 'datasets_ind
 app.add_url_rule('/datasets/show/<int:Bid>', 'datasets_show', datasets.show, methods=['GET'])
 app.add_url_rule('/datasets/show/', 'dataset_edit_share', datasets.editShare, methods=['POST'])
 
+
+
+#PROFILE
+app.add_url_rule('/profile', 'profile', profile.get_my_profile)
+app.add_url_rule('/profile/addInstitute', 'addInstitute', profile.addInstitute, methods=['POST'])
 

@@ -103,3 +103,28 @@ class User(object):
 		cursor.execute(query, (id_user,))
 
 		return cursor.fetchone()
+
+	@classmethod
+	def get_information_of_user(cls, id_user):
+		query = "SELECT u.id, name, email, surname, birthday, username, localidad, jurisdiccion FROM public.user u INNER JOIN city c ON c.id = u.city_id INNER JOIN province p ON p.id = u.province_id  WHERE u.id=%s "
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (id_user,))
+
+		return cursor.fetchone()
+
+	@classmethod
+	def get_establishments_of_user(cls,id_user):
+		query = "SELECT localidad, codigo_de_area, jurisdiccion, cue, nombre, ambito, domicilio, telefono, mail FROM public.user_establishment u INNER JOIN establishment e ON e.id = u.id_establishment INNER JOIN city c ON c.id = e.id_ciudad INNER JOIN province p ON p.id = c.id_provincia  WHERE u.id_user=%s "
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (id_user,))
+
+		return cursor.fetchall()
+
+	@classmethod
+	def add_institute(cls, id_user, id_establishment):
+		con = get_db()
+		query = "INSERT INTO public.user_establishment VALUES(%s,%s)"
+		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (id_user,id_establishment))
+		con.commit()
+		return True

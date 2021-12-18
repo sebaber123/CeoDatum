@@ -75,7 +75,8 @@ def view_activity_data(id):
 	if session['id']:
 		actividad = Activity.get_activity_by_id(id)
 		graficos_disponibles = Activity.get_graph_of_activity_by_id(id)
-		return render_template('activities/activity_view_data.html', activity=actividad, available_graphs=graficos_disponibles)
+		alumnos = Activity.get_students_from_activity(id)
+		return render_template('activities/activity_view_data.html', activity=actividad, available_graphs=graficos_disponibles, students=alumnos)
 
 def view_activity(id):
 	if session['id']:
@@ -94,6 +95,7 @@ def solveActivity(id):
 
 		graphs = Activity.get_graph_of_activity_by_id(id)
 		plotterTab = len(graphs) != 0
+
 
 		return render_template('activities/solve_activity.html', activity=activity, activityId=id, datasetId=datasetId, noNav=True, socialGraph=socialGraph, plotterTab=plotterTab, resolutions=resolutions)
 
@@ -255,3 +257,21 @@ def viewResolutionSocialGraph(resolutionId):
 	socialGraphResolution = Activity.get_social_graph_resolution(resolutionId)
 
 	return render_template('activities/view_resolution_social_graph.html', noNav=True, resolution=resolution, socialGraph=socialGraphResolution)
+
+
+def correct_activity_view(activity_id, user_id):
+	if session['id']:
+		activity = Activity.get_activity_by_id(activity_id)
+		alumno = Activity.get_activity_of_student(activity_id, user_id)
+		return render_template('activities/correct_activity.html', activity=activity, student=alumno)
+
+def correct_activity(activity_id, user_id):
+	if request.method=="POST":
+		comentario = request.form['comment']
+		nota = 'calification' in request.form
+		if not nota:
+			nota = -1
+		Activity.correct_activity(activity_id, user_id, nota, comentario)
+		return redirect(url_for('courses'))
+	return redirect(url_for('home'))
+
