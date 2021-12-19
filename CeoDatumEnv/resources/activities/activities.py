@@ -16,21 +16,22 @@ def activities():
 		overdue_activities = []
 		undelivered_activities = []
 		corrected_activities = []
+
 		for activity in activities:
 			if activity['calification']:
 				corrected_activities.append(activity)
 			else: 
-				if not activity['enable_expired_date'] and (activity['end_date'].strftime('%d-%m-%y')<date.today().strftime('%d-%m-%y')):
+				if not activity['enable_expired_date'] and (activity['end_date']  < date.today()):
 					undelivered_activities.append(activity)
 				else:
-					if activity['commentary']:
+					if 'date_resolution' in activity.keys():
 						finished_activities.append(activity)
 					else:
-						if activity['enable_expired_date'] and (activity['end_date'].strftime('%d-%m-%y')<date.today().strftime('%d-%m-%y')):
+						if activity['enable_expired_date'] and (activity['end_date']<date.today()):
 							overdue_activities.append(activity)
 						else:
 							current_activities.append(activity)
-		return render_template('activities/activities.html', activities=activities, current_activities=current_activities, finished_activities=finished_activities, overdue_activities=overdue_activities, undelivered_activities=undelivered_activities, corrected_activities=corrected_activities, today=date.today())
+		return render_template('activities/activities.html', activities=activities, current_activities=current_activities, finished_activities=finished_activities, overdue_activities=overdue_activities, undelivered_activities=undelivered_activities, corrected_activities=corrected_activities, today=date.today(), user_id=session['id'])
 	else:
 		return render_template('/')
 
@@ -270,6 +271,15 @@ def correct_activity_view(activity_id, user_id):
 		resolutions = Activity.get_user_activity_resolution(user_id, activity_id)
 
 		return render_template('activities/correct_activity.html', activity=activity, student=alumno, resolutions=resolutions)
+
+def viewCorrectedActivity(activity_id, user_id):
+	if session['id']:
+		activity = Activity.get_activity_by_id(activity_id)
+		alumno = Activity.get_activity_of_student(activity_id, user_id)
+
+		resolutions = Activity.get_user_activity_resolution(user_id, activity_id)
+
+		return render_template('activities/view_corrected_activity.html', activity=activity, student=alumno, resolutions=resolutions)
 
 def correct_activity(activity_id, user_id):
 	if request.method=="POST":

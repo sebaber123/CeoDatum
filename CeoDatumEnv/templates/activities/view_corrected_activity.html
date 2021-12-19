@@ -99,26 +99,8 @@
     <hr>
 
 	<div class="container" align="left">
-		<h5>Corrección</h5>
-		<form method="POST" action="/activity/correctActivity/{{activity.id}}&{{student.id}}">
-		  {% if activity.has_calification %}
-		  <div class="form-group">
-		    <label for="calification">Nota</label>
-		    <input type="number" name="calification" min="0" max="10" class="form-control" id="calification" placeholder="Ingresar nota">
-		  </div>
-		  {% else %}
-		  <span>Esta actividad no posee calificación</span>
-		  {% endif %}
-		  <div class="form-group">
-		    <label for="comment">Comentario</label>
-		    <textarea rows="3" class="form-control" id="comment" name="comment" placeholder="Comentario"></textarea>
-		  </div>
-		  <div class="d-grid gap-2 mt-2">
-		  	<button type="submit" class="btn btn-primary">Enviar corrección</button>
-		  </div>
-		</form>
 		<div class="d-grid gap-2 mt-2">
-			<a class="btn btn-primary"  href="/activities/view_activity_data/{{activity.id}}">Volver</a>
+			<a class="btn btn-primary"  href="/activities">Volver</a>
 		</div>
 	</div>
 </div>

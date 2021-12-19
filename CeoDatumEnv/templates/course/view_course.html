@@ -7,7 +7,10 @@
 	<div class="container">
 		<h1 align="center">{{course.name}}</h1>
 		<hr>
-		<h2 id="alumnosTitle">Alumnos inscriptos</h2>
+		<div id="alumnosTitle">
+		<img src="{{url_for('static', filename='expand_arrow.png') }}" style="height: 25px; width: 25px; display:inline-block; margin-bottom: 10px; margin-right:25px">
+		<h2 style="display:inline-block;" >Alumnos inscriptos</h2>
+		</div>
 		<div id="alumnosList">
 			<table class="table">
 				<thead>
@@ -38,7 +41,10 @@
 			</form>
 		</div>
 		<hr class="mt-1">
-		<h2 id="activitiesTitle">Actividades</h2>
+		<div id="activitiesTitle">
+		<img src="{{url_for('static', filename='expand_arrow.png') }}" style="height: 25px; width: 25px; display:inline-block; margin-bottom: 10px; margin-right:25px">
+		<h2 style="display:inline-block;" >Actividades</h2>
+		</div>
 		<div id="activitiesSection">
 			<table class="table table-hover">
 				<thead>
@@ -67,7 +73,10 @@
 			</div>
 		</div>
 		<hr class="mt-1">
-		<h2 id="datasetsTitle">Datasets</h2>
+		<div  id="datasetsTitle">
+		<img src="{{url_for('static', filename='expand_arrow.png') }}" style="height: 25px; width: 25px; display:inline-block; margin-bottom: 10px; margin-right:25px">
+		<h2 style="display:inline-block;">Datasets</h2>
+		</div>
 		<div id="datasetsSection">
 			<table class="table table-hover">
 				<thead>

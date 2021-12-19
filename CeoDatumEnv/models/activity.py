@@ -9,10 +9,19 @@ class Activity(object):
 
 	@classmethod
 	def getMyActivities(cls, user_id):
-		query = "SELECT a.id, a.start_date, a.end_date, title, has_calification, enable_expired_date, calification, commentary, is_finished, name as course_name  FROM public.activity as a INNER JOIN user_activity ON user_activity.id_activity = a.id INNER JOIN course ON a.course_id= course.id WHERE id_user=%s ORDER BY a.end_date desc"
-		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		query = ("SELECT a.id, a.start_date, a.end_date, title, has_calification, enable_expired_date, calification, user_activity.commentary, is_finished, name as course_name, Max(date_resolution) "+
+			" FROM public.activity as a "+
+			" INNER JOIN user_activity ON user_activity.id_activity = a.id "+
+			" INNER JOIN course ON a.course_id= course.id "+
+			" LEFT JOIN user_activity_resolution as uar ON (uar.id_activity = user_activity.id_activity  AND  uar.id_user = user_activity.id_user  ) "+
+			" WHERE user_activity.id_user=%s "+
+			" GROUP BY a.id, a.start_date, a.end_date, title, has_calification, enable_expired_date, calification, user_activity.commentary, is_finished, name"+
+			" ORDER BY a.end_date desc")
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.RealDictCursor)
 		cursor.execute(query, (user_id,))
 		return cursor.fetchall()
+
+
 
 	@classmethod
 	def create_activity(cls, start_date, end_date, title, description, course_id, graphs, objective, has_calification, enable_expired_date, statement_title, statement, students, datasetId, socialGraph):

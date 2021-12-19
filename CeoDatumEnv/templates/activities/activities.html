@@ -35,7 +35,7 @@
 			  		<td>{{activity.course_name}}</td>
 			  		<td>{{activity.start_date.strftime('%d-%m-%y')}}</td>
 			  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
-			  		<td><a href="/resolverActividad/{{activity.id}}">Resolver</a></td>
+			  		<td><a class="btn btn-primary" href="/resolverActividad/{{activity.id}}">Resolver</a></td>
 			  	</tr>
 			  	{% endfor %}
 			  </tbody>
@@ -78,6 +78,7 @@
 			   	  <th scope="col">Curso</th>
 			   	  <th scope="col">Calificación</th>
 			   	  <th scopr="col">Comentario</th>	
+			   	  <th></th>
 			  </thead>
 			  <tbody>
 			  	{% for activity in corrected_activities %}
@@ -86,6 +87,9 @@
 			  		<td>{{activity.course_name}}</td>
 			  		<td>{% if (activity.calification == -1) %}<span class="text-secondary">Sin calificación</span>{% else %}{{activity.calification}}{% endif %}</td>
 			  		<td>{{activity.commentary}}</td>
+			  		<td>
+			  			<a class="btn btn-primary" href="{{url_for('view_corrected_activity', activity_id=activity.id ,user_id=user_id)}}">Ver entrega</a>
+			  		</td>
 			  	</tr>
 			  	{% endfor %}
 			  </tbody>
@@ -100,6 +104,9 @@
 		      <th scope="col">Título</th>
 		   	  <th scope="col">Curso</th>
 		      <th scope="col">Fecha de cierre</th>
+
+		  	  <th></th>
+		  	  
 		  </thead>
 		  <tbody>
 		  	{% for activity in finished_activities %}
@@ -107,6 +114,9 @@
 		  		<td>{{activity.title}}</td>
 		  		<td>{{activity.course_name}}</td>
 		  		<td>{{activity.end_date.strftime('%d-%m-%y')}}</td>
+		  		{% if  today < activity.end_date %}
+		  		<td><a class="btn btn-primary btn-sm" href="/resolverActividad/{{activity.id}}">Agregar Resolucion</a></td>
+		  		{% endif %}
 		  	</tr>
 		  	{% endfor %}
 		  </tbody>

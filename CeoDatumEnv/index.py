@@ -91,6 +91,8 @@ app.add_url_rule('/viewResolutionSocialGraph/<int:resolutionId>', 'view_resoluti
 
 
 app.add_url_rule('/activities/correct/<activity_id>&<user_id>', 'correct_activity_view', activities.correct_activity_view)
+app.add_url_rule('/activities/viewCorrectedActivity/<activity_id>&<user_id>', 'view_corrected_activity', activities.viewCorrectedActivity)
+
 app.add_url_rule('/activity/correctActivity/<activity_id>&<user_id>', 'correct_activity', activities.correct_activity, methods=['POST'])
 
 app.add_url_rule('/datasets', 'datasets', datasets.datasets, methods=['GET'])
