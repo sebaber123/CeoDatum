@@ -40,6 +40,23 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal" id="staticBackdrop3" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+			    <h5 class="modal-title">Salir</h5>
+			    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body">
+			    <p>Seguro que quiere salir de la actividad? Perdera el progreso de la actividad que no haya enviado</p>
+			  </div>
+			  <div class="modal-footer">
+			    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			    <a class="btn btn-danger"  href="{{url_for('activities')}}">salir</a>
+			  </div>
+			</div>
+		</div>
+	</div>
 
 
 	
@@ -57,8 +74,9 @@
 	        	<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-social" type="button" role="tab" aria-controls="nav-social" aria-selected="false">Grafo social (Twitter)</button>
 
 	        {% endif %}
+
+	        <button type="button" class="btn btn-danger ms-auto mb-2 mb-lg-0" data-bs-toggle="modal" data-bs-target="#staticBackdrop3">Salir</button>
 	        
-	        <a class="btn btn-danger ms-auto mb-2 mb-lg-0"  href="{{url_for('activities')}}" onclick="return confirm('perdera todo su progreso, seguro quiere salir?')" >salir</a>
 	      </div>
 
 	    </nav>
@@ -85,8 +103,8 @@
 					        	<thead>
 					        		<tr>
 					        			<th>Pestaña entregada</th>
-					        			<th>fecha</th>
-					        			<th>ver entrega</th>
+					        			<th>Fecha</th>
+					        			<th>Ver entrega</th>
 					        		</tr>
 					        	</thead>
 					        	<tbody>
@@ -95,7 +113,7 @@
 					        			<td>
 					        				{% if resolution.resolution_type == 'plotter' %}
 
-					        					Grafico
+					        					Gráfico
 
 					        				{% else %}
 
@@ -120,7 +138,7 @@
 													  <div class="modal-dialog"  style="max-width: 80%; height: 1050px;" role="document">
 													    <div class="modal-content" style="height:1000">
 													      <div class="modal-header">        
-									        	        <h5 class="modal-title">resolucion</h5>
+									        	        <h5 class="modal-title">Resolución</h5>
 													        	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 													      </div>
 													      <div class="modal-body" style="width:100%; height:1050px">
@@ -129,7 +147,7 @@
 													      		<p class="text-start">{{resolution.commentary}}</p>
 													      	</div>
 													      	<hr>
-													      	<h3>Grafico</h3>
+													      	<h3>Gráfico</h3>
 													      	<iframe id="iframe{{resolution.id_resolution}}" src="{{url_for('view_resolution_graph', resolutionId=resolution.id_resolution)}}" id="iframeResolution{{resolution.id_resolution}}" style="width:100%; height:800px;" scrolling="no" ></iframe>
 													        
 													      </div>
@@ -140,21 +158,21 @@
 
 													<!-- Modal -->
 													<div class="modal fade" id="resolutionModal{{resolution.id_resolution}}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
-													  <div class="modal-dialog"  style="max-width: 80%; height: 800px;" role="document">
-													    <div class="modal-content" style="height:800">
+													  <div class="modal-dialog"  style="max-width: 80%; height: 1700px;" role="document">
+													    <div class="modal-content" style="height:1700">
 
 													      <div class="modal-header">        
-									        	        <h5 class="modal-title">resolucion</h5>
+									        	        <h5 class="modal-title">Resolución</h5>
 													        	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 													      </div>
-													      <div class="modal-body" style="width:100%; height:650px">
+													      <div class="modal-body" style="width:100%; height:1550px">
 													      	<p class="text-start">Comentario:</p>
 													      	<div class="card">
 													      		<p class="text-start">{{resolution.commentary}}</p>
 													      	</div>
 													      	<hr>
-													      	<h3>Grafico</h3>
-													      	<iframe id="iframe{{resolution.id_resolution}}" src="{{url_for('view_resolution_social_graph', resolutionId=resolution.id_resolution)}}" id="iframeResolution{{resolution.id_resolution}}" style="width:100%; height:400px;" scrolling="no" ></iframe>
+													      	<h3>Grafo y Nube de palabras</h3>
+													      	<iframe id="iframe{{resolution.id_resolution}}" src="{{url_for('view_resolution_social_graph', resolutionId=resolution.id_resolution)}}" id="iframeResolution{{resolution.id_resolution}}" style="width:100%; height:1300px;" scrolling="no" ></iframe>
 													        
 													      </div>
 													    </div>
@@ -181,7 +199,7 @@
 						        <br/>
 						        <h5 style="display:inline-block;">Complete la actividad en la pestaña que corresponda(Graficador/Grafo social) </h5>
 						        <br/>
-						        <h5 style="display:inline-block;">Agregue un comentario y seleccione que pestaña quiere enviar</h5>
+						        <h5 style="display:inline-block;">Agregue un comentario y oprima en uno de los dos botones debajo del comentario para elegir que pestaña quiere enviar</h5>
 						        <br/>
 						        <div class="md-form" style="padding: 20px">
 							    	<label class="titulo-form" for="inputCommentary">Comentario</label>
@@ -375,6 +393,10 @@
 
 				var quantityOfWords = $("#iframeGraph").contents().find('#quantity').val();
 
+				var plotterBase64 = $("#iframeGraph").contents().find('#iframe').contents().find('#plotterBase64').val();
+
+				var cloudBase64 = $("#iframeGraph").contents().find('#iframe').contents().find('#cloudBase64').val();				
+
 				var excludePrepositions = false;
 				var excludeArticles = false;
 				var excludePronouns = false;
@@ -426,7 +448,7 @@
 
 				}
 
-				$.post("/addSocialGraphResolutionToActivity", {"searchString":searchString, "excludePrepositions":excludePrepositions, "excludeArticles":excludeArticles, "excludePronouns":excludePronouns, "excludeConjunctions":excludeConjunctions, "excludeAdverbs":excludeAdverbs, "excludeVerbs":excludeVerbs, "excludeLinks":excludeLinks, "quantityOfWords":quantityOfWords  ,"commentary":commentary, "activityId":{{activityId}}})
+				$.post("/addSocialGraphResolutionToActivity", {"searchString":searchString, "excludePrepositions":excludePrepositions, "excludeArticles":excludeArticles, "excludePronouns":excludePronouns, "excludeConjunctions":excludeConjunctions, "excludeAdverbs":excludeAdverbs, "excludeVerbs":excludeVerbs, "excludeLinks":excludeLinks, "quantityOfWords":quantityOfWords  ,"commentary":commentary, "activityId":{{activityId}}, "plotterBase64":plotterBase64, "cloudBase64":cloudBase64})
 
 				location.reload();
 

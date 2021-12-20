@@ -13,7 +13,7 @@
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">Palabra o frase que quiere buscar: </span>
         </div>
-        <input type="text" class="form-control" id="searchString" aria-label="searchString" aria-describedby="basic-addon1" value="{{socialGraph.phrase_to_search}}">
+        <input type="text" class="form-control" id="searchString" aria-label="searchString" aria-describedby="basic-addon1" value="{{socialGraph.phrase_to_search}}"  disabled>
       </div>
     </div>
 
@@ -22,7 +22,7 @@
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1" style="height: 38px;" >Cantidad de palabras a mostrar: <output class="input-group-text" id="quantityOutput" style=" text-align: center; height: 34px; background-color: white;">{{socialGraph.quantity_of_words}}</output> </span>
         </div>
-        <input type="range" class="form-control form-range" min="5" max="25" id="quantity" value="{{socialGraph.quantity_of_words}}"  aria-describedby="basic-addon1" style="width:500px; height: 38px;" oninput="$('#quantityOutput').value = this.value"/>
+        <input type="range" class="form-control form-range" min="5" max="25" id="quantity" value="{{socialGraph.quantity_of_words}}"  aria-describedby="basic-addon1" style="width:500px; height: 38px;" oninput="$('#quantityOutput').value = this.value"  disabled/>
       </div>
     </div>
   <div class="container">
@@ -34,9 +34,9 @@
         <div class="d-flex">
           <div class="form-check form-switch">
             {% if socialGraph.exclude_prepositions %}
-            <input class="form-check-input" type="checkbox" id="preposiciones" checked>
+            <input class="form-check-input" type="checkbox" id="preposiciones" checked disabled>
             {% else %}
-            <input class="form-check-input" type="checkbox" id="preposiciones">
+            <input class="form-check-input" type="checkbox" id="preposiciones" disabled>
             {% endif %}
             <label class="form-check-label" for="preposiciones">Preposiciones</label>
           </div>
@@ -44,9 +44,9 @@
         <div class="d-flex">
           <div class="form-check form-switch">
             {% if socialGraph.exclude_articles %}
-            <input class="form-check-input" type="checkbox" id="articulos" checked>
+            <input class="form-check-input" type="checkbox" id="articulos" checked disabled>
             {% else %}
-            <input class="form-check-input" type="checkbox" id="articulos">
+            <input class="form-check-input" type="checkbox" id="articulos" disabled>
             {% endif %}
             <label class="form-check-label" for="articulos">Artículos</label>
           </div>
@@ -54,9 +54,9 @@
         <div class="d-flex">
           <div class="form-check form-switch">
             {% if socialGraph.exclude_pronouns %}
-            <input class="form-check-input" type="checkbox" id="pronombres" checked>
+            <input class="form-check-input" type="checkbox" id="pronombres" checked  disabled>
             {% else %}
-            <input class="form-check-input" type="checkbox" id="pronombres">
+            <input class="form-check-input" type="checkbox" id="pronombres"  disabled>
             {% endif %}
             <label class="form-check-label" for="pronombres">Pronombres</label>
           </div>
@@ -64,9 +64,9 @@
         <div class="d-flex">
           <div class="form-check form-switch">
             {% if socialGraph.exclude_conjunctions %}
-            <input class="form-check-input" type="checkbox" id="conjunciones" checked>
+            <input class="form-check-input" type="checkbox" id="conjunciones" checked disabled>
             {% else %}
-            <input class="form-check-input" type="checkbox" id="conjunciones">
+            <input class="form-check-input" type="checkbox" id="conjunciones" disabled>
             {% endif %}
             <label class="form-check-label" for="conjunciones">Conjunciones</label>
           </div>
@@ -76,9 +76,9 @@
         <div class="d-flex">
           <div class="form-check form-switch">
             {% if socialGraph.exclude_adverbs %}
-            <input class="form-check-input" type="checkbox" id="adverbios" checked>
+            <input class="form-check-input" type="checkbox" id="adverbios" checked disabled>
             {% else %}
-            <input class="form-check-input" type="checkbox" id="adverbios">
+            <input class="form-check-input" type="checkbox" id="adverbios" disabled>
             {% endif %}
             <label class="form-check-label" for="adverbios">Adverbios</label>
           </div>
@@ -86,9 +86,9 @@
         <div class="d-flex">
           <div class="form-check form-switch">
             {% if socialGraph.exclude_verbs %}
-            <input class="form-check-input" type="checkbox" id="conjugaciones" checked>
+            <input class="form-check-input" type="checkbox" id="conjugaciones" checked disabled>
             {% else %}
-            <input class="form-check-input" type="checkbox" id="conjugaciones">
+            <input class="form-check-input" type="checkbox" id="conjugaciones" disabled>
             {% endif %}
             <label class="form-check-label" for="conjugaciones">Conjugaciones de ser, estar, haber y tener</label>
           </div>
@@ -96,9 +96,9 @@
         <div class="d-flex">
           <div class="form-check form-switch">
             {% if socialGraph.exclude_links %}
-            <input class="form-check-input" type="checkbox" id="links" checked>
+            <input class="form-check-input" type="checkbox" id="links" checked disabled>
             {% else %}
-            <input class="form-check-input" type="checkbox" id="links">
+            <input class="form-check-input" type="checkbox" id="links" disabled>
             {% endif %}
             <label class="form-check-label" for="links">Links</label>
           </div>
@@ -106,6 +106,23 @@
       </div>
       <div class="col-sm">
       </div>
+      <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Grafo</button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Nube de palabras</button>
+      </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+        <div style="display: flex; justify-content: center;">
+          <img src="data:image/png;base64,{{socialGraph.plotter_image}}" alt="" height="100%" width="100%" />  
+            
+        </div>
+      </div>
+      <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+          <img src="data:image/png;base64,{{socialGraph.cloud_image}}" alt="" height="100%" width="100%" /> 
+      </div>
+    </div>
     </div>
   </div>
   </div>

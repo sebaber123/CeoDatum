@@ -193,8 +193,12 @@ def addSocialGraphResolutionToActivity():
 		excludeVerbs = request.form['excludeVerbs']
 		excludeLinks = request.form['excludeLinks']
 		quantityOfWords = request.form['quantityOfWords']
+		cloudBase64 = request.form['cloudBase64']
+		plotterBase64 = request.form['plotterBase64']
 
-		Activity.insert_resolution_social_graph(resolution_id, searchString, excludePrepositions, excludeArticles, excludePronouns, excludeConjunctions, excludeAdverbs, excludeVerbs, excludeLinks, quantityOfWords)
+		
+
+		Activity.insert_resolution_social_graph(resolution_id, searchString, excludePrepositions, excludeArticles, excludePronouns, excludeConjunctions, excludeAdverbs, excludeVerbs, excludeLinks, quantityOfWords, cloudBase64, plotterBase64)
 
 
 

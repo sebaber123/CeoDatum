@@ -122,14 +122,14 @@ class Activity(object):
 		return None
 
 	@classmethod
-	def insert_resolution_social_graph(cls, resolution_id, searchString, excludePrepositions, excludeArticles, excludePronouns, excludeConjunctions, excludeAdverbs, excludeVerbs, excludeLinks, quantityOfWords):	
+	def insert_resolution_social_graph(cls, resolution_id, searchString, excludePrepositions, excludeArticles, excludePronouns, excludeConjunctions, excludeAdverbs, excludeVerbs, excludeLinks, quantityOfWords, cloudBase64, plotterBase64):	
 
 		con = get_db()
 
-		query = "INSERT INTO public.resolution_social_graph(id_resolution, phrase_to_search, exclude_prepositions, exclude_articles, exclude_pronouns, exclude_conjunctions, exclude_adverbs, exclude_verbs, exclude_links, quantity_of_words) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+		query = "INSERT INTO public.resolution_social_graph(id_resolution, phrase_to_search, exclude_prepositions, exclude_articles, exclude_pronouns, exclude_conjunctions, exclude_adverbs, exclude_verbs, exclude_links, quantity_of_words, cloud_image, plotter_image) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (str(resolution_id), searchString, str(excludePrepositions), str(excludeArticles), str(excludePronouns), str(excludeConjunctions), str(excludeAdverbs), str(excludeVerbs), str(excludeLinks), str(quantityOfWords) ))
+		cursor.execute(query, (str(resolution_id), searchString, str(excludePrepositions), str(excludeArticles), str(excludePronouns), str(excludeConjunctions), str(excludeAdverbs), str(excludeVerbs), str(excludeLinks), str(quantityOfWords), str(cloudBase64), str(plotterBase64) ))
 
 		con.commit()
 

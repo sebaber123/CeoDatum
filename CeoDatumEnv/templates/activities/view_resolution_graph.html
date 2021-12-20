@@ -44,7 +44,34 @@
   <tr valign="top">
     <td style="width:25px;"></td>
     <td class="" id="columnsSelectedAndCondition">
-        <h3 id="x_axi_title">Eje X</h3>
+
+        {% if plotterResolution.graph_type == 'map' %}
+          <h3 id="x_axi_title">Latitud</h3>
+        {% else %}
+
+          {% if plotterResolution.graph_type == 'data_table' %}
+
+            <h3 id="x_axi_title">Fila</h3>
+
+          {% else %}
+
+            {% if plotterResolution.graph_type == 'pie' %}
+
+              <h3 id="x_axi_title">Agrupar por</h3>
+
+
+
+            {% else %}
+
+              <h3 id="x_axi_title">Eje x</h3>
+
+            {% endif %}            
+
+          {% endif %}
+
+
+        {% endif %}
+
         <div  id="order-axi-x" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
           
           <div class="list-group-item" id="" parentBox="order-columns">{{plotterResolution.x_axis_to_show}}
@@ -86,8 +113,26 @@
         </div>
         
         <div style="height:190px ">
+          {% if plotterResolution.graph_type == 'map' or plotterResolution.graph_type == 'data_table' or plotterResolution.graph_type == 'scatter' or plotterResolution.graph_type == 'dot' %}
           <div style= "" id="container-order-y">
-            <h3 id="y_axi_title">Eje Y</h3>
+
+              {% if plotterResolution.graph_type == 'map' %}
+                <h3 id="y_axi_title">Longitud</h3>
+              {% else %}
+
+                {% if plotterResolution.graph_type == 'data_table' %}
+
+                  <h3 id="x_axi_title">Columna</h3>
+
+                {% else %}
+
+                  <h3 id="x_axi_title">Eje Y</h3>
+
+                {% endif %}            
+
+              {% endif %}
+
+            
             <div  id="order-axi-y" class="card overflow-auto list-group" style="height:140px ; width: 250px;">
 
                 {% if plotterResolution.y_axis %}
@@ -100,6 +145,7 @@
 
             </div>
           </div>
+          {% endif %}
         </div>
         {% if plotterResolution.graph_type == 'scatter' %}
 
