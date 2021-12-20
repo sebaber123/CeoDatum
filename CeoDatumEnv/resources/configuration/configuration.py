@@ -83,12 +83,12 @@ def cambiar_rol(user_id, role_id):
 	return False
 
 def add_role(role_id, user_id):
-	if session['rolename_1']:
+	if session['actualRole']=='admin':
 		Configuration.add_role(user_id, role_id)
 	return jsonify(True)
 
 def delete_role(role_id, user_id):
-	if session['rolename_1']:
+	if session['actualRole']=='admin':
 		Configuration.delete_role(user_id, role_id)
 	return jsonify(True)
 
