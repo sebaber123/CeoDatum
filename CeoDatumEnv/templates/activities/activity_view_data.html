@@ -35,9 +35,28 @@
 			    <tr>
 			      <td>{{ student.name }} {{student.surname}}</td>
 			      <td>
-			      {% if student.is_finished and student.calification %}Calificado{% elif student.is_finished %}Para corrección{% else %}Sin entregar{%endif%}</td>
+			      	{% if student.date_resolution %}
+			      		
+			      		{% if student.calification %}
+
+			      		Calificado
+
+			      		{% else %}
+
+			      			No calificado
+
+				      	{% endif %}
+	
+			      	{% else %}
+	
+			      		No entregado
+
+			      	{% endif %}
+
+			     
 			      <td>
 			      	{% if student.date_resolution %}
+
 			      		{{student.date_resolution}}
 	
 			      	{% else %}
