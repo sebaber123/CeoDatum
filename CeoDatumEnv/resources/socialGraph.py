@@ -10,7 +10,7 @@ from bokeh.models.graphs import from_networkx, NodesAndLinkedEdges, EdgesAndLink
 import math
 from bokeh.io import show, output_file
 from bokeh.plotting import figure
-from bokeh.models import GraphRenderer, StaticLayoutProvider, Oval, Circle, MultiLine
+from bokeh.models import GraphRenderer, StaticLayoutProvider, Oval, Circle, MultiLine, Label, LabelSet, ColumnDataSource
 from bokeh.palettes import Spectral8
 #Importing Libraries
 import pandas as pd
@@ -187,7 +187,7 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 
 	node_indices = list(range(topQuantity))
 
-	plot = figure(x_range=(-4.5,4.5), y_range=(-4.5,4.5))
+	plot = figure(x_range=(-5.2,5.2), y_range=(-5.2,5.2))
 
 	graph = GraphRenderer()
 
@@ -238,8 +238,21 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 				edge_hover_tool = HoverTool(tooltips=[("word", "@word")], show_arrow = False)
 				plot.add_tools(edge_hover_tool)"""
 
+	#Labels
+	circ2 = [i*2*math.pi/topQuantity for i in node_indices]
+	x2 = [(math.cos(i)*4.5)-0.2 for i in circ2]
+	y2 = [(math.sin(i)*4.4)-0.15 for i in circ2]			
 
+	source2 = ColumnDataSource(data = dict(x=x2, y=y2, labels=mostCommonWords))
+
+	labels = LabelSet(x='x', y='y', text='labels', source=source2, render_mode='canvas')
+
+
+
+	plot.add_layout(labels)
 	plot.renderers.append(graph)
+
+
 	
 
 	from selenium import webdriver
