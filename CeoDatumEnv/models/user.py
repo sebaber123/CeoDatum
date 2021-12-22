@@ -48,12 +48,14 @@ class User(object):
 	def register(cls, username, password, province, city, institute, email, name, surname, birthday):
 		con = get_db()
 
-		query="INSERT INTO public.user(username, password, province_id, city_id, establishment_id, email, name, surname, birthday) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;"
+		query="INSERT INTO public.user(username, password, province_id, city_id, email, name, surname, birthday) VALUES(%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (username, password, province, city, institute, email, name, surname, birthday))
+		cursor.execute(query, (username, password, province, city, email, name, surname, birthday))
 		a = cursor.fetchone()[0]
 		query="INSERT INTO public.user_role VALUES(%s, '3')"
 		cursor.execute(query, (a,))
+		query="INSERT INTO public.user_establishment VALUES(%s,%s)"
+		cursor.execute(query, (a,institute))
 		con.commit()
 
 		return True
@@ -65,6 +67,17 @@ class User(object):
 		query = "SELECT * FROM public.user WHERE email=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (email,))
+
+		if cursor.fetchone():
+			return True
+		else: 
+			return False
+
+	@classmethod
+	def usernameExist(cls, username):
+		query = "SELECT * FROM public.user WHERE username=%s"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (username,))
 
 		if cursor.fetchone():
 			return True

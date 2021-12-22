@@ -16,12 +16,12 @@ class Course(object):
 		return cursor.fetchall()
 
 	@classmethod	
-	def create_course(cls, name, start_date, end_date, owner_id, establishment_id):
+	def create_course(cls, name, start_date, end_date, owner_id):
 
 		con = get_db()
-		query = "INSERT INTO public.course(name, start_date, end_date, id_owner, id_establishment) VALUES(%s, %s, %s, %s, %s)"
+		query = "INSERT INTO public.course(name, start_date, end_date, id_owner) VALUES(%s, %s, %s, %s)"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (name, start_date, end_date, owner_id, str(establishment_id)))
+		cursor.execute(query, (name, start_date, end_date, owner_id))
 		con.commit()
 
 		return True

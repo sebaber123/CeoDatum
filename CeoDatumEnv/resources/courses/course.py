@@ -24,10 +24,7 @@ def create_course():
 		nombre = request.form['name']
 		fecha_comienzo = request.form['startDate']
 		fecha_fin = request.form['endDate']
-
-		establismentId = (User.get_user_by_id(session['id']))['establishment_id']
-
-		Course.create_course(nombre, fecha_comienzo, fecha_fin, session['id'], establismentId)
+		Course.create_course(nombre, fecha_comienzo, fecha_fin, session['id'])
 		return redirect(url_for('courses'))
 	return redirect(url_for('home'))
 

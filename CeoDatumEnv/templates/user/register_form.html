@@ -12,27 +12,31 @@
    </div>
    <div class="col-6 blue-background">   
       <h3 align="center">Formulario de registro</h3>
-        <label class="text-alert">{{error}}</label>
-        <label class="text-alert">{{ emailExist }}</label>
-        <label class="text-alert">{{ emptyField }}</label>
+        <label class="text-danger d-block">{{ error }}</label>
+        <label class="text-danger d-block">{{ emailExist }}</label>
+        <label class="text-danger d-block">{{ emptyField }}</label>
+        <label class="text-danger d-block">{{ incorrectEmail }}</label>
         <div class="main">
          <div class="login-form">
             <form action="/register" method='POST' onsubmit="return validate();">
               <div class="form-group">
                   <label>Correo electrónico</label>
                   <label class="" style="font-size:12px">(*)</label>
-                  <input type="email" name="email" id="emailInput" class="form-control" placeholder="Correo electrónico" required>
+                  <input type="email" name="email" id="emailInput" class="form-control" placeholder="Correo electrónico" value="{{email}}" required>
                </div>
                <div class="form-group">
                   <label class="">Nombre de usuario</label>
                   <label class="" style="font-size:12px">(*)</label>
-                  <input type="text" name="username" class="form-control" placeholder="Nombre de usuario" required>
+                  <label class="text-danger  d-block">{{ usernameExist }}</label>
+                  <input type="text" name="username" class="form-control" id="usernameInput" placeholder="Nombre de usuario" value="{{username}}" required>
                </div>
                <div class="form-group">
                   <label class="">Contraseña</label>
                   <label class="" style="font-size:12px">(*)</label>
+                  <label class="text-danger d-block">{{ passwordNoMatch }}</label>
+                  <label class="text-danger d-block">{{ passwordLengthError }}</label>
                   <label class="contador_caracteres text-white mt-1" id="password-contador"></label>
-                  <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña" required>
+                  <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña"  required>
                </div>
                 <div class="form-group" for="password_repeat">
                   <label class="">Repetir contraseña</label>
@@ -43,17 +47,18 @@
                 <div class="form-group">
                   <label class="" for="name">Nombre</label>
                   <label class="" style="font-size:12px">(*)</label>
-                  <input type="text" name="name" class="form-control" placeholder="Nombre" required>
+                  <input type="text" name="name" class="form-control" placeholder="Nombre" required value="{{name}}">
                 </div>
                 <div class="form-group">
                   <label class="" for="surname">Apellido</label>
                   <label class="" style="font-size:12px">(*)</label>
-                  <input type="text" name="surname" class="form-control" placeholder="Apellido" required>
+                  <input type="text" name="surname" class="form-control" placeholder="Apellido" value="{{surname}}" required>
                 </div>
                 <div class="form-group">
                   <label class="" for="birthday">Fecha de nacimiento</label>
                   <label class="" style="font-size:12px">(*)</label>
-                  <input type="date" name="birthday" class="form-control" placeholder="Fecha de nacimiento" required>
+                  <label class="text-danger  d-block">{{ incorrectDate }}</label>
+                  <input type="date" name="birthday" class="form-control" placeholder="Fecha de nacimiento" required value="{{birthday}}">
                 </div>
                 <div class="form-group">
                   <label class="" for="provinceFormControlSelect">Provincia</label>

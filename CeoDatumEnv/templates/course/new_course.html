@@ -1,11 +1,13 @@
 {% extends "layout.html" %}
 {% block header %}
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 {% endblock %}
-{% block title %}Actividades{% endblock %}
+{% block title %}Nuevo curso{% endblock %}
 {% block content %}
 	<div class="container">
 		<h2>Nuevo curso</h2>
-		<form method="POST" action="/create_course">
+		<form method="POST" action="/create_course" onsubmit="return validate();">
+			{{ emptyFields }}
 			<div class="form-group">
 		    	<label class="titulo-form" for="inputTitle">Nombre</label>
 		    	<input type="text" class="form-control" name="name" id="inputTitle" placeholder="Ingrese un título">
@@ -18,7 +20,24 @@
 		  		<label class="titulo-form" for="inputEndDate">Fecha de fin</label>
 		  		<input type="date" class="form-control" name="endDate" id="inputEndDate">
 		  	</div>
+		  	<label class="d-none d-block text-danger" id="dates_error"></label>
 		  	<button type="submit" class="btn btn-primary btn-lg mt-1" >Crear</button>
 		</form>
 	</div>
+
+	<script>
+		function validate(){
+			var fecha_inicio = new Date($('#inputBeginDate').val());
+			var fecha_fin = new Date($('#inputEndDate').val());
+			if (fecha_inicio>fecha_fin){
+		 		$('#dates_error').removeClass('d-none');
+		        $('#dates_error').empty();
+		        $('#dates_error').append("La fecha de fin debe ser posterior a la de comienzo.");
+		        return false;
+			}
+			else{
+				return true;
+			}
+		}
+	</script>
 {% endblock %}
