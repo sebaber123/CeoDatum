@@ -35,7 +35,7 @@ def activities():
 	else:
 		return render_template('/')
 
-def new_activity(course_id):
+def new_activity(course_id, **kwargs):
 	if session['actualRole'] == "professor":
 		graficos = Activity.get_graph_names()
 
@@ -43,33 +43,47 @@ def new_activity(course_id):
 
 		students = User.get_user_from_course(course_id)
 
-		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos, datasets=datasets, students=students)
+		emptyFields = kwargs.get('emptyFields', "")
+		errorGraficos = kwargs.get('errorGraficos', "")
+		errorFechas = kwargs.get('errorFechas', "")
+
+		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos, datasets=datasets, students=students, emptyFields=emptyFields, errorGraficos=errorGraficos, errorFechas=errorFechas)
 	else:
 		return redirect(url_for('home'))
 
 def create_activity():
 	if request.method=="POST":
-		titulo = request.form['title']
-		fecha_comienzo = request.form['startDate']
-		fecha_fin = request.form['endDate']
-		descripcion = request.form['description']
-		curso = request.form['course']
-		graphs = request.form.getlist('graph')
-		objective = request.form['objective']
-		has_calification = 'checkboxNoCalification' in request.form
-		enable_expired_date = 'checkboxExpiredDate' in request.form
-		statement = request.form['inputStatement']
-		statemenet_title = request.form['inputStatementTitle']
-		student_select = request.form['student_select']
-		students_id = request.form.getlist('student_checkbox')
-		datasetId = request.form['datasetSelect']
-		socialGraph = False
-		if request.form.get('checkboxSocialGraph'):
-			socialGraph = request.form.get('checkboxSocialGraph')
-			if socialGraph == 'on':
-				socialGraph = True
-		Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement, students_id, datasetId, socialGraph)
-		return redirect(url_for('courses'))
+		if 'title' in request.form and 'startDate' in request.form and 'endDate' in request.form and  'description'  in request.form and  'objective' in request.form and  'inputStatement' in request.form and  'inputStatementTitle' in request.form and 'datasetSelect' in request.form:
+			fecha_comienzo = request.form['startDate']
+			fecha_fin = request.form['endDate']
+			titulo = request.form['title']
+			descripcion = request.form['description']
+			curso = request.form['course']
+			graphs = request.form.getlist('graph')
+			objective = request.form['objective']
+			has_calification = 'checkboxNoCalification' in request.form
+			enable_expired_date = 'checkboxExpiredDate' in request.form
+			statement = request.form['inputStatement']
+			statemenet_title = request.form['inputStatementTitle']
+			student_select = request.form['student_select']
+			students_id = request.form.getlist('student_checkbox')
+			datasetId = request.form['datasetSelect']
+			if fecha_comienzo=="" or fecha_fin =="" or descripcion=="" or objective=="" or statement=="" or statemenet_title=="" or datasetId =="":
+				return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios")	
+			socialGraph = False
+			if request.form.get('checkboxSocialGraph'):
+				socialGraph = request.form.get('checkboxSocialGraph')
+				if socialGraph == 'on':
+					socialGraph = True
+			if not graphs:
+				return new_activity(curso, errorGraficos="Debe seleccionar al menos una visualización disponible.")
+			fecha_comienzo = datetime.datetime.strptime(fecha_comienzo, '%Y-%m-%d')
+			fecha_fin = datetime.datetime.strptime(fecha_fin, '%Y-%m-%d')
+			if fecha_fin<fecha_comienzo:
+				return new_activity(curso, errorFechas="La fecha de comienzo debe ser menor a la de fin.")
+			Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement, students_id, datasetId, socialGraph)
+			return redirect(url_for('courses'))
+		return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios")
 	return redirect(url_for('home'))
 
 def view_activity_data(id):

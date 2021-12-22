@@ -39,25 +39,26 @@ def forgotPassword():
 
 def login():
     if request.form['submit'] == 'login':
-        name = request.form['name']
-        password = request.form['password']
-        result = User.login(name, name)
-        if result and check_password_hash(result[0]['password'], password):
-            aux = result[0]
-            session['username'] = aux['username']
-            session['name'] = aux['name']
-            session['email'] = aux['email']
-            session['id'] = aux[1]
-            session['actualRole'] = result[0]['rolename']
-            lista_roles = []
-            for res in result:
-                lista_roles.append(res['rolename'])
-            session['roles'] = lista_roles
-            a = session['roles']
-            return index()    
+        if 'name' in request.form and 'password' in request.form:
+            name = request.form['name']
+            password = request.form['password']
+            result = User.login(name, name)
+            if result and check_password_hash(result[0]['password'], password):
+                aux = result[0]
+                session['username'] = aux['username']
+                session['name'] = aux['name']
+                session['email'] = aux['email']
+                session['id'] = aux[1]
+                session['actualRole'] = result[0]['rolename']
+                lista_roles = []
+                for res in result:
+                    lista_roles.append(res['rolename'])
+                session['roles'] = lista_roles
+                a = session['roles']
+                return index()    
 
-        else:
-            return render_template('user/login_form.html', error="Usuario y/o contraseña incorrectos")
+            else:
+                return render_template('user/login_form.html', error="Usuario y/o contraseña incorrectos")
     elif request.form['submit'] == 'register':
         return register_form()
 
@@ -75,16 +76,19 @@ def logout():
     return redirect(url_for("loginForm"))
 
 def register():
-    email = request.form['email']
-    username = request.form['username']
-    password = request.form['password']
-    password_repeat = request.form['password_repeat']
-    province = request.form['provinceFormControlSelect']
-    city = request.form['cityFormControlSelect']
-    institute = request.form['instituteFormControlSelect']
-    name = request.form['name']
-    surname = request.form['surname']
-    birthday = request.form['birthday']
+    if 'email' in request.form and 'username' in request.form and 'password' in request.form and 'password_repeat' in request.form and 'provinceFormControlSelect' in request.form and 'cityFormControlSelect' in request.form and 'instituteFormControlSelect' in request.form and 'name' in request.form and 'surname' in request.form and 'birthday' in request.form:
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['password']
+        password_repeat = request.form['password_repeat']
+        province = request.form['provinceFormControlSelect']
+        city = request.form['cityFormControlSelect']
+        institute = request.form['instituteFormControlSelect']
+        name = request.form['name']
+        surname = request.form['surname']
+        birthday = request.form['birthday']
+    else:
+        return render_template('user/register_form.html', emptyField="Debe completar todos los campos.", email=email, username=username, name=name, surname=surname, birthday=birthday)
     if User.emailExist(email):
         return render_template('user/register_form.html', emailExist="El email ya está en uso.", username=username, name=name, surname=surname, birthday=birthday)
     if User.usernameExist(username):

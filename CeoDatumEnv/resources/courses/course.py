@@ -21,11 +21,19 @@ def new_course():
 
 def create_course():
 	if request.method=="POST":
-		nombre = request.form['name']
-		fecha_comienzo = request.form['startDate']
-		fecha_fin = request.form['endDate']
-		Course.create_course(nombre, fecha_comienzo, fecha_fin, session['id'])
-		return redirect(url_for('courses'))
+		if 'name' in request.form and 'startDate' in request.form and 'endDate' in request.form:
+			nombre = request.form['name']
+			fecha_comienzo = request.form['startDate']
+			fecha_fin = request.form['endDate']
+			establismentId = (User.get_user_by_id(session['id']))['establishment_id']
+			if not(nombre=="" or fecha_comienzo=="" or fecha_fin==""):
+				fecha_comienzo = datetime.strptime(fecha_comienzo, '%Y-%m-%d')
+				fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d')
+				if fecha_fin<fecha_comienzo:
+					render_template('course/new_course.html', dateError="La fecha de comienzo debe ser anterior a la de fin.")
+				Course.create_course(nombre, fecha_comienzo, fecha_fin, session['id'], establismentId)
+				return redirect(url_for('courses'))
+		return render_template('course/new_course.html', emptyField="Debe completar todos los campos.")
 	return redirect(url_for('home'))
 
 def view_course(course_id):

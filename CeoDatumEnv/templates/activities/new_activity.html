@@ -7,7 +7,8 @@
 {% block content %}
 	<div class="container">
 		<h2>Nueva actividad</h2>
-		<form method="POST" action="/activities/create_activity">
+		<form method="POST" action="/activities/create_activity" onsubmit="return validate();">
+			<label class="text-danger d-block">{{emptyFields}}</label>
 			<div class="form-group">
 		    	<label class="titulo-form" for="inputTitle">Titulo de actividad</label>
 		    	<span class="contador_caracteres" id="contador_caracteres_titulo">Máximo 64 caracteres</span>
@@ -43,6 +44,7 @@
 		 			{% endfor %}
 		  		</select>
 		  	</div>
+		  	<label class="text-danger d-block">{{errorGraficos}}</label>
 		  	<div class="form-group">
 		  		<label class="d-block titulo-form">Gráficos permitidos</label>
 		  		{% for graph in graphs %}
@@ -61,6 +63,8 @@
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputEndDate">Fecha de fin</label>
 		  		<input type="date" class="form-control" name="endDate" id="inputEndDate">
+				<label class="d-none d-block text-danger" id="dates_error"></label>
+				<label class="d-block text-danger">{{errorFechas}}</label>
 		  	</div>
 		  	<div class="form-group">
 		  		<label class="titulo-form" for="inputEndDate">Crear actividad para:</label>
@@ -99,6 +103,20 @@
 		</form>
 	</div>
 	<script>
+		function validate(){
+			var fecha_inicio = new Date($('#inputBeginDate'));
+			var fecha_fin = new Date($('#inputEndDate'));
+			if (fecha_inicio>fecha_fin){
+		 		$('#dates_error').removeClass('d-none');
+		        $('#dates_error').empty();
+		        $('#dates_error').append("La fecha de fin debe ser posterior a la de comienzo.");
+		        return false;
+			}
+			else{
+				return true;
+			}
+		}
+
 		let caracteres_descripcion=256;
 		let caracteres_objetivo=256;
 		let caracteres_titulo=64;
