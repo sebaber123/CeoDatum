@@ -48,6 +48,18 @@
 				</button>
 				<br/>
 				<br/>
+				
+				<div id="establismentsSection" style="display:none">
+					<h5>Elija el/los establecimientos</h5>
+					{% for establisment in establisments %}
+				  		<input type="checkbox" class="form-check-input" id="checkboxEstablisment{{ establisment.establishment_id }}" value="{{ establisment.establishment_id }}" name="establisment" multiple>
+		    			<label class="form-check-label" for="checkboxEstablisment{{ establisment.establishment_id }}">{{ establisment.nombre }}</label>
+		    			<br/>
+
+			  		{% endfor %}
+		  		</div>
+
+				<br/>
 
 				<h5>Ingrese el formato de campos de tipo fecha:</h5>
 				<select style="display: inline; width: 300px;" id="dateFormat" name="dateFormat" class="form-select" required>
@@ -164,15 +176,40 @@
 
 		}else{
 
+			if ($('#establismentsSection input[type=checkbox]:checked').length == 0 && $( "#share" ).val() == 'protegido' ){
+
+				$('#alerts').prepend(
+			        '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+			          '<strong>Por favor seleccione al menos un establecimiento</strong>'+
+			          '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
+			        '</div>'
+			        )
+
+				return false
+			} ;
+
 			return true
 
 
 		}
 
 		
+
+		
 		  
 		
 	} 
+
+	$( "#share" ).change(function() {
+	  if ($( this ).val() == 'protegido'){
+	  	$('#establismentsSection').css('display','contents')
+
+	  }else{
+
+	  	$('#establismentsSection').css('display','none')
+
+	  }
+	});
 </script>
 
 </body>

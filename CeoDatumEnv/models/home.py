@@ -220,13 +220,16 @@ class Home(object):
 
 
 	@classmethod
-	def add_dataset_stablishment(cls, datasetId, establishmentId):
+	def add_dataset_stablishment(cls, datasetId, establishmentsId):
 		
 		con = get_db()
 
-		query = ("INSERT INTO public.\"Dataset_establishment\" (id_dataset, id_establishment) VALUES (\'"+str(datasetId)+"\', \'"+str(establishmentId)+"\')")
+		query = ("INSERT INTO public.\"Dataset_establishment\" (id_dataset, id_establishment) VALUES ( (%s)::integer, (%s)::integer )")
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query)
+		var = []
+		for establishmentId in establishmentsId:
+			var.append((datasetId, establishmentId))
+		cursor.executemany(query, var)
 
 		con.commit()
 

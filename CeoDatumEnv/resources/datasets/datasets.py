@@ -127,6 +127,8 @@ def show(Bid):
 
 			canEdit = sessionId == database['database_owner_id']
 
+			establisments = User.get_establishments_of_user(database['database_owner_id'])
+
 			#get the structure of the dataset
 			databaseStructure = {}
 
@@ -151,7 +153,7 @@ def show(Bid):
 				else: 
 					databaseStructure[column['name']] = column['type'] 
 
-			return render_template('datasets/show.html', columns = columns, database = database, databaseStructure = databaseStructure, canEdit = canEdit)
+			return render_template('datasets/show.html', columns = columns, database = database, databaseStructure = databaseStructure, canEdit = canEdit, establisments=establisments)
 
 	else:
 
@@ -194,14 +196,16 @@ def editShare():
 
 			Dataset.dataset_edit_share(datasetId, datasetShare)
 
-			establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
+			#establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
 
 			if datasetShare == 'protegido':
+
+				establishments = request.form.getlist('establisment')
 				
-				Dataset.add_dataset_to_stablisment(datasetId, establishmentId)
+				Dataset.add_dataset_to_stablisment(datasetId, establishments)
 			else:	
 
-				Dataset.delete_dataset_from_stablisment(datasetId, establishmentId)
+				Dataset.delete_dataset_from_stablisment(datasetId)
 
 
 			return redirect('/datasets/show/'+datasetId)

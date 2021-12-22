@@ -42,7 +42,7 @@ def allowed_file(filename):
 
 def uploadFile():
 
-	if session:
+	if session['id']:
 
 		if request.method == 'POST':
 			
@@ -57,6 +57,8 @@ def uploadFile():
 
 				fileType = filename.rsplit('.', 1)[1]
 
+				establisments = User.get_establishments_of_user(session['id'])
+
 				if fileType == 'csv':
 
 					spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
@@ -64,13 +66,13 @@ def uploadFile():
 
 					firstRow = sqlContext.read.format("csv").option("encoding", "UTF-8").load(os.path.join(UPLOAD_FOLDER,filename)).limit(2).first()
 
-					return render_template('home/uploadConfiguration.html', firstRow = firstRow, filename=filename)
+					return render_template('home/uploadConfiguration.html', firstRow = firstRow, filename=filename, establisments=establisments)
 
 				else:
 
 					if fileType == 'json':
 
-						return render_template('home/uploadConfigurationJSON.html', filename=filename)
+						return render_template('home/uploadConfigurationJSON.html', filename=filename, establisments=establisments)
 
 					else: 
 						flash('Debe subir un archivo de tipo CSV o JSON', 'danger')
@@ -119,9 +121,11 @@ def configurateUploadJSON ():
 
 					if share == 'protegido':
 
-						establismentId = (User.get_user_by_id(sessionId))['establishment_id']
+						#establismentId = (User.get_user_by_id(sessionId))['establishment_id']
 
-						Home.add_dataset_stablishment(databaseInCeoDatum['id'], establismentId)
+						establishments = request.form.getlist('establisment')
+
+						Home.add_dataset_stablishment(databaseInCeoDatum['id'], establishments)
 					
 					spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
 					sqlContext = SQLContext(spark)
@@ -439,9 +443,11 @@ def configurateUploadCSV():
 
 					if share == 'protegido':
 
-						establismentId = (User.get_user_by_id(sessionId))['establishment_id']
+						#establismentId = (User.get_user_by_id(sessionId))['establishment_id']
 
-						Home.add_dataset_stablishment(databaseInCeoDatum['id'], establismentId)
+						establishments = request.form.getlist('establisment')
+
+						Home.add_dataset_stablishment(databaseInCeoDatum['id'], establishments)
 
 					spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
 					sqlContext = SQLContext(spark)
