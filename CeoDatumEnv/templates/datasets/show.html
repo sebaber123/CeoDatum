@@ -13,9 +13,9 @@
         <hr>
         <h5 style="display:inline-block;">Dueño: {{database.user_name}} {{database.surname}}</h5>
         <hr>
-        <h5 style="display:inline-block;">Estado del dataset: {{database.share}}</h5>
+        <h5 style="display:inline-block;">Estado del dataset: {% if database.share == 'publico'  %} Público {%else%}{{database.share}}{% endif %}</h5>
         <hr> 
-        <h5 style="display:inline-block;">Puede ingresar al graficador pusaldo en el siguiente boton</h5>
+        <h5 style="display:inline-block;">Puede ingresar al graficador pulsando en el siguiente botón</h5>
         <br/>
         <button type="button" class="btn btn-info btn-sm" style="width: 300px" onclick="window.location.href='/plotter/{{database.id}}'">    
           Graficar  
@@ -43,7 +43,7 @@
                     <h5>Nuevo estado del dataset:</h5>
                     <select style="display: inline; width: 300px;" id="share" name="share" class="form-select">
                       {% if database.share != 'publico' %}
-                        <option selected value="publico">Publico</option>
+                        <option selected value="publico">Público</option>
                       {% endif %}
                       {% if database.share != 'protegido' %}
                         <option value="protegido">Protegido</option>

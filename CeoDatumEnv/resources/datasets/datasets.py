@@ -7,6 +7,7 @@ from models.user import User
 pagination = 10
 
 def datasets():
+
 	return render_template('datasets/datasets.html')	
 
 def getAvailablePages(actualPage, maxPage):
@@ -39,91 +40,124 @@ def getAvailablePages(actualPage, maxPage):
 
 def indexPublics(page, condition):
 
-	stringCondtion= ''
+	if session['id']:
 
-	if condition:
+		stringCondtion= ''
 
-		stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
+		if condition:
 
-	datasets = Dataset.get_dataset_public(page, pagination, stringCondtion)
+			stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
 
-	maxPage = Dataset.max_page_publics(pagination, stringCondtion)
+		datasets = Dataset.get_dataset_public(page, pagination, stringCondtion)
 
-	availablePages = getAvailablePages(page, maxPage)
-	
-	return render_template('datasets/index.html', datasets=datasets, nombre='Públicos', name='publics', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)	
+		maxPage = Dataset.max_page_publics(pagination, stringCondtion)
+
+		availablePages = getAvailablePages(page, maxPage)
+		
+		return render_template('datasets/index.html', datasets=datasets, nombre='Públicos', name='publics', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)	
+
+	else: 
+
+		flash('Debe estar logeado para realizar esta accion', 'danger')
+
+		return redirect(url_for('loginForm'))		
 
 def indexProtecteds(page, condition):
 
-	stringCondtion= ''
+	if session['id']:
 
-	if condition:
+		stringCondtion= ''
 
-		stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
+		if condition:
 
-	datasets = Dataset.get_dataset_protected(session['id'], page, pagination, stringCondtion)
+			stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
 
-	maxPage = Dataset.max_page_protecteds(pagination, session['id'], stringCondtion)
+		datasets = Dataset.get_dataset_protected(session['id'], page, pagination, stringCondtion)
 
-	availablePages = getAvailablePages(page, maxPage)
-	
-	return render_template('datasets/index.html', datasets=datasets, nombre='protegidos', name='protecteds', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)	
+		maxPage = Dataset.max_page_protecteds(pagination, session['id'], stringCondtion)
+
+		availablePages = getAvailablePages(page, maxPage)
+		
+		return render_template('datasets/index.html', datasets=datasets, nombre='protegidos', name='protecteds', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)
+
+	else:
+
+		flash('Debe estar logeado para realizar esta accion', 'danger')
+
+		return redirect(url_for('loginForm'))
+
 
 def indexPrivates(page, condition):
 
-	stringCondtion= ''
+	if session['id']:
 
-	if condition:
+		stringCondtion= ''
 
-		stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
+		if condition:
 
-	datasets = Dataset.get_dataset_privates(session['id'], page, pagination, stringCondtion)
+			stringCondtion = 'AND LOWER(d.name) LIKE LOWER(\'%'+condition+'%\')'
 
-	maxPage = Dataset.max_page_privates(pagination, session['id'], stringCondtion)
+		datasets = Dataset.get_dataset_privates(session['id'], page, pagination, stringCondtion)
 
-	availablePages = getAvailablePages(page, maxPage)
+		maxPage = Dataset.max_page_privates(pagination, session['id'], stringCondtion)
+
+		availablePages = getAvailablePages(page, maxPage)
+		
+		return render_template('datasets/index.html', datasets=datasets, nombre='privados', name='privates', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)			
 	
-	return render_template('datasets/index.html', datasets=datasets, nombre='privados', name='privates', availablePages=availablePages, maxPage=maxPage, actualPage=page, condition=condition)			
+	else:
+
+		flash('Debe estar logeado para realizar esta accion', 'danger')
+
+		return redirect(url_for('loginForm'))		
 
 def show(Bid):	
 
-	if checkSessionCanAccess(Bid):
+	if session['id']:
 
-		sessionId= session['id']
+		if checkSessionCanAccess(Bid):
 
-		#get the columns of the database
-		columns = Visualization.get_db_data(Bid)
+			sessionId= session['id']
 
-		#get the database
-		database = Dataset.get_dataset_with_owner(Bid)
+			#get the columns of the database
+			columns = Visualization.get_db_data(Bid)
 
-		canEdit = sessionId == database['database_owner_id']
+			#get the database
+			database = Dataset.get_dataset_with_owner(Bid)
 
-		#get the structure of the dataset
-		databaseStructure = {}
+			canEdit = sessionId == database['database_owner_id']
 
-		for column in columns:
-			if column['type'] == 'object': 
+			#get the structure of the dataset
+			databaseStructure = {}
 
-				dictionaryObject = {}
+			for column in columns:
+				if column['type'] == 'object': 
 
-				columnsOfObject = Visualization.getColumnsOfObject(database['name'],column['name'])
+					dictionaryObject = {}
 
-				for columnOfObject in columnsOfObject:
-					if columnOfObject['type'] == 'object':
+					columnsOfObject = Visualization.getColumnsOfObject(database['name'],column['name'])
 
-						dictionaryObject[columnOfObject['name']] = generateStructureRecursion(database['name'], column['name'], columnOfObject['name'])
+					for columnOfObject in columnsOfObject:
+						if columnOfObject['type'] == 'object':
 
-					else:  
+							dictionaryObject[columnOfObject['name']] = generateStructureRecursion(database['name'], column['name'], columnOfObject['name'])
 
-						dictionaryObject[columnOfObject['name']] = columnOfObject['type'] 
+						else:  
 
-				databaseStructure[column['name']] = dictionaryObject        
+							dictionaryObject[columnOfObject['name']] = columnOfObject['type'] 
 
-			else: 
-				databaseStructure[column['name']] = column['type'] 
+					databaseStructure[column['name']] = dictionaryObject        
 
-		return render_template('datasets/show.html', columns = columns, database = database, databaseStructure = databaseStructure, canEdit = canEdit)
+				else: 
+					databaseStructure[column['name']] = column['type'] 
+
+			return render_template('datasets/show.html', columns = columns, database = database, databaseStructure = databaseStructure, canEdit = canEdit)
+
+	else:
+
+		flash('Debe estar logeado para realizar esta accion', 'danger')
+
+		return redirect(url_for('loginForm'))				
 
 
 
@@ -151,22 +185,40 @@ def checkSessionCanAccess(Bid):
 
 def editShare():
 
-	datasetId = request.form['id']
-	datasetShare = request.form['share']
+	if session['id']:
 
-	Dataset.dataset_edit_share(datasetId, datasetShare)
+		if ((request.form.get('id')) and (request.form.get('share'))):
 
-	establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
+			datasetId = request.form['id']
+			datasetShare = request.form['share']
 
-	if datasetShare == 'protegido':
+			Dataset.dataset_edit_share(datasetId, datasetShare)
+
+			establishmentId = (User.get_user_by_id(session['id']))['establishment_id']
+
+			if datasetShare == 'protegido':
+				
+				Dataset.add_dataset_to_stablisment(datasetId, establishmentId)
+			else:	
+
+				Dataset.delete_dataset_from_stablisment(datasetId, establishmentId)
+
+
+			return redirect('/datasets/show/'+datasetId)
+
+		else:
+
+			flash('Lo sentimos, el formulario no se ha enviado correctamente', 'danger')
+
+			return redirect('/datasets/show/'+datasetId)
 		
-		Dataset.add_dataset_to_stablisment(datasetId, establishmentId)
-	else:	
-
-		Dataset.delete_dataset_from_stablisment(datasetId, establishmentId)
 
 
-	return redirect('/datasets/show/'+datasetId)
+	else:
+
+		flash('Debe estar logeado para realizar esta accion', 'danger')
+
+		return redirect(url_for('loginForm'))		
 
 
 

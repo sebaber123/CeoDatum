@@ -21,7 +21,7 @@
       white-space: nowrap;
     }
 
-    [type=radio] { 
+    .imageChart { 
       position: absolute;
       opacity: 0;
       width: 0;
@@ -129,7 +129,7 @@
       {% for graph in graphs %}
 
         <label>
-          <input type="radio" id="{{graph}}" name="chart" value="{{graph}}" /><img class="imgBar" src="{{url_for('static', filename=graph+'_chart.png') }}">
+          <input class="imageChart" type="radio" id="{{graph}}" name="chart" value="{{graph}}" /><img class="imgBar" src="{{url_for('static', filename=graph+'_chart.png') }}">
         </label>
 
       {% endfor %}

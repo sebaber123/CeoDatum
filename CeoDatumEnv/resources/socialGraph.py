@@ -10,7 +10,7 @@ from bokeh.models.graphs import from_networkx, NodesAndLinkedEdges, EdgesAndLink
 import math
 from bokeh.io import show, output_file
 from bokeh.plotting import figure
-from bokeh.models import GraphRenderer, StaticLayoutProvider, Oval, Circle, MultiLine
+from bokeh.models import GraphRenderer, StaticLayoutProvider, Oval, Circle, MultiLine, Label, LabelSet, ColumnDataSource
 from bokeh.palettes import Spectral8
 #Importing Libraries
 import pandas as pd
@@ -19,6 +19,10 @@ from wordcloud import WordCloud
 #Importing Dataset
 import base64, re
 from io import BytesIO
+from bokeh.io import export_png
+from bokeh.io.export import get_screenshot_as_png
+from selenium import webdriver
+
 
 def word_cloud(text):
 	# Creating word_cloud with text as argument in .generate() method
@@ -183,7 +187,7 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 
 	node_indices = list(range(topQuantity))
 
-	plot = figure(x_range=(-4.5,4.5), y_range=(-4.5,4.5))
+	plot = figure(x_range=(-5.2,5.2), y_range=(-5.2,5.2))
 
 	graph = GraphRenderer()
 
@@ -234,10 +238,36 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 				edge_hover_tool = HoverTool(tooltips=[("word", "@word")], show_arrow = False)
 				plot.add_tools(edge_hover_tool)"""
 
+	#Labels
+	circ2 = [i*2*math.pi/topQuantity for i in node_indices]
+	x2 = [(math.cos(i)*4.5)-0.2 for i in circ2]
+	y2 = [(math.sin(i)*4.4)-0.15 for i in circ2]			
 
+	source2 = ColumnDataSource(data = dict(x=x2, y=y2, labels=mostCommonWords))
+
+	labels = LabelSet(x='x', y='y', text='labels', source=source2, render_mode='canvas')
+
+
+
+	plot.add_layout(labels)
 	plot.renderers.append(graph)
 
-			
+
+	
+
+	from selenium import webdriver
+	from webdriver_manager.firefox import GeckoDriverManager
+	import os
+	os.environ['MOZ_HEADLESS'] = '1'
+
+	driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+
+
+	imageSocialGraph = get_screenshot_as_png(plot, driver=driver)
+	buffered = BytesIO()
+	imageSocialGraph.save(buffered, format = "PNG")
+	img_byte = buffered.getvalue() # bytes
+	imgBase64SocialGraph = base64.b64encode(img_byte).decode('ascii')
 
 	script, div = components(plot)
 
@@ -246,6 +276,8 @@ def api_twitter_search(stringToSearch, topQuantity, articles, prep, pron, conj, 
 	return render_template(
 		'home/twitterGraphAndCloud.html',
 		image = image,
+		imgBase64SocialGraph=imgBase64SocialGraph,
+
 		plot_script=script,
 		plot_div=div,
 		js_resources=INLINE.render_js(),

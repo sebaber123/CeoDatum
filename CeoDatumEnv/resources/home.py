@@ -13,6 +13,7 @@ from pyspark.sql.functions import *
 from pyspark.sql import  Window
 from pyspark.sql.types import DateType, TimestampType, DoubleType
 import re
+from pyspark.sql.functions import *
 
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -78,7 +79,9 @@ def uploadFile():
 
 		else:
 
-			return '4'
+			flash('Error en el enviado del formulario', 'danger')
+
+			return render_template('home/dragAndDrop.html')
 
 	else:
 
@@ -89,130 +92,158 @@ def uploadFile():
 
 def configurateUploadJSON ():
 
-	sessionId= session['id']
+	if session['id']:
 
-	fileName = request.form['filename']
+		if request.method == 'POST':
 
-	database = request.form['database']
+			sessionId= session['id']
 
-	database = database.replace(' ','_').replace('.','')
+			if ((request.form.get('filename')) and (request.form.get('database')) and (request.form.get('share')) and (request.form.get('dateFormat'))) :
 
-	share = request.form['share']
+				fileName = request.form['filename']
+
+				database = request.form['database']
+
+				database = database.replace(' ','_').replace('.','')
+
+				share = request.form['share']
 
 
-	dateFormat =  request.form['dateFormat']
+				dateFormat =  request.form['dateFormat']
 
-	try:
+				try:
 
-		Home.create_database(database)
+					Home.create_database(database)
 
-		databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database, str(sessionId), share)
+					databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database, str(sessionId), share)
 
-		if share == 'protegido':
+					if share == 'protegido':
 
-			establismentId = (User.get_user_by_id(sessionId))['establishment_id']
+						establismentId = (User.get_user_by_id(sessionId))['establishment_id']
 
-			Home.add_dataset_stablishment(databaseInCeoDatum['id'], establismentId)
+						Home.add_dataset_stablishment(databaseInCeoDatum['id'], establismentId)
+					
+					spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
+					sqlContext = SQLContext(spark)
+
+					#data = sqlContext.read.json(os.path.join(UPLOAD_FOLDER,filename))
+
+					#data = sqlContext.read.format('org.apache.spark.sql.json').load(os.path.join(UPLOAD_FOLDER,filename))
+					
+					data = sqlContext.read.option("multiline", "true").json(os.path.join(UPLOAD_FOLDER,fileName))
+
+					firstRelationName = data.first().__fields__[0]
+
+					data = data.first()[data.first().__fields__[0]]
+
+					data = spark.sparkContext.parallelize(list(data)).toDF()
+
+					w = Window.orderBy('id2')
+					data = data.withColumn("id2", F.monotonically_increasing_id()).withColumn("id_"+firstRelationName, F.row_number().over(w))   
+
+					data = data.drop('id2') 
+
+					data.registerTempTable('factTable')
+
+					factTableInCeoDatum = Home.add_fact_table_ceoDatum(database, databaseInCeoDatum['id'])
+
+					pos = 0
+
+					firstRow = data.first()
+
+					firstRowFields = firstRow.__fields__
+
+					Home.create_fact_table(database)	
+
+					factTable = sqlContext.sql(' SELECT factTable.id_'+firstRelationName+' as id FROM factTable as factTable ')
+
+					factTable.write.format("jdbc")\
+						    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
+						    .option("dbtable", ("\""+database+"\"")) \
+						    .option("user", "sebaber12") \
+						    .option("password", "sebas") \
+						    .option("driver", "org.postgresql.Driver") \
+						    .mode("append")\
+						    .save()
+
+					Home.create_relation_table(database, firstRelationName)	 
+
+					data.registerTempTable('t'+str(pos))
+
+					df = sqlContext.sql(' SELECT factTable.id_'+firstRelationName+' as id_'+database+', factTable.id_'+firstRelationName+' as id_'+firstRelationName+' FROM factTable as factTable ')   
+
+					df.write.format("jdbc")\
+							    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
+							    .option("dbtable", ("\""+database+"-"+firstRelationName+"\"")) \
+							    .option("user", "sebaber12") \
+							    .option("password", "sebas") \
+							    .option("driver", "org.postgresql.Driver") \
+							    .mode("append")\
+							    .save()
+
+					objectTable = Home.add_table_and_columns_to_ceoDatum_recursion(firstRelationName, database, factTableInCeoDatum['id'])    
+
+					JSONRecursion(database, data, firstRow, sqlContext, spark, objectTable['id'], pos+1, pos, firstRelationName, dateFormat)	
+
+					flash('Dataset cargado correctamente', 'info')
+
+					return render_template('home/dragAndDrop.html')		
+
+
+				except BaseException as e:
+
+					exceptionString = str(e)
+
+					if 'database \"'+database+'\" already exists' in exceptionString:
+
+						flash('Ya hay un dataset con ese nombre. Debe escribir otro nombre.', 'danger')
+
+						return render_template('home/uploadConfigurationJSON.html', filename=fileName)
+
+					else:
+
+						Home.delete_dataset(database)
+
+						if 'wrong format of date in field' in exceptionString:
+
+							flash('El campo '+ exceptionString.replace('wrong format of date in field ','')+ ' tiene otro formato de fecha' , 'danger')
+
+							return render_template('home/uploadConfigurationJSON.html', filename=fileName)
+						
+						flash('Lo sentimos, la carga del dataset ha fallado', 'danger')
+
+						return render_template('home/dragAndDrop.html')
+			
+			else:
+
+				flash('Por favor envie todos los datos solicitados', 'danger')
+
+				return render_template('home/uploadConfigurationJSON.html', filename=filename)
 		
-		spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
-		sqlContext = SQLContext(spark)
-
-		#data = sqlContext.read.json(os.path.join(UPLOAD_FOLDER,filename))
-
-		#data = sqlContext.read.format('org.apache.spark.sql.json').load(os.path.join(UPLOAD_FOLDER,filename))
-		
-		data = sqlContext.read.option("multiline", "true").json(os.path.join(UPLOAD_FOLDER,fileName))
-
-		firstRelationName = data.first().__fields__[0]
-
-		data = data.first()[data.first().__fields__[0]]
-
-		data = spark.sparkContext.parallelize(list(data)).toDF()
-
-		w = Window.orderBy('id2')
-		data = data.withColumn("id2", F.monotonically_increasing_id()).withColumn("id_"+firstRelationName, F.row_number().over(w))   
-
-		data = data.drop('id2') 
-
-		data.registerTempTable('factTable')
-
-		factTableInCeoDatum = Home.add_fact_table_ceoDatum(database, databaseInCeoDatum['id'])
-
-		pos = 0
-
-		firstRow = data.first()
-
-		firstRowFields = firstRow.__fields__
-
-		Home.create_fact_table(database)	
-
-		factTable = sqlContext.sql(' SELECT factTable.id_'+firstRelationName+' as id FROM factTable as factTable ')
-
-		factTable.write.format("jdbc")\
-			    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
-			    .option("dbtable", ("\""+database+"\"")) \
-			    .option("user", "sebaber12") \
-			    .option("password", "sebas") \
-			    .option("driver", "org.postgresql.Driver") \
-			    .mode("append")\
-			    .save()
-
-		Home.create_relation_table(database, firstRelationName)	 
-
-		data.registerTempTable('t'+str(pos))
-
-		df = sqlContext.sql(' SELECT factTable.id_'+firstRelationName+' as id_'+database+', factTable.id_'+firstRelationName+' as id_'+firstRelationName+' FROM factTable as factTable ')   
-
-		df.write.format("jdbc")\
-				    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
-				    .option("dbtable", ("\""+database+"-"+firstRelationName+"\"")) \
-				    .option("user", "sebaber12") \
-				    .option("password", "sebas") \
-				    .option("driver", "org.postgresql.Driver") \
-				    .mode("append")\
-				    .save()
-
-		objectTable = Home.add_table_and_columns_to_ceoDatum_recursion(firstRelationName, database, factTableInCeoDatum['id'])    
-
-		JSONRecursion(database, data, firstRow, sqlContext, spark, objectTable['id'], pos+1, pos, firstRelationName, dateFormat)	
-
-		flash('Dataset cargado correctamente', 'info')
-
-		return render_template('home/dragAndDrop.html')		
-
-
-	except BaseException as e:
-
-		exceptionString = str(e)
-
-		if 'database \"'+database+'\" already exists' in exceptionString:
-
-			flash('Ya hay un dataset con ese nombre. Debe escribir otro nombre.', 'danger')
-
-			return render_template('home/uploadConfigurationJSON.html', filename=fileName)
-
 		else:
 
-			Home.delete_dataset(database)
-
-			if 'wrong format of date in field' in exceptionString:
-
-				flash('El campo '+ exceptionString.replace('wrong format of date in field ','')+ ' tiene otro formato de fecha' , 'danger')
-
-				return render_template('home/uploadConfigurationJSON.html', filename=fileName)
-			
-			flash('Lo sentimos, la carga del dataset ha fallado', 'danger')
+			flash('Error en el enviado del formulario', 'danger')
 
 			return render_template('home/dragAndDrop.html')
+
+	else:
+
+		flash('Debe estar logeado para realizar esta accion', 'danger')
+
+		return redirect(url_for('loginForm'))
+
+
+
+
 
 
 
 def detectType(xString):
 
-	if xString.isdigit():
+	if xString.replace('-','',1).isdigit():
 		return 'int'
 	else:
-		if xString.replace('.','',1).replace('-','',1).isdigit():
+		if xString.replace('.','',1).replace(',','',1).replace('-','',1).isdigit():
 			return 'NUMERIC (16, 10)'
 		else:
 
@@ -331,9 +362,13 @@ def JSONRecursion(database, data, firstRow, sqlContext, spark, idTable, pos, pos
 
 						if (tableToCompare.first()[0] != None) and (table.first()[0] == None):
 
-							raise Exception('wrong format of date in field ' + x)	
+							raise Exception('wrong format of date in field ' + x)
 
 					else:	
+
+						if xType == 'NUMERIC (16, 10)':
+
+							table = table.withColumn(x, regexp_replace(x, ',', '.'))
 
 						table = table.withColumn(x, table[x].cast(dictionaryTypes[xType]))
 
@@ -376,115 +411,132 @@ def JSONRecursion(database, data, firstRow, sqlContext, spark, idTable, pos, pos
 
 
 def configurateUploadCSV():
-	if request.method == 'POST':
 
-		sessionId= session['id']
+	if session['id']:
 
-		filename = request.form['filename']
+		if request.method == 'POST':
 
-		database = request.form['database']
+			sessionId= session['id']
 
-		database = database.replace(' ','_').replace('.','')
-
-		share = request.form['share']
-
-		dateFormat =  request.form['dateFormat']
-
-		try:
-
-			Home.create_database(database)
-
-			databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database, str(sessionId), share)
-
-			if share == 'protegido':
-
-				establismentId = (User.get_user_by_id(sessionId))['establishment_id']
-
-				Home.add_dataset_stablishment(databaseInCeoDatum['id'], establismentId)
-
-			spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
-			sqlContext = SQLContext(spark)
-
-			data = sqlContext.read.format("csv").option("encoding", "UTF-8").load(os.path.join(UPLOAD_FOLDER,filename))
-
-			loop = 1
-
-			while request.form.get('nameColumn'+ str(loop)):
-
-				data = data.withColumnRenamed('_c'+str(loop-1), (request.form.get('nameColumn'+ str(loop))).replace(' ','_').replace('.','') )
-
-				loop = loop + 1
-
-			w = Window.orderBy('id2')
-			data = data.withColumn("id2", F.monotonically_increasing_id()).withColumn("id_"+database, F.row_number().over(w))    
-
-			data = data.drop('id2') 
+			if ((request.form.get('filename')) and (request.form.get('database')) and (request.form.get('share')) and (request.form.get('dateFormat'))) :
 
 
-			if request.form['headers'] == 'si':
-				data = data.filter(data['id_'+database] != 1)
+				filename = request.form['filename']
 
-			data.registerTempTable('t0')
+				database = request.form['database']
 
-			factTableInCeoDatum = Home.add_fact_table_ceoDatum(database, databaseInCeoDatum['id'])		
+				database = database.replace(' ','_').replace('.','')
 
-			firstRow = data.first()
+				share = request.form['share']
 
-			firstRowFields = firstRow.__fields__
+				dateFormat =  request.form['dateFormat']
 
-			idTable = factTableInCeoDatum['id']
+				try:
 
-			JSONRecursion(database, data, firstRow, sqlContext, spark, factTableInCeoDatum['id'], 1, 0, database, dateFormat)	
+					Home.create_database(database)
 
-			#fact_table
-			Home.create_fact_table(database)	
+					databaseInCeoDatum = Home.add_new_database_to_ceoDatum(database, str(sessionId), share)
 
-			factTable = sqlContext.sql(' SELECT factTable.id_'+database+' as id FROM t0 as factTable ')
+					if share == 'protegido':
 
-			factTable.write.format("jdbc")\
-				    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
-				    .option("dbtable", ("\""+database+"\"")) \
-				    .option("user", "sebaber12") \
-				    .option("password", "sebas") \
-				    .option("driver", "org.postgresql.Driver") \
-				    .mode("append")\
-				    .save()
+						establismentId = (User.get_user_by_id(sessionId))['establishment_id']
 
+						Home.add_dataset_stablishment(databaseInCeoDatum['id'], establismentId)
 
-			flash('Dataset cargado correctamente', 'info')
+					spark = SparkSession.builder.appName("CeoDatum").config("spark.jars", (os.path.join("resources","postgresql-42.3.0.jar"))).getOrCreate()
+					sqlContext = SQLContext(spark)
 
-			return render_template('home/dragAndDrop.html')		
+					data = sqlContext.read.format("csv").option("encoding", "UTF-8").load(os.path.join(UPLOAD_FOLDER,filename))
 
+					loop = 1
 
-		except BaseException as e:
+					while request.form.get('nameColumn'+ str(loop)):
 
-			exceptionString = str(e)
+						data = data.withColumnRenamed('_c'+str(loop-1), (request.form.get('nameColumn'+ str(loop))).replace(' ','_').replace('.','') )
 
-			if 'database \"'+database+'\" already exists' in exceptionString:
+						loop = loop + 1
 
-				flash('Ya hay un dataset con ese nombre. Debe escribir otro nombre.', 'danger')
+					w = Window.orderBy('id2')
+					data = data.withColumn("id2", F.monotonically_increasing_id()).withColumn("id_"+database, F.row_number().over(w))    
 
-				return render_template('home/uploadConfigurationJSON.html', filename=fileName)
-
-			else: 
-
-				Home.delete_dataset(database)
-
-				if 'wrong format of date in field' in exceptionString:
-
-					flash('El campo '+ exceptionString.replace('wrong format of date in field ','')+ ' tiene otro formato de fecha' , 'danger')
-
-					return render_template('home/uploadConfiguration.html', filename=fileName)
-				
-				flash('Lo sentimos, la carga del dataset ha fallado', 'danger')
+					data = data.drop('id2') 
 
 
-				return render_template('home/dragAndDrop.html')
+					if request.form['headers'] == 'si':
+						data = data.filter(data['id_'+database] != 1)
+
+					data.registerTempTable('t0')
+
+					factTableInCeoDatum = Home.add_fact_table_ceoDatum(database, databaseInCeoDatum['id'])		
+
+					firstRow = data.first()
+
+					firstRowFields = firstRow.__fields__
+
+					idTable = factTableInCeoDatum['id']
+
+					JSONRecursion(database, data, firstRow, sqlContext, spark, factTableInCeoDatum['id'], 1, 0, database, dateFormat)	
+
+					#fact_table
+					Home.create_fact_table(database)	
+
+					factTable = sqlContext.sql(' SELECT factTable.id_'+database+' as id FROM t0 as factTable ')
+
+					factTable.write.format("jdbc")\
+						    .option("url", ("jdbc:postgresql://localhost:5432/" + database)) \
+						    .option("dbtable", ("\""+database+"\"")) \
+						    .option("user", "sebaber12") \
+						    .option("password", "sebas") \
+						    .option("driver", "org.postgresql.Driver") \
+						    .mode("append")\
+						    .save()
 
 
-			
+					flash('Dataset cargado correctamente', 'info')
+
+					return render_template('home/dragAndDrop.html')		
+
+
+				except BaseException as e:
+
+					exceptionString = str(e)
+
+					if 'database \"'+database+'\" already exists' in exceptionString:
+
+						flash('Ya hay un dataset con ese nombre. Debe escribir otro nombre.', 'danger')
+
+						return render_template('home/uploadConfigurationJSON.html', filename=fileName)
+
+					else: 
+
+						Home.delete_dataset(database)
+
+						if 'wrong format of date in field' in exceptionString:
+
+							flash('El campo '+ exceptionString.replace('wrong format of date in field ','')+ ' tiene otro formato de fecha' , 'danger')
+
+							return render_template('home/uploadConfiguration.html', filename=fileName)
+						
+						flash('Lo sentimos, la carga del dataset ha fallado', 'danger')
+
+
+						return render_template('home/dragAndDrop.html')
+
+
+			else:
+
+				flash('Por favor envie todos los datos solicitados', 'danger')
+
+				return render_template('home/uploadConfiguration.html', filename=filename)
 		
+		else:
+
+			flash('Error en el enviado del formulario', 'danger')
+
+			return render_template('home/dragAndDrop.html')
 
 	else:
 
-		return '3'
+		flash('Debe estar logeado para realizar esta accion', 'danger')
+
+		return redirect(url_for('loginForm'))
