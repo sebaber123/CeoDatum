@@ -67,26 +67,29 @@ class Dataset(object):
 		return None		
 
 	@classmethod
-	def add_dataset_to_stablisment(cls, Bid, Eid):
-
+	def add_dataset_to_stablisment(cls,  datasetId, establishmentsId):
+		
 		con = get_db()
 
-		query="INSERT INTO public.\"Dataset_establishment\"(id_dataset, id_establishment) VALUES(%s, %s);"
+		query = ("INSERT INTO public.\"Dataset_establishment\" (id_dataset, id_establishment) VALUES ( (%s)::integer, (%s)::integer )")
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (str(Bid), str(Eid)))
-		
+		var = []
+		for establishmentId in establishmentsId:
+			var.append((datasetId, establishmentId))
+		cursor.executemany(query, var)
+
 		con.commit()
 
-		return True	
+		return True
 
 	@classmethod
-	def delete_dataset_from_stablisment(cls, Bid, Eid):
+	def delete_dataset_from_stablisment(cls, Bid):
 
 		con = get_db()
 
-		query = ("DELETE FROM public.\"Dataset_establishment\" WHERE id_dataset = %s AND id_establishment = %s ;")
+		query = ("DELETE FROM public.\"Dataset_establishment\" WHERE id_dataset = %s")
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (str(Bid), str(Eid)))
+		cursor.execute(query, (str(Bid),))
 
 		con.commit()	
 
