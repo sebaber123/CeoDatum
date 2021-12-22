@@ -20,56 +20,64 @@ from bokeh.tile_providers import CARTODBPOSITRON, get_provider
 #return the plotter page
 def plotter(Bid, activityId):
 
-    graphs = []
-    noNav = False
+    if session['id']:
 
-    if activityId:
+        graphs = []
+        noNav = False
 
-        graphs = Activity.get_graph_of_activity_by_id(activityId)
-        graphs = [ x['name'] for x in graphs]
+        if activityId:
 
-        noNav = True
+            graphs = Activity.get_graph_of_activity_by_id(activityId)
+            graphs = [ x['name'] for x in graphs]
 
-    else:
-    
-        graphs = ['data_table','bar','line','pie','dot','scatter','map'] 
+            noNav = True
 
-    #get the columns of the database
-    columns = Visualization.get_db_data(Bid)
-    
-    #get the database
-    database = Visualization.get_database(Bid)
+        else:
+        
+            graphs = ['data_table','bar','line','pie','dot','scatter','map'] 
 
-    #get the structure of the dataset
-    databaseStructure = {}
+        #get the columns of the database
+        columns = Visualization.get_db_data(Bid)
+        
+        #get the database
+        database = Visualization.get_database(Bid)
 
-    for column in columns:
-        if column['type'] == 'object': 
+        #get the structure of the dataset
+        databaseStructure = {}
 
-            dictionaryObject = {}
+        for column in columns:
+            if column['type'] == 'object': 
 
-            columnsOfObject = Visualization.getColumnsOfObject(database['name'],column['name'])
+                dictionaryObject = {}
 
-            for columnOfObject in columnsOfObject:
-                if columnOfObject['type'] == 'object':
+                columnsOfObject = Visualization.getColumnsOfObject(database['name'],column['name'])
 
-                    dictionaryObject[columnOfObject['name']] = generateStructureRecursion(database['name'], column['name'], columnOfObject['name'])
+                for columnOfObject in columnsOfObject:
+                    if columnOfObject['type'] == 'object':
 
-                else:   
+                        dictionaryObject[columnOfObject['name']] = generateStructureRecursion(database['name'], column['name'], columnOfObject['name'])
 
-                    dictionaryObject[columnOfObject['name']] = columnOfObject['type'] 
+                    else:   
 
-            databaseStructure[column['name']] = dictionaryObject        
+                        dictionaryObject[columnOfObject['name']] = columnOfObject['type'] 
 
-
-            #databaseStructure[column['name']] = generateStructureRecursion(database['name'],)
-
-        else:    
-            databaseStructure[column['name']] = column['type'] 
+                databaseStructure[column['name']] = dictionaryObject        
 
 
+                #databaseStructure[column['name']] = generateStructureRecursion(database['name'],)
 
-    return render_template('home/plotter.html', columns = columns, database= database, databaseStructure = databaseStructure, graphs=graphs, noNav=noNav)  
+            else:    
+                databaseStructure[column['name']] = column['type'] 
+
+
+
+        return render_template('home/plotter.html', columns = columns, database= database, databaseStructure = databaseStructure, graphs=graphs, noNav=noNav)  
+
+    else: 
+
+        flash('Debe estar logeado para realizar esta accion', 'danger')       
+
+        return redirect(url_for('loginForm'))
 
 def generateStructureRecursion(databaseName, columnName, columnNameOfObject): 
 

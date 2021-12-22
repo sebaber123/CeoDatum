@@ -3,6 +3,7 @@
 		{	
 			"nombre": "sebastian",
 			"edad": "24",
+			"flotante": "5,3",
 		    	"vehiculo": {
 				"marca": {
 					"nombre" : "peugeot",
@@ -14,6 +15,7 @@
 		{	
 			"nombre": "martin",
 			"edad": "21",
+			"flotante": "5,3",
 		    	"vehiculo": [{
 				"marca": {
 					"nombre" : "amarok",
@@ -25,6 +27,7 @@
 		{	
 			"nombre": "ivan",
 			"edad": "53",
+			"flotante": "5,3",
 		    	"vehiculo": [{
 				"marca": {
 					"nombre" : "amarok",
@@ -44,6 +47,7 @@
 		{	
 			"nombre": "ariel",
 			"edad": "53",
+			"flotante": "5,3",
 		    	"vehiculo": [{
 				"marca": {
 					"nombre" : "fiat",
