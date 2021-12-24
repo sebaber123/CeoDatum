@@ -6,89 +6,14 @@
   	<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 </head>
 <body>
-	<div class="modal" id="staticBackdrop" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-			  <div class="modal-header">
-			    <h5 class="modal-title">Entrega</h5>
-			    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			  </div>
-			  <div class="modal-body">
-			    <p>Seguro que quiere realizar la entrega?</p>
-			  </div>
-			  <div class="modal-footer">
-			    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-			    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="sentResolutionPlotter()">Entregar</button>
-			  </div>
-			</div>
-		</div>
-	</div>
-	<div class="modal" id="staticBackdrop2" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-			  <div class="modal-header">
-			    <h5 class="modal-title">Entrega</h5>
-			    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			  </div>
-			  <div class="modal-body">
-			    <p>Seguro que quiere realizar la entrega?</p>
-			  </div>
-			  <div class="modal-footer">
-			    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-			    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="sentResolutionSocialGraph()">Entregar</button>
-			  </div>
-			</div>
-		</div>
-	</div>
-	<div class="modal" id="staticBackdrop3" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-			  <div class="modal-header">
-			    <h5 class="modal-title">Salir</h5>
-			    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			  </div>
-			  <div class="modal-body">
-			    <p>Seguro que quiere salir de la actividad? Perdera el progreso de la actividad que no haya enviado</p>
-			  </div>
-			  <div class="modal-footer">
-			    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-			    <a class="btn btn-danger"  href="{{url_for('activities')}}">salir</a>
-			  </div>
-			</div>
-		</div>
-	</div>
 
-
-	
-		<nav  style="margin-left: 100px; margin-right:100px" >
-	      <div class="nav nav-tabs" id="nav-tab" role="tablist">
-	        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-activity" type="button" role="tab" aria-controls="nav-activity" aria-selected="true">Actividad</button>
-	        {% if plotterTab %}
-
-	        	<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-plotter" type="button" role="tab" aria-controls="nav-plotter" aria-selected="false">Graficador</button>
-
-	        {% endif %}
-	        
-	        
-	        {% if socialGraph %}
-	        	<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-social" type="button" role="tab" aria-controls="nav-social" aria-selected="false">Grafo social (Twitter)</button>
-
-	        {% endif %}
-
-	        <button type="button" class="btn btn-danger ms-auto mb-2 mb-lg-0" data-bs-toggle="modal" data-bs-target="#staticBackdrop3">Salir</button>
-	        
-	      </div>
-
-	    </nav>
-	    <div id="alertsActivity"></div>
-	    <div class="tab-content" id="nav-tabContent" style="height:95.5%; width: 100%; ">
-	      	<div class="tab-pane fade show active" id="nav-activity" role="tabpanel" aria-labelledby="nav-home-tab" style="height:100%">
-		        <div class="container" style="min-height: 100%;">
+	<div class="container" style="min-height: 100%;">
 				    <div style="min-height: 100%;" class="row align-items-start">
 				      	<div class="col">
 				        
 				      	</div>
-				      	<div style="background-color: #61A5C2; text-align:center; margin: auto;height: 100%;" class="col-9">
+				      	<div style="background-color: #61A5C2; text-align:center; margin: auto;height: 100%;" class="col-12">
+				      		<div id="alertsActivity" style="z-index: 2000; position: fixed; width:70%"></div>
 					        <br/>
 					        <h5 style="display:inline-block;">Titulo: {{activity.statement_title}}</h5>
 					        <hr>
@@ -102,7 +27,7 @@
 					        <table class="table" style="">
 					        	<thead>
 					        		<tr>
-					        			<th>Pestaña entregada</th>
+					        			<th>Tipo de entregada</th>
 					        			<th>Fecha</th>
 					        			<th>Ver entrega</th>
 					        		</tr>
@@ -113,7 +38,7 @@
 					        			<td>
 					        				{% if resolution.resolution_type == 'plotter' %}
 
-					        					Gráfico
+					        					Graficador
 
 					        				{% else %}
 
@@ -197,9 +122,9 @@
 					        <div class="card " style="display: inline-block; width:750px; background-color:#89C2D9; border-width: 5px;">
 						        <h3 style="display:inline-block;">Realizar una entrega de la actividad</h3>
 						        <br/>
-						        <h5 style="display:inline-block;">Complete la actividad en la pestaña que corresponda(Graficador/Grafo social) </h5>
+						        <h5 style="display:inline-block;">Complete la actividad en alguna de las pestañas que aparecen a continuacion segun crea correspondiente para completar la consigna (Graficador/Grafo social) </h5>
 						        <br/>
-						        <h5 style="display:inline-block;">Agregue un comentario y oprima en uno de los dos botones debajo del comentario para elegir que pestaña quiere enviar</h5>
+						        <h5 style="display:inline-block;">Agregue un comentario y oprima en uno de los dos botones debajo del comentario para elegir que tipo de entrega quiere enviar</h5>
 						        <br/>
 						        <div class="md-form" style="padding: 20px">
 							    	<label class="titulo-form" for="inputCommentary">Comentario</label>
@@ -217,6 +142,9 @@
 						        <br/>
 					        </div>
 					        <br/>
+					        <hr>
+
+					        <h5 style="display:inline-block;">Área de realización de la actividad</h5>  
 					        <br/>
 					        <br/>
 				      	</div>
@@ -225,11 +153,84 @@
 				        
 				      	</div>
 			    	</div>
-				</div>    
-  			</div>
+			    </div>	
+	<div class="modal" id="staticBackdrop" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+			    <h5 class="modal-title">Entrega</h5>
+			    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body">
+			    <p>Seguro que quiere realizar la entrega?</p>
+			  </div>
+			  <div class="modal-footer">
+			    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="sentResolutionPlotter()">Entregar</button>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<div class="modal" id="staticBackdrop2" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+			    <h5 class="modal-title">Entrega</h5>
+			    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body">
+			    <p>Seguro que quiere realizar la entrega?</p>
+			  </div>
+			  <div class="modal-footer">
+			    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="sentResolutionSocialGraph()">Entregar</button>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<div class="modal" id="staticBackdrop3" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+			    <h5 class="modal-title">Salir</h5>
+			    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body">
+			    <p>Seguro que quiere salir de la actividad? Perdera el progreso de la actividad que no haya enviado</p>
+			  </div>
+			  <div class="modal-footer">
+			    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			    <a class="btn btn-danger"  href="{{url_for('activities')}}">salir</a>
+			  </div>
+			</div>
+		</div>
+	</div>
+
+
+	<div style="height:105%; border: 10px solid #61A5C2 ">
+		<nav >
+	      <div class="nav nav-tabs" style="padding-left: 260px;" id="nav-tab" role="tablist">
+	        {% if plotterTab %}
+
+	        	<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-plotter" type="button" role="tab" aria-controls="nav-plotter" aria-selected="false">Graficador</button>
+
+	        {% endif %}
+	        
+	        
+	        {% if socialGraph %}
+	        	<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-social" type="button" role="tab" aria-controls="nav-social" aria-selected="false">Grafo social (Twitter)</button>
+
+	        {% endif %}
+	        
+	      </div>
+
+	    </nav>
+	    <div id="alertsActivity"></div>
+	    <div class="tab-content" id="nav-tabContent" style="height:95.5%; width: 100%; ">
+	      	
 	      	{% if plotterTab %}
 	       		<div class="tab-pane fade" id="nav-plotter" role="tabpanel" aria-labelledby="nav-profile-tab" style="height:100%">
-	          		<iframe src="{{url_for('plotter', Bid=datasetId , activityId=activityId)}}" id="iframePlotter" style="width:100%; height:100%"></iframe>
+	          		<iframe src="{{url_for('plotter', Bid=datasetId , activityId=activityId)}}" id="iframePlotter" style="width:100%; height:101%"></iframe>
 	      		</div>
 
 	        {% endif %}
@@ -241,6 +242,7 @@
 			{% endif %}
 	      
     	</div>
+    </div>	
 
 <script>
 

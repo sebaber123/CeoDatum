@@ -101,7 +101,7 @@ def solveActivity(id):
 		plotterTab = len(graphs) != 0
 
 
-		return render_template('activities/solve_activity.html', activity=activity, activityId=id, datasetId=datasetId, noNav=True, socialGraph=socialGraph, plotterTab=plotterTab, resolutions=resolutions)
+		return render_template('activities/solve_activity.html', activity=activity, activityId=id, datasetId=datasetId, socialGraph=socialGraph, plotterTab=plotterTab, resolutions=resolutions)
 
 def addPlotterResolutionToActivity():
 
