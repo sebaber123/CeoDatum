@@ -16,19 +16,19 @@ class Course(object):
 		return cursor.fetchall()
 
 	@classmethod	
-	def create_course(cls, name, start_date, end_date, owner_id, establishment_id):
+	def create_course(cls, name, start_date, end_date, owner_id, establishment_id, cicle, year, curricular_scope):
 
 		con = get_db()
-		query = "INSERT INTO public.course(name, start_date, end_date, id_owner, establishment_id) VALUES(%s, %s, %s, %s, %s)"
+		query = "INSERT INTO public.course(name, start_date, end_date, id_owner, establishment_id, cicle, year, curricular_scope_id) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
-		cursor.execute(query, (name, start_date, end_date, owner_id, str(establishment_id)))
+		cursor.execute(query, (name, start_date, end_date, owner_id, str(establishment_id), cicle, year, curricular_scope))
 		con.commit()
 
 		return True
 
 	@classmethod
 	def get_course(cls, id_course):
-		query = "SELECT * FROM public.course WHERE id=%s"
+		query = "SELECT course.id as courseId, course.name as courseName, start_date, end_date, id_owner, cicle, year, curricular_scope.name as curricular_scope FROM public.course INNER JOIN curricular_scope ON course.curricular_scope_id = curricular_scope.id WHERE course.id=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (id_course,))
 		return cursor.fetchone()
@@ -78,3 +78,11 @@ class Course(object):
 		cursor.execute(query)
 
 		return cursor.fetchall()	
+
+	@classmethod
+	def get_curricular_scope(cls):
+		query= "SELECT * FROM curricular_scope ORDER BY name"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query)
+
+		return cursor.fetchall()

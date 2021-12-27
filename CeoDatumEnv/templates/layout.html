@@ -29,8 +29,9 @@
               <li><a class="nav-link " aria-current="page" href="{{url_for('datasets_index_publics')}}">Datasets Públicos</a></li>
 
               <li><a class="nav-link " aria-current="page" href="{{url_for('datasets_index_protecteds')}}">Datasets Protegidos</a></li>
-
+            {% if session['actualRole']=='professor' %}
               <li><a class="nav-link " aria-current="page" href="{{url_for('datasets_index_privates')}}">Mis Datasets</a></li>
+            {% endif %}
             </ul>
           </li>
 
@@ -53,7 +54,7 @@
               <a class="nav-link " aria-current="page" href="{{url_for('courses')}}">Cursos</a>
             </li>
           {% endif %}
-          {% if session.actualRole == 'admin' %}
+          {% if session.actualRole == 'admin' or session.actualRole == 'superadmin'%}
             <li class="nav-item">
               <a class="nav-link " aria-current="page" href="{{url_for('configuration')}}">Configuración</a>
             </li>

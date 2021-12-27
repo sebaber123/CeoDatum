@@ -5,7 +5,7 @@
 {% block title %}Datasets{% endblock %}
 {% block content %}
 	<div class="container">
-		<h1 align="center">{{course.name}}</h1>
+		<h1 align="center">{{course.coursename}}</h1>
 		<hr>
 		<div id="alumnosTitle">
 		<img src="{{url_for('static', filename='expand_arrow.png') }}" style="height: 25px; width: 25px; display:inline-block; margin-bottom: 10px; margin-right:25px">
@@ -69,7 +69,7 @@
 				</tbody>
 			</table>
 			<div class="d-grid gap-2">
-				<a class="btn btn-info" href="/activities/new_activity/{{course.id}}">Nueva actividad</a>
+				<a class="btn btn-info" href="/activities/new_activity/{{course.courseid}}">Nueva actividad</a>
 			</div>
 		</div>
 		<hr class="mt-1">
@@ -123,7 +123,7 @@
 		                {% endfor%}
 		              </select>
 		              <br/>
-		              <input type="hidden" name="courseId" id="courseId" value="{{course.id}}"></input>
+		              <input type="hidden" name="courseId" id="courseId" value="{{course.courseid}}"></input>
 		              <br/>  
 		              
 		            </div>  
@@ -141,7 +141,7 @@
 	<script>
 
 
-		$(document).on('load',funcion());
+		$(document).on('load', funcion());
 
 		function funcion(){
 			$('#alumnosList').slideUp();
@@ -172,14 +172,14 @@
 					if (usuario_existe == -1){
 						$('#invitationError').append("El usuario o email no existe");
 					}else{
-						$.getJSON($SCRIPT_ROOT + "isStudentOnCourse/" + usuario_existe + "&" + {{course.id}},{}, function(data) {
+						$.getJSON($SCRIPT_ROOT + "isStudentOnCourse/" + usuario_existe + "&" + {{course.courseid}},{}, function(data) {
 							if (data.result){
 								$('#invitationError').append("El usuario ya se encuentra en el curso");
 							}
 							else{
-								$.getJSON($SCRIPT_ROOT + "inviteUserToCourse/" + usuario_existe + "&" + {{course.id}},{}, function(data) {
+								$.getJSON($SCRIPT_ROOT + "inviteUserToCourse/" + usuario_existe + "&" + {{course.courseid}},{}, function(data) {
 									usuario = data.result;
-									$('#alumnsTableBody').append("<tr><td>" + usuario[4] + ", " +  usuario[0] + "</td><td>"+ usuario[3] + "</td><td>"+ usuario[9] +"</td></tr>")	
+									$('#alumnsTableBody').append("<tr><td>" + usuario[4] + ", " +  usuario[0] + "</td><td>"+ usuario[3] + "</td><td>"+ usuario[8] +"</td></tr>")	
 									$('#invitationError').removeClass('text-danger');
 									$('#invitationError').addClass('text-success');
 									$('#invitationError').append("Invitación enviada.");	
