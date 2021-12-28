@@ -74,7 +74,7 @@ class User(object):
 	@classmethod
 	def get_user_from_course(cls, course_id):
 
-		query = "SELECT * FROM public.user as u INNER JOIN user_course ON user_course.user_id = u.id ORDER BY surname asc"
+		query = "SELECT * FROM public.user as u INNER JOIN user_course ON user_course.user_id = u.id WHERE user_course.course_id = %s ORDER BY surname asc"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (course_id,))
 

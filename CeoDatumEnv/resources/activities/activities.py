@@ -56,7 +56,7 @@ def create_activity():
 		curso = request.form['course']
 		graphs = request.form.getlist('graph')
 		objective = request.form['objective']
-		has_calification = 'checkboxNoCalification' in request.form
+		has_calification = not('checkboxNoCalification' in request.form)
 		enable_expired_date = 'checkboxExpiredDate' in request.form
 		statement = request.form['inputStatement']
 		statemenet_title = request.form['inputStatementTitle']

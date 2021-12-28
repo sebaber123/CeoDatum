@@ -511,7 +511,7 @@ def configurateUploadCSV():
 
 						flash('Ya hay un dataset con ese nombre. Debe escribir otro nombre.', 'danger')
 
-						return render_template('home/uploadConfigurationJSON.html', filename=fileName)
+						return render_template('home/uploadConfiguration.html', filename=filename)
 
 					else: 
 
