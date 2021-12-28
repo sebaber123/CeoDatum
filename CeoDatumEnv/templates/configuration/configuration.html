@@ -27,10 +27,12 @@
 			<label class="form-check-label" for="exampleRadios1">
 			    Todo
 			  </label>
+			{% if session['actualRole']=='superadmin' %}
 			<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="1" >
 			<label class="form-check-label" for="exampleRadios1">
 			    Admin
 			</label>
+			{% endif %}
 			<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="2">
 			<label class="form-check-label" for="exampleRadios2">
 			  	Profesores
@@ -50,18 +52,22 @@
 		  </thead>
 		  <tbody id="tableBody">
 		  	{% for user in users %}
+		  	{% if not 4 in roles[user.id] %}
 		    <tr class="user_rows">
 		      <td>{{user.name + " " + user.surname}}</td>
 		      <td>{{user.email}}</td>
 		      <td name="usuario{{user.id}}">
+		      	{% if session['actualRole']=='superadmin' %}
 		      	<input class="form-check-input" type="checkbox" onclick="validate(1, {{user.id}});" {% if 1 in roles[user.id]  %} checked {% endif %} id="role1_{{user.id}}">
 		      	<label for="role1">Admin</label>
+		      	{% endif %}
 		      	<input class="form-check-input" type="checkbox" onclick="validate(2, {{user.id}});" {% if 2 in roles[user.id] %} checked {% endif %} id="role2_{{user.id}}">
 		      	<label for="role1">Profesor</label>
 		      	<input class="form-check-input" type="checkbox" onclick="validate(3, {{user.id}});" {% if 3 in roles[user.id] %} checked {% endif %} id="role3_{{user.id}}">
 		      	<label for="role1">Estudiante</label>
 		      </td>
 		    </tr>
+		    {% endif %}
 		    {% endfor %}
 		  </tbody>
 		</table>
@@ -166,34 +172,40 @@
 			}
 		
 
-			function armar_body(data){
+			function armar_body(data, actualRole){
 				var body = $('#tableBody');
 				datos = data.result;
 				for (var i=0; i<datos.length;i++){
-						var aux = datos[i]
-						var string = ("<tr><td>"+ aux[2] + ", " + aux[1] + "</td><td>" + aux[3] + "</td><td name=\"usuario" + aux[0] + "\">" +
-							"<input class=\"form-check-input\" type=\"checkbox\" onclick=\"validate(1, "+ aux[0] + ");\" ");
-						if (data.roles[aux[0]].includes(1)){
-							string = string + " checked ";
+					var aux = datos[i]
+					if (!data.roles[aux[0]].includes(4)){
+							var string = ("<tr><td>"+ aux[1] + " " + aux[2] + "</td><td>" + aux[3] + "</td><td name=\"usuario" + aux[0] + "\">");
+							var rol="{{session.actualRole}}";
+							if (rol=='superadmin'){
+								string = string + ("<input class=\"form-check-input\" type=\"checkbox\" onclick=\"validate(1, "+ aux[0] + ");\"");
+								if (data.roles[aux[0]].includes(1)){
+									string = string + " checked ";
+								}
+								string = string + ("id=\"role1_" + aux[0] + "\"><label for=\"role1\">Admin</label>");
+							}
+							string = string + ("<input class=\"form-check-input\" type=\"checkbox\" onclick=\"validate(2, "+ aux[0] + ");\"");
+							if (data.roles[aux[0]].includes(2)){
+								string = string + " checked ";
+							}
+							string = string + ("id=\"role2_" + aux[0] + "\"><label for=\"role2\">Profesor</label><input class=\"form-check-input\" type=\"checkbox\" onclick=\"validate(3, "+ aux[0] + ");\"");
+							if (data.roles[aux[0]].includes(3)){
+								string = string + " checked ";
+							}
+							string = string + ("id=\"role3_" + aux[0] + "\"><label for=\"role3\">Estudiante</label></td></tr>");
+							body.append(string);
 						}
-						string = string + ("id=\"role1_" + aux[0] + "\"><label for=\"role1\">Admin</label><input class=\"form-check-input\" type=\"checkbox\" onclick=\"validate(2, "+ aux[0] + ");\"");
-						if (data.roles[aux[0]].includes(2)){
-							string = string + " checked ";
-						}
-						string = string + ("id=\"role2_" + aux[0] + "\"><label for=\"role2\">Profesor</label><input class=\"form-check-input\" type=\"checkbox\" onclick=\"validate(3, "+ aux[0] + ");\"");
-						if (data.roles[aux[0]].includes(3)){
-							string = string + " checked ";
-						}
-						string = string + ("id=\"role3_" + aux[0] + "\"><label for=\"role3\">Estudiante</label></td></tr>");
-						body.append(string);
 					}
 			}
 
-			function getPage(page, filter){
+			function getPage(page, filter, role){
 				$.getJSON("/configuration_AJAX/" + page + "&" + filter, function(data){
 					var body = $('#tableBody');
 					body.empty();
-					armar_body(data);
+					armar_body(data,role);
 					var pages = $('#pages');
 					pages.empty();
 					var availablePages = data.availablePages;

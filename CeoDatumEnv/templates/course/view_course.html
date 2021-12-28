@@ -5,18 +5,18 @@
 {% block title %}Datasets{% endblock %}
 {% block content %}
 	<div class="container">
-		<h1 align="center">{{course.name}}</h1>
+		<h1 align="center">{{course.coursename}}</h1>
 		<hr>
 		<div id="alumnosTitle">
 		<img src="{{url_for('static', filename='expand_arrow.png') }}" style="height: 25px; width: 25px; display:inline-block; margin-bottom: 10px; margin-right:25px">
-		<h2 style="display:inline-block;" >Alumnos inscriptos</h2>
+		<h2 style="display:inline-block;" >Estudiantes inscriptos</h2>
 		</div>
 		<div id="alumnosList">
 			<table class="table">
 				<thead>
 					<th>Nombre</th>
 					<th>Email</th>
-					<th>Usuario</th>
+					<th>Nombre de usuario</th>
 				</thead>
 			  <tbody id="alumnsTableBody">
 			  	{% for alumno in alumnos %}
@@ -27,18 +27,28 @@
 			    </tr>
 			    {% endfor %}
 			  </tbody>
-			</table>
-			<label class="text-danger"  id="invitationError"></label>
-			<form id="invitationForm" class="w-50 float-right">
-			  <div class="form-group row">
-			  	<label>Añadir usuarios al curso:</label>  	
-			    <div class="col-sm-10">
-			      <label for="usernameInput" class="d-none">Email</label>
-              	  <input type="text" name="username" id="usernameInput" class="form-control" placeholder="Ingrese aquí">
-			    </div>
-			    <input type="submit" class="col-sm-2 btn btn-info" value="Invitar">
-			  </div>
-			</form>
+			</table>				  
+			{% if students_to_add|length > 0 %}
+			<div class="container" align="center" id="inviteStudentContainer">
+				<label class="text-danger"  id="invitationError"></label>
+				<form id="invitationForm" class="w-50 float-right">
+				  <div class="form-select row">
+				  	<label>Añadir usuarios al curso:</label>
+				  	<label for="usernameInput" class="d-none">Email</label> 
+				  	<select name="username" id="usernameInput" class="form-control" placeholder="Ingrese aquí">
+				  		<option value=""> -- Seleccione un estudiante de la lista --</option>
+				  		{% for student in students_to_add %}
+	 					<option value="{{student.username}}">{{student.name}} {{student.surname}} | {{student.username}}</option>
+				  		{% endfor %}
+				  	</select> 	
+				    <input type="submit" class="col-sm-2 btn btn-info mt-2" value="Invitar">
+				  </div>
+				</form>
+			</div>
+			{% else %}
+			<label class="d-block">No hay más estudiantes diponibles en el curso para invitar.</label>
+			{% endif %}
+			<label class="d-block d-none" id="emptyList">No hay más estudiantes diponibles en el curso para invitar.</label>
 		</div>
 		<hr class="mt-1">
 		<div id="activitiesTitle">
@@ -48,7 +58,7 @@
 		<div id="activitiesSection">
 			<table class="table table-hover">
 				<thead>
-					<th>Titulo</th>
+					<th>Título</th>
 					<th>Descripción</th>
 					<th>Estado</th>
 				</thead>
@@ -69,7 +79,7 @@
 				</tbody>
 			</table>
 			<div class="d-grid gap-2">
-				<a class="btn btn-info" href="/activities/new_activity/{{course.id}}">Nueva actividad</a>
+				<a class="btn btn-info" href="/activities/new_activity/{{course.courseid}}">Nueva actividad</a>
 			</div>
 		</div>
 		<hr class="mt-1">
@@ -123,7 +133,7 @@
 		                {% endfor%}
 		              </select>
 		              <br/>
-		              <input type="hidden" name="courseId" id="courseId" value="{{course.id}}"></input>
+		              <input type="hidden" name="courseId" id="courseId" value="{{course.courseid}}"></input>
 		              <br/>  
 		              
 		            </div>  
@@ -141,7 +151,7 @@
 	<script>
 
 
-		$(document).on('load',funcion());
+		$(document).on('load', funcion());
 
 		function funcion(){
 			$('#alumnosList').slideUp();
@@ -161,28 +171,34 @@
 		
 
 		$('#invitationForm').on('submit', function(e){
-		 	let usuario = $('#usernameInput').val();
+		 	let usuario_input = $('#usernameInput').val();
 		 	$('#invitationError').empty();
 		 	let usuario_existe
-			if (usuario == "") {
+			if (usuario_input == "") {
 				$('#invitationError').append("Debe ingresar un usuario");
 			} else{
-				$.getJSON($SCRIPT_ROOT + "userExist/" + usuario,{}, function(data) {
+				$.getJSON($SCRIPT_ROOT + "userExist/" + usuario_input,{}, function(data) {
 					usuario_existe = data.result;
 					if (usuario_existe == -1){
 						$('#invitationError').append("El usuario o email no existe");
 					}else{
-						$.getJSON($SCRIPT_ROOT + "isStudentOnCourse/" + usuario_existe + "&" + {{course.id}},{}, function(data) {
+						$.getJSON($SCRIPT_ROOT + "isStudentOnCourse/" + usuario_existe + "&" + {{course.courseid}},{}, function(data) {
 							if (data.result){
 								$('#invitationError').append("El usuario ya se encuentra en el curso");
 							}
 							else{
-								$.getJSON($SCRIPT_ROOT + "inviteUserToCourse/" + usuario_existe + "&" + {{course.id}},{}, function(data) {
+								$.getJSON($SCRIPT_ROOT + "inviteUserToCourse/" + usuario_existe + "&" + {{course.courseid}},{}, function(data) {
 									usuario = data.result;
-									$('#alumnsTableBody').append("<tr><td>" + usuario[4] + ", " +  usuario[0] + "</td><td>"+ usuario[3] + "</td><td>"+ usuario[9] +"</td></tr>")	
+									$('#alumnsTableBody').append("<tr><td>" + usuario[4] + ", " +  usuario[0] + "</td><td>"+ usuario[3] + "</td><td>"+ usuario[8] +"</td></tr>")	
 									$('#invitationError').removeClass('text-danger');
 									$('#invitationError').addClass('text-success');
-									$('#invitationError').append("Invitación enviada.");	
+									$('#invitationError').append("Invitación enviada.");
+									var input = $('#usernameInput option[value="'+ usuario_input + '"]').remove();
+									$('#usernameInput').val("");
+									if ($('#usernameInput > option').length === 1){
+										$('#inviteStudentContainer').addClass("d-none");
+										$('#emptyList').removeClass("d-none");
+									}
 								});
 							}
 						});

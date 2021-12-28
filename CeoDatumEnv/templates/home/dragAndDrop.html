@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
 	<div class="container d-flex" style="height: 90%">
-	    <div class="row align-self-center" style="width: 100%">
+	    <div class="row align-self-center" style="width: 100%" >
 	     <div class="col">
 				<h1>Nuevo dataset</h1>
 				<span>Haga click en examinar o suelte un archivo (CSV o JSON) sobre el área marcada.</span>
@@ -13,20 +13,14 @@
 			<div class="col">	
 				<form action="{{url_for('uploadFile')}}" method=post enctype=multipart/form-data style="height: 100%">
 		        	<div class="card" style="height: 50px; width: 100%;">
-	            	
-	       				
-	       				<div class="mb-3">
-								  <input  class="form-control form-control-lg" type="file" name=file id="file"  required>
-								</div>
-
+	       			<div class="mb-3">
+						<input  class="form-control form-control-lg" type="file" name=file id="file" required placeholder="Archivo">
+						</div>
 		       		</div>
-		       		
 		        	<br>
-		        	<input class="btn btn-primary" style="width:100%" type=submit value="Subir">
+		        	<input class="btn btn-info" style="width:100%" type=submit value="Subir">       	
 		    	</form>
 		    </div>
 	    </div>
 	</div>
-   
-
 {% endblock %}    

@@ -7,7 +7,7 @@ from models.configuration import Configuration
 import os, shutil
 import json
 
-pagination = 2
+pagination = 10	
 
 def configuration():
 	if session['username']:
@@ -83,12 +83,12 @@ def cambiar_rol(user_id, role_id):
 	return False
 
 def add_role(role_id, user_id):
-	if session['actualRole']=='admin':
+	if session['actualRole']=='admin' or session['actualRole']=='superadmin':
 		Configuration.add_role(user_id, role_id)
 	return jsonify(True)
 
 def delete_role(role_id, user_id):
-	if session['actualRole']=='admin':
+	if session['actualRole']=='admin' or session['actualRole']=='superadmin':
 		Configuration.delete_role(user_id, role_id)
 	return jsonify(True)
 
