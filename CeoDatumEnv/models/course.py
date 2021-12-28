@@ -28,7 +28,7 @@ class Course(object):
 
 	@classmethod
 	def get_course(cls, id_course):
-		query = "SELECT course.id as courseId, course.name as courseName, start_date, end_date, id_owner, cicle, year, curricular_scope.name as curricular_scope FROM public.course INNER JOIN curricular_scope ON course.curricular_scope_id = curricular_scope.id WHERE course.id=%s"
+		query = "SELECT course.id as courseId, course.name as courseName, start_date, end_date, id_owner, establishment_id, cicle, year, curricular_scope.name as curricular_scope FROM public.course INNER JOIN curricular_scope ON course.curricular_scope_id = curricular_scope.id WHERE course.id=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (id_course,))
 		return cursor.fetchone()

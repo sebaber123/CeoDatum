@@ -87,7 +87,7 @@ class User(object):
 	@classmethod
 	def get_user_from_course(cls, course_id):
 
-		query = "SELECT * FROM public.user as u INNER JOIN user_course ON user_course.user_id = u.id ORDER BY surname asc"
+		query = "SELECT * FROM public.user as u INNER JOIN user_course ON user_course.user_id = u.id WHERE course_id=%s ORDER BY surname asc"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (course_id,))
 
@@ -127,7 +127,7 @@ class User(object):
 
 	@classmethod
 	def get_establishments_of_user(cls,id_user):
-		query = "SELECT localidad, codigo_de_area, jurisdiccion, cue, nombre, ambito, domicilio, telefono, mail, e.id as establishment_id FROM public.user_establishment u INNER JOIN establishment e ON e.id = u.id_establishment INNER JOIN city c ON c.id = e.id_ciudad::integer INNER JOIN province p ON p.id = c.id_provincia::integer  WHERE u.id_user=%s "
+		query = "SELECT localidad, codigo_de_area, jurisdiccion, cue, nombre, ambito, domicilio, telefono, mail, e.id as establishment_id FROM public.user_establishment u INNER JOIN establishment e ON e.id = u.id_establishment INNER JOIN city c ON c.id = e.id_ciudad::integer INNER JOIN province p ON p.id = c.id_provincia::integer  WHERE u.id_user=%s ORDER BY nombre"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (id_user,))
 
@@ -141,3 +141,11 @@ class User(object):
 		cursor.execute(query, (id_user,id_establishment))
 		con.commit()
 		return True
+
+	@classmethod
+	def get_students_to_add(cls, id_course, id_establishment):
+		query = "SELECT * FROM public.user u INNER JOIN user_establishment ON u.id = user_establishment.id_user WHERE id_establishment = %s AND u.id NOT IN (SELECT user_id FROM user_course WHERE course_id=%s)"
+		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
+		cursor.execute(query, (id_establishment,id_course))
+
+		return cursor.fetchall()
