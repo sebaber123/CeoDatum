@@ -77,7 +77,14 @@
                   <option selected value=""> -- Selecciona una opción -- </option>                  
                   </select>
                 </div>
+                <br/>
                 <div class="form-group d-none" id="instituteFormGroup">
+                  <p>Seleccione el establecimiento educativo</p>
+                  <label>Filtro para la lista de establecimientos</label>
+                  <div class="mb-3">
+                    <label for="inputSearchCheckBox" class="form-label" style="display:none;" id=filterConditionText>Filtro:</label>
+                    <input style="width: 300px  ;" name="inputConditon" type="text" id="inputSearchCheckBox" class="form-control">
+                  </div> 
                   <label class="" for="instituteFormControlSelect">Establecimiento educativo</label>
                   <label class="" style="font-size:12px">(*)</label>
                   <select class="form-control" id="instituteFormControlSelect" name="instituteFormControlSelect" required>
@@ -168,6 +175,23 @@
       }
       return false;
     });
+
+      $( "#inputSearchCheckBox" ).on("input", function() {
+    var valueOfSearch = $(this).val().toLowerCase(); 
+    $("#instituteFormControlSelect option").each(function(){
+      var valueOfCheckBox = $(this).text().toLowerCase();
+      if (valueOfCheckBox.includes(valueOfSearch)) {
+        $(this).css("display", "");
+        
+
+      }else{
+        $(this).css("display", "none");
+        
+      }
+
+    });
+    
+  });
 
 
   </script>

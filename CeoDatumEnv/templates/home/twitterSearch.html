@@ -4,6 +4,44 @@
   <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 {% endblock%}
 {% block content %}
+<div class="modal" id="modalExplanation" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Grafo social</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+        <h4>Explicacion:</h4>
+        <p>En este sitio podra buscar las palabras que más apariciones tuvieron en los ultimos 100 Tweets que esten relacionadas con la palabra o frase por la que quiera realizar la búsqueda. Una vez realizada la búsqueda aparecera un grafo en el que los nodos representan las palabras y las aristas la cantidad de veces que aparecieron en el mismo Tweet y tambien aparecera una nube de palabras</p>
+        <br/>
+        <h4>Como utilizarlo:</h4>
+        <p>Escriba la palabra o frase por la que quiera realizar la busqueda en el campo:</p>
+        <img src="{{url_for('static', filename='twitter_search1.png') }}" class="d-block w-100" alt="...">
+        <hr>
+
+        <p>Elija que cantidad de palabras mas buscadas quieren que aparezca en el grafo moviendo el punto del rango del campo:</p>
+        <img src="{{url_for('static', filename='twitter_search2.png') }}" class="d-block w-100" alt="...">
+        <hr>
+
+        <p>Puede excluir ciertas palabras activando las opciones de exclución</p>
+        <img src="{{url_for('static', filename='twitter_search3.png') }}" class="d-block " alt="...">
+        <hr>
+
+        <p>Presione el botón de buscar</p>
+        <img src="{{url_for('static', filename='twitter_search4.png') }}" class="d-block " alt="...">
+        <hr>
+
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <div class="d-flex justify-content-center">
   <div class="card justify-content-center" style="width: 60rem; margin-top: 10px;">
 
@@ -94,6 +132,20 @@
 </div>
 
 <script>
+
+  $( document ).ready(function() {
+
+    
+    $('#modalExplanation').modal('toggle');
+
+
+    
+
+
+
+  });
+
+
   function GenerateChart() {
     //iframe
     var iframe = $('#iframe')[0];

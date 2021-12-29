@@ -16,7 +16,7 @@
 				<thead>
 					<th>Nombre</th>
 					<th>Email</th>
-					<th>Nombre de usuario</th>
+					<th>Nombre de Estudiante</th>
 				</thead>
 			  <tbody id="alumnsTableBody">
 			  	{% for alumno in alumnos %}
@@ -33,7 +33,7 @@
 				<label class="text-danger"  id="invitationError"></label>
 				<form id="invitationForm" class="w-50 float-right">
 				  <div class="form-select row">
-				  	<label>Añadir usuarios al curso:</label>
+				  	<label>Añadir estudiante al curso:</label>
 				  	<label for="usernameInput" class="d-none">Email</label> 
 				  	<select name="username" id="usernameInput" class="form-control" placeholder="Ingrese aquí">
 				  		<option value=""> -- Seleccione un estudiante de la lista --</option>
@@ -189,7 +189,7 @@
 							else{
 								$.getJSON($SCRIPT_ROOT + "inviteUserToCourse/" + usuario_existe + "&" + {{course.courseid}},{}, function(data) {
 									usuario = data.result;
-									$('#alumnsTableBody').append("<tr><td>" + usuario[4] + ", " +  usuario[0] + "</td><td>"+ usuario[3] + "</td><td>"+ usuario[8] +"</td></tr>")	
+									$('#alumnsTableBody').append("<tr><td>" + usuario[1] + ", " +  usuario[0] + "</td><td>"+ usuario[2] + "</td><td>"+ usuario[3] +"</td></tr>")	
 									$('#invitationError').removeClass('text-danger');
 									$('#invitationError').addClass('text-success');
 									$('#invitationError').append("Invitación enviada.");
