@@ -46,8 +46,22 @@ def new_activity(course_id, **kwargs):
 		emptyFields = kwargs.get('emptyFields', "")
 		errorGraficos = kwargs.get('errorGraficos', "")
 		errorFechas = kwargs.get('errorFechas', "")
+		fecha_comienzo = kwargs.get('startDate', "")
+		fecha_fin = kwargs.get('endDate', "")
+		titulo = kwargs.get('title', "")
+		descripcion = kwargs.get('description',"")
+		objective= kwargs.get('objective', "")
+		has_calification = kwargs.get('has_calification', "")
+		statement = kwargs.get('statement', "")
+		statement_title = kwargs.get('statement_title', "")
+		datasetId = kwargs.get('datasetId', "")
+		students_id=kwargs.get('students_id',"")
+		enable_expired_date=kwargs.get('enable_expired_date', "")
+		student_select = kwargs.get('student_select', "")
+		socialGraph = kwargs.get('socialGraph', "")
+		checked_graphs = kwargs.get('graphs', "")
 
-		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos, datasets=datasets, students=students, emptyFields=emptyFields, errorGraficos=errorGraficos, errorFechas=errorFechas)
+		return render_template('activities/new_activity.html', course_id=course_id, graphs=graficos, datasets=datasets, students=students, emptyFields=emptyFields, errorGraficos=errorGraficos, errorFechas=errorFechas, startDate=fecha_comienzo, endDate=fecha_fin, title=titulo, description=descripcion, objective=objective, has_calification=has_calification, statement=statement, statement_title=statement_title, datasetId=datasetId, students_id=students_id, enable_expired_date=enable_expired_date,  student_select=student_select, socialGraph=socialGraph, checked_graphs=checked_graphs)
 	else:
 		return redirect(url_for('home'))
 
@@ -64,26 +78,26 @@ def create_activity():
 			has_calification = not('checkboxNoCalification' in request.form)
 			enable_expired_date = 'checkboxExpiredDate' in request.form
 			statement = request.form['inputStatement']
-			statemenet_title = request.form['inputStatementTitle']
+			statement_title = request.form['inputStatementTitle']
 			student_select = request.form['student_select']
 			students_id = request.form.getlist('student_checkbox')
 			datasetId = request.form['datasetSelect']
-			if fecha_comienzo=="" or fecha_fin =="" or descripcion=="" or objective=="" or statement=="" or statemenet_title=="" or datasetId =="":
-				return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios")	
 			socialGraph = False
 			if request.form.get('checkboxSocialGraph'):
 				socialGraph = request.form.get('checkboxSocialGraph')
 				if socialGraph == 'on':
 					socialGraph = True
+			if fecha_comienzo=="" or fecha_fin =="" or descripcion=="" or objective=="" or statement=="" or statement_title=="" or datasetId =="":
+				return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios", startDate=fecha_comienzo, endDate=fecha_fin, title=titulo, description=descripcion, objective=objective, has_calification=has_calification, statement=statement, statement_title=statement_title, datasetId=datasetId, students_id=students_id, enable_expired_date=enable_expired_date, student_select=student_select, socialGraph=socialGraph, graphs=graphs)	
 			if not graphs:
-				return new_activity(curso, errorGraficos="Debe seleccionar al menos una visualización disponible.")
+				return new_activity(curso, errorGraficos="Debe seleccionar al menos una visualización disponible.", startDate=fecha_comienzo, endDate=fecha_fin, title=titulo, description=descripcion, objective=objective, has_calification=has_calification, statement=statement, statement_title=statement_title, datasetId=datasetId, students_id=students_id, enable_expired_date=enable_expired_date, student_select=student_select, socialGraph=socialGraph, graphs=graphs)
 			fecha_comienzo = datetime.datetime.strptime(fecha_comienzo, '%Y-%m-%d')
 			fecha_fin = datetime.datetime.strptime(fecha_fin, '%Y-%m-%d')
 			if fecha_fin<fecha_comienzo:
-				return new_activity(curso, errorFechas="La fecha de comienzo debe ser menor a la de fin.")
+				return new_activity(curso, errorFechas="La fecha de comienzo debe ser menor a la de fin.", title=titulo, description=descripcion, objective=objective, has_calification=has_calification, statement=statement, statement_title=statement_title, datasetId=datasetId, students_id=students_id, enable_expired_date=enable_expired_date,  student_select=student_select, socialGraph=socialGraph, graphs=graphs)
 			Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement, students_id, datasetId, socialGraph)
 			return redirect(url_for('courses'))
-		return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios")
+		return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios", startDate=fecha_comienzo, endDate=fecha_fin, title=titulo, description=descripcion, objective=objective, has_calification=has_calification, statement=statement, statement_title=statement_title, datasetId=datasetId, students_id=students_id, enable_expired_date=enable_expired_date,  student_select=student_select, socialGraph=socialGraph, graphs=graphs)
 	return redirect(url_for('home'))
 
 def view_activity_data(id):
@@ -293,6 +307,7 @@ def correct_activity_view(activity_id, user_id):
 def viewCorrectedActivity(activity_id, user_id):
 	if session['id']:
 		activity = Activity.get_activity_by_id(activity_id)
+		aaaaaa
 		alumno = Activity.get_activity_of_student(activity_id, user_id)
 
 		resolutions = Activity.get_user_activity_resolution(user_id, activity_id)

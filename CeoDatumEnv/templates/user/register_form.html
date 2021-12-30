@@ -38,6 +38,7 @@
                   <label class="contador_caracteres text-white mt-1" id="password-contador"></label>
                   <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña"  required>
                </div>
+                <label class="d-none d-block text-danger" id="passwordcheck_error2">La contraseña debe tener 8 o más caracteres.</label>
                 <div class="form-group" for="password_repeat">
                   <label class="">Repetir contraseña</label>
                   <label class="" style="font-size:12px">(*)</label>
@@ -141,15 +142,20 @@
     let caracteres_password = 8;
 
     function validate(){
-       var password = $('#password').val()
-       var password_repeat = $('#password_repeat').val()
-       if( password.length < caracteres_password){
-        $('#passwordcheck_error').removeClass('d-none');
-        $('#passwordcheck_error').empty();
-        $('#passwordcheck_error').append("La contraseña debe tener 8 o más caracteres")
+       var password = $('#password');
+       var password_repeat = $('#password_repeat');
+       $('#passwordcheck_error').addClass('d-none');
+       $('#passwordcheck_error2').addClass('d-none');
+       if( password.val().length < caracteres_password){
+        if (password_repeat.val().length < caracteres_password){
+          $('#passwordcheck_error').removeClass('d-none');
+          $('#passwordcheck_error').empty();
+          $('#passwordcheck_error').append("La contraseña debe tener 8 o más caracteres");
+        }
+        $('#passwordcheck_error2').removeClass('d-none');
         return false;
        }
-       if( password != password_repeat ){
+       if( password.val() != password_repeat.val() ){
         $('#passwordcheck_error').removeClass('d-none');
         $('#passwordcheck_error').empty();
         $('#passwordcheck_error').append("Las contraseñas deben coincidir")

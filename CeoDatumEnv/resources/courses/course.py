@@ -57,7 +57,7 @@ def view_course(course_id):
 
 		activities = Activity.get_activities_of_course(course_id)
 		students = User.get_user_from_course(course_id)
-
+		
 		students_to_add = User.get_students_to_add(course_id, course['establishment_id'])
 		
 

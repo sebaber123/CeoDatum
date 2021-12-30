@@ -76,6 +76,7 @@ def logout():
     return redirect(url_for("loginForm"))
 
 def register():
+    provincias = Establishment.select_provinces()
     if 'email' in request.form and 'username' in request.form and 'password' in request.form and 'password_repeat' in request.form and 'provinceFormControlSelect' in request.form and 'cityFormControlSelect' in request.form and 'instituteFormControlSelect' in request.form and 'name' in request.form and 'surname' in request.form and 'birthday' in request.form:
         email = request.form['email']
         username = request.form['username']
@@ -88,24 +89,24 @@ def register():
         surname = request.form['surname']
         birthday = request.form['birthday']
     else:
-        return render_template('user/register_form.html', emptyField="Debe completar todos los campos.", email=email, username=username, name=name, surname=surname, birthday=birthday)
+        return render_template('user/register_form.html', emptyField="Debe completar todos los campos.", email=email, username=username, name=name, surname=surname, birthday=birthday, provincias=provincias)
     if User.emailExist(email):
-        return render_template('user/register_form.html', emailExist="El email ya está en uso.", username=username, name=name, surname=surname, birthday=birthday)
+        return render_template('user/register_form.html', emailExist="El email ya está en uso.", username=username, name=name, surname=surname, birthday=birthday, provincias=provincias)
     if User.usernameExist(username):
-        return render_template('user/register_form.html', usernameExist="El nombre de usuario ya está en uso.", email=email, name=name, surname=surname, birthday=birthday)
+        return render_template('user/register_form.html', usernameExist="El nombre de usuario ya está en uso.", email=email, name=name, surname=surname, birthday=birthday, provincias=provincias)
     if username=="" or password=="" or name=="" or surname=="" or email == "" or birthday =="" or city=="" or province=="":
-        return render_template('user/register_form.html', emptyField="Debe completar todos los campos.", email=email, username=username, name=name, surname=surname, birthday=birthday)
+        return render_template('user/register_form.html', emptyField="Debe completar todos los campos.", email=email, username=username, name=name, surname=surname, birthday=birthday, provincias=provincias)
     if len(password)<8:
-        return render_template('user/register_form.html', passwordLengthError = "La contraseña debe tener 8 caracteres o más.", email=email, username=username, name=name, surname=surname, birthday=birthday)
+        return render_template('user/register_form.html', passwordLengthError = "La contraseña debe tener 8 caracteres o más.", email=email, username=username, name=name, surname=surname, birthday=birthday, provincias=provincias)
     if not password == password_repeat:
-        return render_template('user/register_form.html', passwordsNoMatch = "Las contraseñas deben coincidir.", email=email, username=username, name=name, surname=surname, birthday=birthday)
+        return render_template('user/register_form.html', passwordsNoMatch = "Las contraseñas deben coincidir.", email=email, username=username, name=name, surname=surname, birthday=birthday, provincias=provincias)
     password = generate_password_hash(password)
     if not (re.fullmatch(regex,email)):
-        return render_template('user/register_form.html', incorrectEmail = "No es un email válido.", username=username, name=name, surname=surname, birthday=birthday) 
+        return render_template('user/register_form.html', incorrectEmail = "No es un email válido.", username=username, name=name, surname=surname, birthday=birthday, provincias=provincias) 
     eight_years_ago = datetime.now() - relativedelta(years=8)
     birthday = datetime.strptime(birthday, '%Y-%m-%d')
     if birthday>eight_years_ago:
-        return render_template('user/register_form.html', incorrectDate = "Seleccione una fecha válida.", email=email, username=username, name=name, surname=surname)
+        return render_template('user/register_form.html', incorrectDate = "Seleccione una fecha válida.", email=email, username=username, name=name, surname=surname, provincias=provincias)
     User.register(username, password, province, city, institute, email, name, surname, birthday)
     return render_template('user/login_form.html', registerSuccess="Registro exitoso!")
 
