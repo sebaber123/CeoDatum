@@ -95,8 +95,8 @@ def create_activity():
 			fecha_fin = datetime.datetime.strptime(fecha_fin, '%Y-%m-%d')
 			if fecha_fin<fecha_comienzo:
 				return new_activity(curso, errorFechas="La fecha de comienzo debe ser menor a la de fin.", title=titulo, description=descripcion, objective=objective, has_calification=has_calification, statement=statement, statement_title=statement_title, datasetId=datasetId, students_id=students_id, enable_expired_date=enable_expired_date,  student_select=student_select, socialGraph=socialGraph, graphs=graphs)
-			Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statemenet_title, statement, students_id, datasetId, socialGraph)
-			return redirect(url_for('courses'))
+			Activity.create_activity(fecha_comienzo, fecha_fin, titulo, descripcion, curso, graphs, objective, has_calification, enable_expired_date, statement_title, statement, students_id, datasetId, socialGraph)
+			return redirect('/courses/' + curso, code=302)
 		return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios", startDate=fecha_comienzo, endDate=fecha_fin, title=titulo, description=descripcion, objective=objective, has_calification=has_calification, statement=statement, statement_title=statement_title, datasetId=datasetId, students_id=students_id, enable_expired_date=enable_expired_date,  student_select=student_select, socialGraph=socialGraph, graphs=graphs)
 	return redirect(url_for('home'))
 
@@ -307,7 +307,7 @@ def correct_activity_view(activity_id, user_id):
 def viewCorrectedActivity(activity_id, user_id):
 	if session['id']:
 		activity = Activity.get_activity_by_id(activity_id)
-		aaaaaa
+		
 		alumno = Activity.get_activity_of_student(activity_id, user_id)
 
 		resolutions = Activity.get_user_activity_resolution(user_id, activity_id)

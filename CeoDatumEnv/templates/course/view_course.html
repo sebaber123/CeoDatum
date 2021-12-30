@@ -27,9 +27,9 @@
 			    </tr>
 			    {% endfor %}
 			  </tbody>
-			</table>				  
+			</table>
 			{% if students_to_add|length > 0 %}
-			<div class="container" align="center" id="inviteStudentContainer">
+			<div class="container mb-2" align="center" id="inviteStudentContainer">
 				<label class="text-danger"  id="invitationError"></label>
 				<form id="invitationForm" class="w-50 float-right">
 				  <div class="form-select row">
@@ -79,7 +79,8 @@
 				</tbody>
 			</table>
 			<div class="d-grid gap-2">
-				<a class="btn btn-info" href="/activities/new_activity/{{course.courseid}}">Nueva actividad</a>
+				<label class="d-none d-block text-danger" id="errorActivityButton"></label>
+				<a class="btn btn-info" id="newAtivityButton">Nueva actividad</a>
 			</div>
 		</div>
 		<hr class="mt-1">
@@ -94,7 +95,7 @@
 					<th>Subido por</th>
 					<th>Acciones</th>				
 				</thead>
-				<tbody>
+				<tbody id="datasetTable">
 					{% for dataset in datasets %}
 	  				<tr>		      
 							<td>{{dataset.dataset_name}}</td>
@@ -211,5 +212,25 @@
 		function getActivity(id){
 			window.location.href = '/activities/view_activity_data/' + id;
 		}
+
+		$('#newAtivityButton').on('click', function(){
+			var alumnos = $('#alumnsTableBody');
+			var errorActivityButton = $('#errorActivityButton');
+			var datasets = $('#datasetTable');
+			if (alumnos.children().length == 0){
+				errorActivityButton.empty();
+				errorActivityButton.removeClass('d-none');
+				errorActivityButton.append("Debe tener al menos un alumno en el curso para crear la actividad.");
+				return false;
+			}
+			if (datasets.children().length == 0){
+				errorActivityButton.empty();
+				errorActivityButton.removeClass('d-none');
+				errorActivityButton.append("Debe tener al menos un dataset asociado al curso para crear la actividad.")
+				return false;
+			}
+			window.location.href = $SCRIPT_ROOT + "/activities/new_activity/{{course.courseid}}";
+			
+		});
 	</script>
 {% endblock %}
