@@ -112,7 +112,7 @@ class Dataset(object):
 
 		start_at = (page-1)*pagination
 
-		query = ("SELECT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d INNER JOIN public.\"user\" as u on d.database_owner_id = u.id INNER JOIN user_establishment ue on ue.id_user	=u.id " +
+		query = ("SELECT DISTINCT d.id, d.name as dataset_name, u.name, u.surname FROM public.\"Database\" as d INNER JOIN public.\"user\" as u on d.database_owner_id = u.id INNER JOIN user_establishment ue on ue.id_user	=u.id " +
 				"WHERE "+
 				"d.id IN (SELECT id_dataset from public.\"Dataset_establishment\" where id_establishment = ue.id_establishment)  "+ 
 				"OR d.id IN (select id_dataset from public.\"Dataset_course\" as dc INNER JOIN public.\"user_course\" as uc on dc.id_course = uc.course_id where uc.user_id = "+str(user_id)+" ) "+stringCondtion +" "+

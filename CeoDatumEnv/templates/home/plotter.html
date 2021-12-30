@@ -345,37 +345,37 @@
           <div class="visually-hidden" id='secondStepCondition'>
             <h4>2. Seleccione el criterio para filtrar la columna seleccionada: </h4>
               <div class="form-check" id="includeDiv" style="visibility: hidden;">
-                <input class="form-check-input" type="radio" name="columnCondition" id="include" value="include">
+                <input class="form-check-input" type="radio" name="columnCondition" id="include" value="include" required="required">
                 <label class="form-check-label" for="columnCondition">
                   Incluir
                 </label>
               </div>
               <div class="form-check" id="excludeDiv" style="visibility: hidden;">
-                <input class="form-check-input" type="radio" name="columnCondition" id="exclude" value="exclude">
+                <input class="form-check-input" type="radio" name="columnCondition" id="exclude" value="exclude" required="required">
                 <label class="form-check-label" for="columnCondition">
                   Excluir
                 </label>
               </div>
               <div class="form-check" id="likeDiv" style="visibility: hidden;">
-                <input class="form-check-input" type="radio" name="columnCondition" id="like" value="like">
+                <input class="form-check-input" type="radio" name="columnCondition" id="like" value="like" required="required">
                 <label class="form-check-label" for="columnCondition">
                   Similar a la palabra
                 </label>
               </div>
               <div class="form-check" id="higherDiv" style="visibility: hidden;">
-                <input class="form-check-input" type="radio" name="columnCondition" id="higher" value="higher">
+                <input class="form-check-input" type="radio" name="columnCondition" id="higher" value="higher" required="required">
                 <label class="form-check-label" for="columnCondition">
                   Mayor que
                 </label>
               </div>
               <div class="form-check" id="lowerDiv" style="visibility: hidden;">
-                <input class="form-check-input" type="radio" name="columnCondition" id="lower" value="lower">
+                <input class="form-check-input" type="radio" name="columnCondition" id="lower" value="lower" required="required">
                 <label class="form-check-label" for="columnCondition">
                   Menor que
                 </label>
               </div>
               <div class="form-check" id="betweenDiv" style="visibility: hidden;">
-                <input class="form-check-input" type="radio" name="columnCondition" id="between" value="between">
+                <input class="form-check-input" type="radio" name="columnCondition" id="between" value="between" required="required">
                 <label class="form-check-label" for="columnCondition">
                   Dentro del rango
                 </label>
@@ -454,11 +454,7 @@
     $("input[type=radio][name=columnCondition]").prop('checked', false);
     $('#modalExplanation').modal('toggle');
 
-    console.log( "ready!" );
-
-    //$("#order-columns > .list-group-item").each(function(index){
-    //  
-    //});
+    
 
 
 
@@ -1118,7 +1114,13 @@
             "</div>"); 
       }
       cant = cant + 1;
-    }  
+    }
+
+    $('#staticBackdrop').modal('toggle'); 
+    $('input:radio[name="columnModal"]:checked').prop('checked', false);
+    $('#secondStepCondition').addClass('visually-hidden');
+    $('#thirdStepCondition').addClass('visually-hidden');
+
   }
 
   //remove the condition

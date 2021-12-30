@@ -52,6 +52,7 @@ def create_course():
 
 def view_course(course_id):
 	if session['actualRole'] == "professor":
+
 		course = Course.get_course(course_id)
 
 		activities = Activity.get_activities_of_course(course_id)
@@ -89,6 +90,7 @@ def course_add_dataset():
 
 		Course.add_dataset(datasetId, courseId)
 
+		flash('Dataset agregado correctamente', 'success')
 		return view_course(courseId)
 	return redirect(url_for('home'))
 

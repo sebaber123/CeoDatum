@@ -19,7 +19,7 @@ class Course(object):
 	def create_course(cls, name, start_date, end_date, owner_id, establishment_id, cicle, year, curricular_scope):
 
 		con = get_db()
-		query = "INSERT INTO public.course(name, start_date, end_date, id_owner, establishment_id, cicle, year, curricular_scope_id) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
+		query = "INSERT INTO public.course(name, start_date, end_date, id_owner, id_establishment, cicle, year, curricular_scope_id) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (name, start_date, end_date, owner_id, str(establishment_id), cicle, year, curricular_scope))
 		con.commit()
@@ -28,7 +28,7 @@ class Course(object):
 
 	@classmethod
 	def get_course(cls, id_course):
-		query = "SELECT course.id as courseId, course.name as courseName, start_date, end_date, id_owner, establishment_id, cicle, year, curricular_scope.name as curricular_scope FROM public.course INNER JOIN curricular_scope ON course.curricular_scope_id = curricular_scope.id WHERE course.id=%s"
+		query = "SELECT course.id as courseId, course.name as courseName, start_date, end_date, id_owner, id_establishment, id_establishment as establishment_id, cicle, year, curricular_scope.name as curricular_scope FROM public.course INNER JOIN curricular_scope ON course.curricular_scope_id = curricular_scope.id WHERE course.id=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (id_course,))
 		return cursor.fetchone()
@@ -41,7 +41,7 @@ class Course(object):
 		cursor = con.cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (username,course_id))
 		con.commit()
-		query = "SELECT * FROM public.user WHERE id=%s"
+		query = "SELECT name, surname, email, username FROM public.user WHERE id=%s"
 		cursor.execute(query, (username,))
 
 		return cursor.fetchone()
