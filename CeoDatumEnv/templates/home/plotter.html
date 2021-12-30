@@ -561,11 +561,14 @@
     if (!$('input:radio[name="chart"]:checked').val()) {
        
       $('#alerts').prepend(
-        '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+        '<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">'+
           '<strong>Por favor seleccione un tipo de grafico primero</strong>'+
           '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
         '</div>'
         )
+      $("#alert1").fadeTo(10000, 500).slideUp(500, function(){
+          $("#alert1").slideUp(500);
+      });
     }
 
     else {
@@ -574,11 +577,14 @@
 
       if ($('#order-axi-x').children(0).length == 0){
         $('#alerts').prepend(
-        '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+        '<div class="alert alert-danger alert-dismissible fade show" id="alert2" role="alert">'+
           '<strong>Por favor elija una columna por la cual graficar</strong>'+
           '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
         '</div>'
         )
+        $("#alert2").fadeTo(10000, 500).slideUp(500, function(){
+          $("#alert2").slideUp(500);
+        });
       }
 
       else{
@@ -602,11 +608,14 @@
             if ($('#order-axi-x').children(0).children(0).attr('columnType') != 'date'){
 
               $('#alerts').prepend(
-                '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+                '<div class="alert alert-danger alert-dismissible fade show" id="alert3" role="alert">'+
                   '<strong>la columna elegida debe ser de tipo fecha</strong>'+
                   '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
                 '</div>'
                 )
+              $("#alert3").fadeTo(10000, 500).slideUp(500, function(){
+                  $("#alert3").slideUp(500);
+              });
 
 
               return true
@@ -689,11 +698,14 @@
 
                       if ($('#order-axi-y').children(0).length == 0){
                         $('#alerts').prepend(
-                        '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+                        '<div class="alert alert-danger alert-dismissible fade show" id="alert4" role="alert">'+
                           '<strong>Por favor elija una columna para agregar en Longitud </strong>'+
                           '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
                         '</div>'
                         )
+                        $("#alert4").fadeTo(10000, 500).slideUp(500, function(){
+                            $("#alert4").slideUp(500);
+                        });
 
                         return true
                       }
@@ -701,11 +713,14 @@
                       if ($('#order-axi-x').children(0).children(0).attr('columnType') != 'NUMERIC (16, 10)'){
 
                         $('#alerts').prepend(
-                          '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+                          '<div class="alert alert-danger alert-dismissible fade show" id="alert5" role="alert">'+
                             '<strong>la columna elegida  como latitud debe ser de tipo numero con decimales</strong>'+
                             '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
                           '</div>'
                           )
+                        $("#alert5").fadeTo(10000, 500).slideUp(500, function(){
+                            $("#alert5").slideUp(500);
+                        });
 
 
                         return true
@@ -715,11 +730,14 @@
                       if ($('#order-axi-y').children(0).children(0).attr('columnType') != 'NUMERIC (16, 10)'){
 
                         $('#alerts').prepend(
-                          '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+                          '<div class="alert alert-danger alert-dismissible fade show" id="alert6" role="alert">'+
                             '<strong>la columna elegida  como Longitud debe ser de tipo numero con decimales</strong>'+
                             '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
                           '</div>'
                           )
+                        $("#alert6").fadeTo(10000, 500).slideUp(500, function(){
+                            $("#alert6").slideUp(500);
+                        });
 
 
                         return true
@@ -1243,11 +1261,7 @@
   const observer = new MutationObserver(callback);
 
 
-  $('[name="columnOfDataSet"]').change(function() {
 
-    alert('seba');
-
-  });
 
 </script>
 

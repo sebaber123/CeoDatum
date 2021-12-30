@@ -573,13 +573,20 @@ def counts_query_for_data_table(database, column, condition, pos, parent):
 
     #generate the counts
     for x in columnData:
-        stringCounts = stringCounts + 'count(case t'+str(pos)+'.\"'+column+'\" when \''+str(x[1])+'\' then 1 else null end) as \"'+ str(x[1]) + '\", '
+
+        if str(x[1]) != 'None':
+
+            stringCounts = stringCounts + 'count(case t'+str(pos)+'.\"'+column+'\" when \''+str(x[1])+'\' then 1 else null end) as \"'+ str(x[1]) + '\", '
 
     #delete the last ', ' of the string
     stringCounts = stringCounts[:-2] 
     
     #add the name of column of the count (used in the headers of the data table)
     columnNames = [str(row[1]) for row in columnData]
+
+    if 'None' in columnNames:
+
+        columnNames.remove('None')
 
     return [stringCounts, columnNames]
         

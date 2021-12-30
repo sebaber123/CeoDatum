@@ -125,7 +125,7 @@ class Visualization(object):
 	@classmethod
 	def get_data_with_parameters_for_inspection(cls, data_db_name, selectString, fromString, whereString):
 		query = ("SELECT "+selectString+ " FROM "+ fromString +
-		" "+whereString )
+		" "+whereString+ " LIMIT 1000 " )
 		cursor = get_db_visualization(data_db_name).cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query)
 
