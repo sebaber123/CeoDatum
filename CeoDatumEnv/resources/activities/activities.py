@@ -69,7 +69,7 @@ def create_activity():
 			students_id = request.form.getlist('student_checkbox')
 			datasetId = request.form['datasetSelect']
 			if fecha_comienzo=="" or fecha_fin =="" or descripcion=="" or objective=="" or statement=="" or statemenet_title=="" or datasetId =="":
-				return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios")	
+				return new_activity(request.form['course'], emptyFields="Todos los campos son necesarios", startDate=fecha_comienzo, endDate=fecha_fin, title=titulo, description=descripcion)	
 			socialGraph = False
 			if request.form.get('checkboxSocialGraph'):
 				socialGraph = request.form.get('checkboxSocialGraph')

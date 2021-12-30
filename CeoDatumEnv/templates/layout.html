@@ -60,7 +60,7 @@
             </li>
           {% endif %}
           {% if session.username %}
-
+          {% if session['actualRole']=='professor' or session['actualRole']=='student'%}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Perfil
@@ -84,6 +84,7 @@
               {% endif %}
             </ul>
           </li>
+          {% endif %}
           {% endif %}
         </ul>
 
