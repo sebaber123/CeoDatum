@@ -102,11 +102,16 @@
 		if ($('#establismentsSection input[type=checkbox]:checked').length == 0 && $( "#share" ).val() == 'protegido' ){
 
 			$('#alerts').prepend(
-		        '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+
+		        '<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">'+
 		          '<strong>Por favor seleccione al menos un establecimiento</strong>'+
 		          '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'+
 		        '</div>'
 		        )
+
+			$("#alert1").fadeTo(10000, 500).slideUp(500, function(){
+                $("#alert1").slideUp(500);
+            });
+
 
 			return false
 		

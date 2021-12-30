@@ -103,7 +103,7 @@
       <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
       {% if messages %}
         {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" style="margin: auto; width: 60%; " role="alert">
+          <div class="alert alert-{{ category }} alert-dismissible fade show" id="alert" style="margin: auto; width: 60%; " role="alert">
           {{ message }}
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
