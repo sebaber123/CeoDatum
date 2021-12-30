@@ -1,11 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}Actividades{% endblock %}
 {% block content %}
-<div class="container " style="width: 60%;background-color:#89C2D9; padding-bottom: 15px;" align="center">
-	<h2>Actividad de {{student.name}} {{student.surname}}</h2>
-	<hr>
-
-	<h3>Entregas realizadas por el alumno</h3>
+<div class="container" style="width: 60%;background-color:#89C2D9; padding-bottom: 15px;" align="center">
+	<h1 style="">Actividad de {{student.name}} {{student.surname}}</h1>
+	<h3 align="left">Entregas realizadas por el alumno</h3>
 	<table class="table" style="">
     	<thead>
     		<tr>
@@ -97,7 +95,13 @@
     </table>	
 
     <hr>
-
+    <div class="card m-2" align="left">
+		<div class="card-body">
+			<h3 align="left">Enunciado<h2>
+			<h5 align="">{{activity.statement_title}}</h5>
+			<p><i>{{activity.statement}}</i></p>
+		</div>
+	</div>
 	<div class="container" align="left">
 		<h5>Corrección</h5>
 		<form method="POST" action="/activity/correctActivity/{{activity.id}}&{{student.id}}">

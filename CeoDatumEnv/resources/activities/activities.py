@@ -307,6 +307,7 @@ def correct_activity_view(activity_id, user_id):
 def viewCorrectedActivity(activity_id, user_id):
 	if session['id']:
 		activity = Activity.get_activity_by_id(activity_id)
+		aaaaaa
 		alumno = Activity.get_activity_of_student(activity_id, user_id)
 
 		resolutions = Activity.get_user_activity_resolution(user_id, activity_id)

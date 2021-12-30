@@ -4,14 +4,16 @@
 <div class="container " style="width: 60%;background-color:#89C2D9; padding-bottom: 15px;" align="center">
 	<h2>Actividad de {{student.name}} {{student.surname}}</h2>
 	<hr>
-
-	<h3>Entregas realizadas por el alumno</h3>
+	<h3>Enunciado<h2>
+	<h4>{{activity.statement_tile}}</h4>
+	<p>{{activity.statement}}</p>
+	<h3>Entregas realizadas por el estudiante</h3>
 	<table class="table" style="">
     	<thead>
     		<tr>
     			<th>Pestaña entregada</th>
-    			<th>fecha</th>
-    			<th>ver entrega</th>
+    			<th>Fecha</th>
+    			<th>Ver entrega</th>
     		</tr>
     	</thead>
     	<tbody>
@@ -20,7 +22,7 @@
     			<td>
     				{% if resolution.resolution_type == 'plotter' %}
 
-    					Grafico
+    					Gráfico
 
     				{% else %}
 
