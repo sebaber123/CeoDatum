@@ -3,6 +3,7 @@
 {% block content %}
 <div class="container" style="width: 60%;background-color:#89C2D9; padding-bottom: 15px;" align="center">
 	<h1 style="">Actividad de {{student.name}} {{student.surname}}</h1>
+	<hr>
 	<h3 align="left">Entregas realizadas por el alumno</h3>
 	<table class="table" style="">
     	<thead>
@@ -18,7 +19,7 @@
     			<td>
     				{% if resolution.resolution_type == 'plotter' %}
 
-    					Grafico
+    					Gráfico
 
     				{% else %}
 

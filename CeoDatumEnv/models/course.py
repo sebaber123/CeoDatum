@@ -9,7 +9,7 @@ class Course(object):
 
 	@classmethod
 	def get_my_courses(cls, user_id):
-		query = "SELECT c.id as id, name, start_date, end_date, id_owner, cicle, year, curricular_scope_id, e.nombre as establishment_name FROM public.course c INNER JOIN establishment as e ON establishment_id=e.id WHERE id_owner=%s"
+		query = "SELECT c.id as id, name, start_date, end_date, id_owner, cicle, year, curricular_scope_id, e.nombre as establishment_name FROM public.course c INNER JOIN establishment as e ON id_establishment=e.id WHERE id_owner=%s"
 		cursor = get_db().cursor(cursor_factory = psycopg2.extras.DictCursor)
 		cursor.execute(query, (user_id,))
 

@@ -10,29 +10,29 @@
 		<form method="POST" action="/activities/create_activity" onsubmit="return validate();">
 			<label class="text-danger d-block">{{emptyFields}}</label>
 			<div class="form-group">
-		    	<label class="titulo-form" for="inputTitle">Titulo de actividad</label>
+		    	<label class="titulo-form" for="inputTitle">Titulo de la actividad</label>
 		    	<span class="contador_caracteres" id="contador_caracteres_titulo">Máximo 64 caracteres</span>
 		    	<input type="text" class="form-control" maxlength="64" name="title" id="inputTitle" placeholder="Ingrese un título" value="{{title}}">
 		  	</div>
 		  	<div class="md-form">
-		  		<span class="titulo-form">Enunciado (Esta sección será lo que el alumno verá en su actividad)</span>
+		  		<span class="titulo-form">Enunciado (Esta sección será lo que el estudiante verá en su actividad)</span>
 		  		<div class="card d-block p-3">
 					  	<label class="titulo-form" for="inputStatementTitle">Título del enunciado</label>
 				  		<span class="contador_caracteres" id="contador_caracteres_enunciado_titulo">Máximo 64 caracteres</span>
 				    	<input type="text" value="{{statement_title}}" class="form-control" maxlength="64" name="inputStatementTitle" id="inputStatementTitle">
-				    	<label class="titulo-form" for="inputStatement">Consigna</label>
+				    	<label class="titulo-form" for="inputStatement">Consigna del enunciado</label>
 				  		<span class="contador_caracteres" id="contador_caracteres_consigna">Máximo 256 caracteres</span>
 				    	<textarea class="md-textarea form-control" maxlength="256" name="inputStatement" id="inputStatement" rows="2">{{statement}}</textarea>
 				</div>
 		  		
 		  	</div>
 		  	<div class="md-form">
-		  		<label class="titulo-form" for="inputObjective">Objetivo</label>
+		  		<label class="titulo-form" for="inputObjective">Objetivo de la actividad</label>
 		  		<span class="contador_caracteres" id="contador_caracteres_objetivo">Máximo 256 caracteres</span>
 		    	<textarea class="md-textarea form-control" maxlength="256" name="objective" id="inputObjective" rows="2">{{objective}}</textarea>
 		  	</div>
 		  	<div class="md-form">
-		  		<label class="titulo-form" for="inputDescription">Descripción</label>
+		  		<label class="titulo-form" for="inputDescription">Descripción de la actividad</label>
 		  		<span class="contador_caracteres" id="contador_caracteres_descripcion">Máximo 256 caracteres</span>
 		    	<textarea class="md-textarea form-control" maxlength="256" name="description" id="inputDescription" rows="2" >{{description}}</textarea>
 		  	</div>
