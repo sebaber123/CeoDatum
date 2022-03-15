@@ -1,0 +1,1021 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.9 (Ubuntu 12.9-0ubuntu0.20.04.1)
+-- Dumped by pg_dump version 12.9 (Ubuntu 12.9-0ubuntu0.20.04.1)
+
+-- Started on 2022-03-15 14:47:57 -03
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 3163 (class 1262 OID 16385)
+-- Name: CeoDatum; Type: DATABASE; Schema: -; Owner: sebaber
+--
+
+CREATE DATABASE "CeoDatum" WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
+
+
+ALTER DATABASE "CeoDatum" OWNER TO sebaber;
+
+\connect "CeoDatum"
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 207 (class 1259 OID 16406)
+-- Name: Column; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."Column" (
+    id integer NOT NULL,
+    name character varying(80) NOT NULL,
+    type character varying(80) NOT NULL
+);
+
+
+ALTER TABLE public."Column" OWNER TO sebaber12;
+
+--
+-- TOC entry 206 (class 1259 OID 16404)
+-- Name: Column_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."Column" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public."Column_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 203 (class 1259 OID 16392)
+-- Name: Database; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."Database" (
+    name character varying(80) NOT NULL,
+    id integer NOT NULL,
+    database_owner_id integer NOT NULL,
+    share character varying(80) NOT NULL
+);
+
+
+ALTER TABLE public."Database" OWNER TO sebaber12;
+
+--
+-- TOC entry 202 (class 1259 OID 16390)
+-- Name: Database_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."Database" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public."Database_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 209 (class 1259 OID 16413)
+-- Name: Database_table; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."Database_table" (
+    id integer NOT NULL,
+    id_database integer NOT NULL,
+    id_table integer NOT NULL
+);
+
+
+ALTER TABLE public."Database_table" OWNER TO sebaber12;
+
+--
+-- TOC entry 208 (class 1259 OID 16411)
+-- Name: Database_table_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."Database_table" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public."Database_table_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 234 (class 1259 OID 49417)
+-- Name: Dataset_course; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."Dataset_course" (
+    id integer NOT NULL,
+    id_dataset integer NOT NULL,
+    id_course integer NOT NULL
+);
+
+
+ALTER TABLE public."Dataset_course" OWNER TO sebaber12;
+
+--
+-- TOC entry 228 (class 1259 OID 49323)
+-- Name: Dataset_establishment; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."Dataset_establishment" (
+    id integer NOT NULL,
+    id_dataset integer NOT NULL,
+    id_establishment integer NOT NULL
+);
+
+
+ALTER TABLE public."Dataset_establishment" OWNER TO sebaber12;
+
+--
+-- TOC entry 227 (class 1259 OID 49321)
+-- Name: Dataset_establishment_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."Dataset_establishment" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public."Dataset_establishment_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 236 (class 1259 OID 49424)
+-- Name: Graph; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."Graph" (
+    id integer NOT NULL,
+    spanish_name character varying(80) NOT NULL,
+    name character varying(80) NOT NULL
+);
+
+
+ALTER TABLE public."Graph" OWNER TO sebaber12;
+
+--
+-- TOC entry 205 (class 1259 OID 16399)
+-- Name: Table; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."Table" (
+    id integer NOT NULL,
+    name character varying(80) NOT NULL,
+    fact_table boolean NOT NULL
+);
+
+
+ALTER TABLE public."Table" OWNER TO sebaber12;
+
+--
+-- TOC entry 211 (class 1259 OID 16420)
+-- Name: Table_column; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."Table_column" (
+    id integer NOT NULL,
+    id_table integer NOT NULL,
+    id_column integer NOT NULL
+);
+
+
+ALTER TABLE public."Table_column" OWNER TO sebaber12;
+
+--
+-- TOC entry 210 (class 1259 OID 16418)
+-- Name: Table_column_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."Table_column" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public."Table_column_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 204 (class 1259 OID 16397)
+-- Name: Table_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."Table" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public."Table_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 212 (class 1259 OID 41040)
+-- Name: activity; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.activity (
+    id integer NOT NULL,
+    start_date date,
+    end_date date,
+    is_finished boolean,
+    course_id integer,
+    title character varying(64),
+    description character varying(256),
+    objective character varying(256),
+    has_calification boolean,
+    enable_expired_date boolean,
+    statement_title character varying(64),
+    statement character varying(256),
+    dataset_id integer,
+    social_graph boolean
+);
+
+
+ALTER TABLE public.activity OWNER TO sebaber12;
+
+--
+-- TOC entry 238 (class 1259 OID 73851)
+-- Name: activity_available_graph; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.activity_available_graph (
+    activity_id integer NOT NULL,
+    graph_id integer NOT NULL
+);
+
+
+ALTER TABLE public.activity_available_graph OWNER TO sebaber12;
+
+--
+-- TOC entry 213 (class 1259 OID 41043)
+-- Name: activity_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.activity ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.activity_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 224 (class 1259 OID 41102)
+-- Name: city; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.city (
+    id integer NOT NULL,
+    id_provincia character varying(255),
+    localidad character varying(255),
+    rn character varying(255),
+    codigo_localidad character varying(255),
+    codigo_de_area character varying(255)
+);
+
+
+ALTER TABLE public.city OWNER TO sebaber12;
+
+--
+-- TOC entry 223 (class 1259 OID 41100)
+-- Name: city_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.city ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.city_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 214 (class 1259 OID 41053)
+-- Name: configuration; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.configuration (
+    establishment_filename character varying(100),
+    establishment_update_day date,
+    id integer NOT NULL
+);
+
+
+ALTER TABLE public.configuration OWNER TO sebaber12;
+
+--
+-- TOC entry 215 (class 1259 OID 41056)
+-- Name: configuration_app_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.configuration ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.configuration_app_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 230 (class 1259 OID 49399)
+-- Name: course; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.course (
+    id integer NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    name character varying(80) NOT NULL,
+    id_owner integer NOT NULL,
+    id_establishment integer,
+    cicle character varying(80),
+    year character varying(80),
+    curricular_scope_id integer
+);
+
+
+ALTER TABLE public.course OWNER TO sebaber12;
+
+--
+-- TOC entry 229 (class 1259 OID 49397)
+-- Name: course_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.course ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.course_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 249 (class 1259 OID 107808)
+-- Name: curricular_scope; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.curricular_scope (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.curricular_scope OWNER TO sebaber12;
+
+--
+-- TOC entry 248 (class 1259 OID 107806)
+-- Name: curricular_scope_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.curricular_scope ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.curricular_scope_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 233 (class 1259 OID 49415)
+-- Name: dataset_establishment_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."Dataset_course" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.dataset_establishment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 226 (class 1259 OID 41112)
+-- Name: establishment; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.establishment (
+    id integer NOT NULL,
+    id_ciudad character varying(255),
+    cue character varying(255),
+    nombre character varying(255),
+    ambito character varying(255),
+    domicilio character varying(255),
+    telefono character varying(255),
+    mail character varying(255)
+);
+
+
+ALTER TABLE public.establishment OWNER TO sebaber12;
+
+--
+-- TOC entry 225 (class 1259 OID 41110)
+-- Name: establishment_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.establishment ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.establishment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 235 (class 1259 OID 49422)
+-- Name: graph_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."Graph" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.graph_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 222 (class 1259 OID 41095)
+-- Name: province; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.province (
+    id integer NOT NULL,
+    jurisdiccion character varying(255)
+);
+
+
+ALTER TABLE public.province OWNER TO sebaber12;
+
+--
+-- TOC entry 221 (class 1259 OID 41093)
+-- Name: province_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.province ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.province_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 241 (class 1259 OID 90493)
+-- Name: resolution_plotter; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.resolution_plotter (
+    id_resolution_plotter integer NOT NULL,
+    id_resolution integer NOT NULL,
+    id_dataset integer NOT NULL,
+    x_axis character varying(256) NOT NULL,
+    y_axis character varying(256),
+    graph_type character varying(80) NOT NULL,
+    cumulative boolean,
+    dispersion_x real,
+    dispersion_y real,
+    has_condition boolean NOT NULL
+);
+
+
+ALTER TABLE public.resolution_plotter OWNER TO sebaber12;
+
+--
+-- TOC entry 244 (class 1259 OID 90508)
+-- Name: resolution_plotter_conditions; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.resolution_plotter_conditions (
+    id_condition integer NOT NULL,
+    id_resolution_plotter integer NOT NULL,
+    condition character varying(256) NOT NULL
+);
+
+
+ALTER TABLE public.resolution_plotter_conditions OWNER TO sebaber12;
+
+--
+-- TOC entry 243 (class 1259 OID 90506)
+-- Name: resolution_plotter_conditions_condition_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.resolution_plotter_conditions ALTER COLUMN id_condition ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.resolution_plotter_conditions_condition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 242 (class 1259 OID 90496)
+-- Name: resolution_plotter_id_resolution_plotter_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.resolution_plotter ALTER COLUMN id_resolution_plotter ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.resolution_plotter_id_resolution_plotter_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 245 (class 1259 OID 90513)
+-- Name: resolution_social_graph; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.resolution_social_graph (
+    id_resolution_social_graph integer NOT NULL,
+    phrase_to_search character varying(256) NOT NULL,
+    exclude_prepositions boolean NOT NULL,
+    exclude_articles boolean NOT NULL,
+    exclude_pronouns boolean NOT NULL,
+    exclude_conjunctions boolean NOT NULL,
+    exclude_adverbs boolean NOT NULL,
+    exclude_verbs boolean NOT NULL,
+    exclude_links boolean NOT NULL,
+    id_resolution integer NOT NULL,
+    quantity_of_words integer NOT NULL,
+    plotter_image text,
+    cloud_image text
+);
+
+
+ALTER TABLE public.resolution_social_graph OWNER TO sebaber12;
+
+--
+-- TOC entry 246 (class 1259 OID 90516)
+-- Name: resolution_social_graph_id_resolution_social_graph_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.resolution_social_graph ALTER COLUMN id_resolution_social_graph ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.resolution_social_graph_id_resolution_social_graph_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 216 (class 1259 OID 41071)
+-- Name: role; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.role (
+    id integer NOT NULL,
+    rolename character varying
+);
+
+
+ALTER TABLE public.role OWNER TO sebaber12;
+
+--
+-- TOC entry 217 (class 1259 OID 41077)
+-- Name: role_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.role ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.role_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 218 (class 1259 OID 41079)
+-- Name: user; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public."user" (
+    name character varying,
+    id integer NOT NULL,
+    password character varying,
+    email character varying,
+    surname character varying,
+    province_id integer,
+    city_id integer,
+    establishment_id integer,
+    birthday date,
+    username character varying,
+    role_id integer DEFAULT 3
+);
+
+
+ALTER TABLE public."user" OWNER TO sebaber12;
+
+--
+-- TOC entry 219 (class 1259 OID 41086)
+-- Name: user_activity; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.user_activity (
+    id_user integer NOT NULL,
+    id_activity integer NOT NULL,
+    calification integer,
+    commentary character varying(256)
+);
+
+
+ALTER TABLE public.user_activity OWNER TO sebaber12;
+
+--
+-- TOC entry 240 (class 1259 OID 90488)
+-- Name: user_activity_resolution; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.user_activity_resolution (
+    id_resolution integer NOT NULL,
+    id_user integer NOT NULL,
+    id_activity integer NOT NULL,
+    resolution_type character varying(80) NOT NULL,
+    commentary character varying(256),
+    date_resolution timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.user_activity_resolution OWNER TO sebaber12;
+
+--
+-- TOC entry 239 (class 1259 OID 90486)
+-- Name: user_activity_resolution_id_resolution_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.user_activity_resolution ALTER COLUMN id_resolution ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.user_activity_resolution_id_resolution_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 232 (class 1259 OID 49406)
+-- Name: user_course; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.user_course (
+    id integer NOT NULL,
+    course_id integer NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE public.user_course OWNER TO sebaber12;
+
+--
+-- TOC entry 231 (class 1259 OID 49404)
+-- Name: user_course_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public.user_course ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.user_course_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 247 (class 1259 OID 90527)
+-- Name: user_establishment; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.user_establishment (
+    id_user integer NOT NULL,
+    id_establishment integer NOT NULL
+);
+
+
+ALTER TABLE public.user_establishment OWNER TO sebaber12;
+
+--
+-- TOC entry 220 (class 1259 OID 41089)
+-- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE public."user" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 237 (class 1259 OID 65893)
+-- Name: user_role; Type: TABLE; Schema: public; Owner: sebaber12
+--
+
+CREATE TABLE public.user_role (
+    user_id integer NOT NULL,
+    role_id integer NOT NULL
+);
+
+
+ALTER TABLE public.user_role OWNER TO sebaber12;
+
+--
+-- TOC entry 2987 (class 2606 OID 16410)
+-- Name: Column Column_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."Column"
+    ADD CONSTRAINT "Column_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2983 (class 2606 OID 16396)
+-- Name: Database Database_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."Database"
+    ADD CONSTRAINT "Database_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2989 (class 2606 OID 16417)
+-- Name: Database_table Database_table_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."Database_table"
+    ADD CONSTRAINT "Database_table_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3007 (class 2606 OID 49327)
+-- Name: Dataset_establishment Dataset_establishment_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."Dataset_establishment"
+    ADD CONSTRAINT "Dataset_establishment_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2991 (class 2606 OID 16424)
+-- Name: Table_column Table_column_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."Table_column"
+    ADD CONSTRAINT "Table_column_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2985 (class 2606 OID 16403)
+-- Name: Table Table_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."Table"
+    ADD CONSTRAINT "Table_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3019 (class 2606 OID 73855)
+-- Name: activity_available_graph activity_available_graph_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.activity_available_graph
+    ADD CONSTRAINT activity_available_graph_pkey PRIMARY KEY (activity_id, graph_id);
+
+
+--
+-- TOC entry 2993 (class 2606 OID 98386)
+-- Name: activity activity_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.activity
+    ADD CONSTRAINT activity_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3003 (class 2606 OID 41109)
+-- Name: city city_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.city
+    ADD CONSTRAINT city_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3009 (class 2606 OID 49403)
+-- Name: course course_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.course
+    ADD CONSTRAINT course_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3031 (class 2606 OID 107812)
+-- Name: curricular_scope curricular_scope_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.curricular_scope
+    ADD CONSTRAINT curricular_scope_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3013 (class 2606 OID 49421)
+-- Name: Dataset_course dataset_establishment_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."Dataset_course"
+    ADD CONSTRAINT dataset_establishment_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3005 (class 2606 OID 41119)
+-- Name: establishment establishment_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.establishment
+    ADD CONSTRAINT establishment_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3015 (class 2606 OID 49428)
+-- Name: Graph graph_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."Graph"
+    ADD CONSTRAINT graph_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3001 (class 2606 OID 41099)
+-- Name: province province_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.province
+    ADD CONSTRAINT province_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3025 (class 2606 OID 90512)
+-- Name: resolution_plotter_conditions resolution_plotter_conditions_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.resolution_plotter_conditions
+    ADD CONSTRAINT resolution_plotter_conditions_pkey PRIMARY KEY (id_condition);
+
+
+--
+-- TOC entry 3023 (class 2606 OID 90505)
+-- Name: resolution_plotter resolution_plotter_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.resolution_plotter
+    ADD CONSTRAINT resolution_plotter_pkey PRIMARY KEY (id_resolution_plotter);
+
+
+--
+-- TOC entry 3027 (class 2606 OID 90522)
+-- Name: resolution_social_graph resolution_social_graph_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.resolution_social_graph
+    ADD CONSTRAINT resolution_social_graph_pkey PRIMARY KEY (id_resolution_social_graph);
+
+
+--
+-- TOC entry 2995 (class 2606 OID 41125)
+-- Name: role role_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.role
+    ADD CONSTRAINT role_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2999 (class 2606 OID 90526)
+-- Name: user_activity user_activity_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.user_activity
+    ADD CONSTRAINT user_activity_pkey PRIMARY KEY (id_user, id_activity);
+
+
+--
+-- TOC entry 3021 (class 2606 OID 90492)
+-- Name: user_activity_resolution user_activity_resolution_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.user_activity_resolution
+    ADD CONSTRAINT user_activity_resolution_pkey PRIMARY KEY (id_resolution);
+
+
+--
+-- TOC entry 3011 (class 2606 OID 49410)
+-- Name: user_course user_course_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.user_course
+    ADD CONSTRAINT user_course_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3029 (class 2606 OID 90531)
+-- Name: user_establishment user_establishment_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.user_establishment
+    ADD CONSTRAINT user_establishment_pkey PRIMARY KEY (id_user, id_establishment);
+
+
+--
+-- TOC entry 2997 (class 2606 OID 49320)
+-- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3017 (class 2606 OID 65897)
+-- Name: user_role user_role_pkey; Type: CONSTRAINT; Schema: public; Owner: sebaber12
+--
+
+ALTER TABLE ONLY public.user_role
+    ADD CONSTRAINT user_role_pkey PRIMARY KEY (user_id, role_id);
+
+
+-- Completed on 2022-03-15 14:47:59 -03
+
+--
+-- PostgreSQL database dump complete
+--
+
